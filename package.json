@@ -12,6 +12,9 @@
   "engines": {
     "node": ">=20"
   },
+  "workspaces": [
+    "web"
+  ],
   "devDependencies": {
     "@types/node": "^22.0.0",
     "ajv": "^8.17.1",
