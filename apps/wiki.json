@@ -19,7 +19,7 @@
     "website": "https://frappe.io"
   },
   "media": {
-    "icon": "",
+    "icon": "https://raw.githubusercontent.com/frappe/wiki/develop/frontend/src/assets/wiki-logo.png",
     "screenshots": []
   },
   "meta": {

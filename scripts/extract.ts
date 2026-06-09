@@ -171,6 +171,38 @@ function topicsToCategories(topics: string[]): string[] {
   return found.size > 0 ? Array.from(found) : ["Utilities"];
 }
 
+async function detectIconUrl(owner: string, repo: string, branch: string, appName: string): Promise<string | null> {
+  const candidates = [
+    `${appName}/public/images/${appName}-logo.svg`,
+    `${appName}/public/images/${appName}-logo.png`,
+    `${appName}/public/images/frappe-${appName}-logo.svg`,
+    `${appName}/public/images/frappe-${appName}-logo.png`,
+    `${appName}/public/images/logo.svg`,
+    `${appName}/public/images/logo.png`,
+    `frontend/src/assets/${appName}-icon.svg`,
+    `frontend/src/assets/${appName}-logo.svg`,
+    `frontend/public/favicon.png`,
+    `frontend/public/favicon.svg`,
+    `desk/public/favicon.svg`,
+    `desk/public/logo.svg`,
+    `public/favicon.svg`,
+    `public/logo.svg`
+  ];
+
+  for (const item of candidates) {
+    const url = `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/${branch}/${item}`;
+    try {
+      const res = await fetch(url, { method: "HEAD" });
+      if (res.ok) {
+        return url;
+      }
+    } catch {
+      // ignore network errors and try next
+    }
+  }
+  return null;
+}
+
 // ──────────────────────────────────────────────
 // Main
 // ──────────────────────────────────────────────
@@ -216,6 +248,7 @@ async function main() {
   const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
   const categories = topicsToCategories(repoData.topics);
   const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t));
+  const iconUrl = await detectIconUrl(owner, repo, repoData.default_branch, appName);
 
   const outputPath = path.join(APPS_DIR, `${slug}.json`);
 
@@ -247,7 +280,7 @@ async function main() {
       ...(repoData.homepage ? { website: repoData.homepage } : {}),
     },
     media: {
-      icon: "",
+      icon: iconUrl || "",
       screenshots: [],
     },
     meta: {

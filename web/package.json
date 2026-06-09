@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp -r ../index dist/index && cp -r ../apps dist/apps",
     "typecheck": "vue-tsc -b",
     "preview": "vite preview"
   },

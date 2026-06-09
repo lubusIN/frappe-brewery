@@ -20,7 +20,7 @@
     "website": "https://frappe.io/insights"
   },
   "media": {
-    "icon": "https://raw.githubusercontent.com/frappe/insights/develop/insights/public/images/insights-logo.png",
+    "icon": "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/frontend/public/favicon.png",
     "screenshots": []
   },
   "meta": {

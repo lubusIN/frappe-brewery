@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { FeatherIcon, Badge, Button } from 'frappe-ui'
 import { fetchApp } from '../api'
@@ -10,6 +10,11 @@ const app = ref<App | null>(null)
 const loading = ref(true)
 const error = ref('')
 const copied = ref(false)
+const imageError = ref(false)
+
+watch(() => app.value?.media?.icon, () => {
+  imageError.value = false
+})
 
 async function loadApp(slug: string) {
   loading.value = true
@@ -64,7 +69,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
       <!-- Hero bar -->
       <div class="flex flex-col sm:flex-row sm:items-start gap-5 pb-7 border-b border-outline-gray-1">
         <div class="w-16 h-16 rounded-lg bg-surface-gray-2 border border-outline-gray-1 overflow-hidden flex items-center justify-center shrink-0">
-          <img v-if="app.media?.icon" :src="app.media.icon" :alt="app.title" class="w-full h-full object-cover" @error="($event.target as HTMLImageElement).style.display='none'" />
+          <img v-if="app.media?.icon && !imageError" :src="app.media.icon" :alt="app.title" class="w-full h-full object-cover" @error="imageError = true" />
           <span v-else class="text-2xl font-bold text-ink-gray-4">{{ app.title[0] }}</span>
         </div>
         <div class="flex-1 min-w-0">

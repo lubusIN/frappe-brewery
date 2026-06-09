@@ -20,7 +20,7 @@
     "website": "https://frappe.io/helpdesk"
   },
   "media": {
-    "icon": "https://raw.githubusercontent.com/frappe/helpdesk/develop/helpdesk/public/images/helpdesk-logo.png",
+    "icon": "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/desk/public/favicon.svg",
     "screenshots": []
   },
   "meta": {

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-09T16:20:16.980Z",
+  "generated_at": "2026-06-09T17:22:25.298Z",
   "frappe_version": "14",
   "count": 5,
   "apps": [
@@ -65,7 +65,7 @@
       ],
       "verified": true,
       "status": "active",
-      "icon": "https://raw.githubusercontent.com/frappe/helpdesk/develop/helpdesk/public/images/helpdesk-logo.png"
+      "icon": "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/desk/public/favicon.svg"
     },
     {
       "slug": "hrms",
@@ -96,7 +96,7 @@
       ],
       "verified": true,
       "status": "active",
-      "icon": "https://raw.githubusercontent.com/frappe/hrms/develop/hrms/public/images/hrms-logo.png"
+      "icon": "https://raw.githubusercontent.com/frappe/hrms/develop/hrms/public/images/frappe-hr-logo.svg"
     },
     {
       "slug": "insights",
@@ -126,7 +126,7 @@
       ],
       "verified": true,
       "status": "active",
-      "icon": "https://raw.githubusercontent.com/frappe/insights/develop/insights/public/images/insights-logo.png"
+      "icon": "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/frontend/public/favicon.png"
     },
     {
       "slug": "wiki",
@@ -154,7 +154,7 @@
       ],
       "verified": true,
       "status": "active",
-      "icon": null
+      "icon": "https://raw.githubusercontent.com/frappe/wiki/develop/frontend/src/assets/wiki-logo.png"
     }
   ]
 }

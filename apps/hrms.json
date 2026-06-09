@@ -19,7 +19,7 @@
     "website": "https://frappe.io/hr"
   },
   "media": {
-    "icon": "https://raw.githubusercontent.com/frappe/hrms/develop/hrms/public/images/hrms-logo.png",
+    "icon": "https://raw.githubusercontent.com/frappe/hrms/develop/hrms/public/images/frappe-hr-logo.svg",
     "screenshots": []
   },
   "meta": {
