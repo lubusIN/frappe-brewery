@@ -1,0 +1,211 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://registry.frappe.io/schema/app.schema.json",
+  "title": "Frappe App",
+  "description": "Schema for a Frappe app registry entry",
+  "type": "object",
+  "required": [
+    "slug",
+    "name",
+    "title",
+    "description",
+    "repository",
+    "license",
+    "frappe_versions",
+    "required_apps",
+    "categories",
+    "install",
+    "meta"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly unique identifier (must match filename)",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "description": "Python package name (snake_case)",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable display name",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of what the app does",
+      "minLength": 10,
+      "maxLength": 500
+    },
+    "repository": {
+      "type": "string",
+      "description": "Public GitHub repository URL",
+      "format": "uri"
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier",
+      "enum": ["MIT", "Apache-2.0", "GPL-3.0", "LGPL-3.0", "AGPL-3.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "MPL-2.0", "proprietary", "other"]
+    },
+    "frappe_versions": {
+      "type": "array",
+      "description": "Frappe major versions this app supports",
+      "items": {
+        "type": "string",
+        "enum": ["14", "15", "16"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "required_apps": {
+      "type": "array",
+      "description": "Other Frappe apps required by this app (must include 'frappe')",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "minItems": 1,
+      "contains": {
+        "const": "frappe"
+      }
+    },
+    "categories": {
+      "type": "array",
+      "description": "Allowed category list",
+      "items": {
+        "type": "string",
+        "enum": [
+          "CRM",
+          "HR",
+          "Accounting",
+          "Manufacturing",
+          "POS",
+          "Healthcare",
+          "Education",
+          "Integration",
+          "Payments",
+          "Reports",
+          "Developer Tools",
+          "AI",
+          "Utilities"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "tags": {
+      "type": "array",
+      "description": "Free-form tags for discoverability",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "install": {
+      "type": "object",
+      "description": "Installation instructions",
+      "required": ["method", "command", "app_name"],
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["bench", "pip", "manual"],
+          "description": "Installation method"
+        },
+        "command": {
+          "type": "string",
+          "description": "Full installation command",
+          "minLength": 1
+        },
+        "app_name": {
+          "type": "string",
+          "description": "App name as used in bench/pip (typically matches 'name')",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        }
+      }
+    },
+    "links": {
+      "type": "object",
+      "description": "Useful links for the app",
+      "additionalProperties": false,
+      "properties": {
+        "docs": {
+          "type": "string",
+          "format": "uri",
+          "description": "Documentation URL"
+        },
+        "demo": {
+          "type": "string",
+          "format": "uri",
+          "description": "Live demo URL"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "Official website URL"
+        }
+      }
+    },
+    "media": {
+      "type": "object",
+      "description": "Visual assets",
+      "additionalProperties": false,
+      "properties": {
+        "icon": {
+          "type": "string",
+          "description": "URL to app icon (square, min 128x128)"
+        },
+        "screenshots": {
+          "type": "array",
+          "description": "URLs to screenshots",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "default": []
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "description": "Registry metadata (managed by maintainers)",
+      "required": ["source", "verified", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["manual", "extracted"],
+          "description": "How this entry was created"
+        },
+        "verified": {
+          "type": "boolean",
+          "description": "Whether this app has been verified by registry maintainers",
+          "default": false
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "deprecated", "archived", "unmaintained"],
+          "description": "Current maintenance status",
+          "default": "active"
+        },
+        "added_at": {
+          "type": "string",
+          "format": "date",
+          "description": "Date this app was added to the registry (YYYY-MM-DD)"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date",
+          "description": "Date this entry was last updated (YYYY-MM-DD)"
+        }
+      }
+    }
+  }
+}

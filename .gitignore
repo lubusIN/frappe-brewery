@@ -1,0 +1,10 @@
+node_modules/
+dist/
+index/
+*.log
+.DS_Store
+scratch/
+
+# Web SPA build output
+web/dist/
+web/node_modules/

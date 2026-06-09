@@ -1,0 +1,44 @@
+name: Build Registry Index
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/**/*.json"
+      - "schema/**/*.json"
+      - "scripts/**"
+
+permissions:
+  contents: write
+
+jobs:
+  build-index:
+    name: Generate index files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate all apps
+        run: npm run validate
+
+      - name: Generate index
+        run: npm run generate:index
+
+      - name: Commit generated index
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update registry index [skip ci]"
+          file_pattern: "index/*.json"
