@@ -5,10 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build": "vite build",
+    "typecheck": "vue-tsc -b",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/forms": "^0.5.11",
+    "@tailwindcss/typography": "^0.5.20",
+    "autoprefixer": "^10.5.0",
+    "frappe-ui": "^0.1.278",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.19",
     "vue": "^3.5.34",
     "vue-router": "^4.6.4"
   },

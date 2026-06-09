@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
+import { FeatherIcon } from 'frappe-ui'
 import { fetchApp } from '../api'
 import type { App } from '../types'
 
@@ -15,7 +16,7 @@ async function loadApp(slug: string) {
   error.value = ''
   try {
     app.value = await fetchApp(slug)
-  } catch (e) {
+  } catch {
     error.value = `App "${slug}" not found.`
   } finally {
     loading.value = false
@@ -30,189 +31,202 @@ async function copyCommand() {
 }
 
 onMounted(() => loadApp(route.params.slug as string))
-watch(() => route.params.slug, (slug) => slug && loadApp(slug as string))
+watch(() => route.params.slug, s => s && loadApp(s as string))
 </script>
 
 <template>
-  <div class="app-detail">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
     <!-- Loading -->
-    <div v-if="loading" class="container detail-skeleton">
-      <div class="skeleton-header"></div>
-      <div class="skeleton-body"></div>
+    <div v-if="loading" class="space-y-4">
+      <div class="skeleton h-10 w-64 rounded-lg" />
+      <div class="skeleton h-32 rounded-xl" />
+      <div class="skeleton h-48 rounded-xl" />
     </div>
 
     <!-- Error -->
-    <div v-else-if="error" class="container error-state" role="alert">
-      <p class="error-icon">😕</p>
-      <p class="error-msg">{{ error }}</p>
-      <RouterLink to="/apps" class="btn btn-ghost">← Back to apps</RouterLink>
+    <div v-else-if="error" class="flex flex-col items-center py-24 text-center" role="alert">
+      <FeatherIcon name="alert-circle" class="w-10 h-10 text-ink-gray-3 mb-4" />
+      <p class="text-ink-gray-5 font-medium">{{ error }}</p>
+      <RouterLink to="/apps" class="mt-4 text-sm text-ink-blue-2 hover:underline">← Back to apps</RouterLink>
     </div>
 
     <!-- Content -->
     <template v-else-if="app">
+
       <!-- Breadcrumb -->
-      <div class="breadcrumb-bar">
-        <div class="container breadcrumb">
-          <RouterLink to="/apps" class="breadcrumb-link">Apps</RouterLink>
-          <span class="breadcrumb-sep" aria-hidden="true">/</span>
-          <span class="breadcrumb-current">{{ app.title }}</span>
+      <nav class="flex items-center gap-1.5 text-sm text-ink-gray-4 mb-6" aria-label="Breadcrumb">
+        <RouterLink to="/apps" class="hover:text-ink-gray-7 transition-colors">Apps</RouterLink>
+        <FeatherIcon name="chevron-right" class="w-3.5 h-3.5 text-ink-gray-3" />
+        <span class="text-ink-gray-7 font-medium">{{ app.title }}</span>
+      </nav>
+
+      <!-- Hero bar -->
+      <div class="flex flex-col sm:flex-row sm:items-start gap-5 pb-7 border-b border-outline-gray-1">
+        <div class="w-16 h-16 rounded-xl bg-surface-gray-2 border border-outline-gray-1 overflow-hidden flex items-center justify-center shrink-0">
+          <img v-if="app.media?.icon" :src="app.media.icon" :alt="app.title" class="w-full h-full object-cover" @error="($event.target as HTMLImageElement).style.display='none'" />
+          <span v-else class="text-2xl font-bold text-ink-gray-4">{{ app.title[0] }}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start gap-3 flex-wrap">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                <span v-if="app.meta?.verified" class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-full">
+                  <FeatherIcon name="check-circle" class="w-3 h-3" /> Verified
+                </span>
+                <span class="text-xs font-medium text-ink-gray-4 bg-surface-gray-2 border border-outline-gray-1 px-2 py-0.5 rounded-full">{{ app.license }}</span>
+                <span v-if="app.meta?.status && app.meta.status !== 'active'" class="text-xs font-medium text-ink-gray-4 bg-surface-gray-2 border border-outline-gray-1 px-2 py-0.5 rounded-full">{{ app.meta.status }}</span>
+              </div>
+              <h1 class="text-2xl font-bold text-ink-gray-9 leading-tight">{{ app.title }}</h1>
+              <p class="text-sm text-ink-gray-4 mt-0.5 font-mono">{{ app.name }}</p>
+              <p class="text-sm text-ink-gray-6 mt-3 leading-relaxed max-w-2xl">{{ app.description }}</p>
+            </div>
+            <!-- Action buttons -->
+            <div class="flex gap-2 shrink-0 flex-wrap">
+              <a :href="app.repository" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 text-sm font-medium hover:bg-surface-gray-1 transition-colors">
+                <FeatherIcon name="github" class="w-4 h-4" /> GitHub
+              </a>
+              <a v-if="app.links?.docs" :href="app.links.docs" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 text-sm font-medium hover:bg-surface-gray-1 transition-colors">
+                <FeatherIcon name="book-open" class="w-4 h-4" /> Docs
+              </a>
+              <a v-if="app.links?.demo" :href="app.links.demo" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-ink-gray-9 text-white text-sm font-medium hover:bg-ink-gray-7 transition-colors">
+                <FeatherIcon name="external-link" class="w-4 h-4" /> Live Demo
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Hero -->
-      <section class="detail-hero">
-        <div class="container detail-hero-inner">
-          <div class="detail-app-info">
-            <div class="detail-icon">
-              <img
-                v-if="app.media?.icon"
-                :src="app.media.icon"
-                :alt="app.title"
-                @error="($event.target as HTMLImageElement).style.display='none'"
-              />
-              <span v-else class="detail-icon-fallback">{{ app.title[0] }}</span>
-            </div>
-            <div class="detail-meta">
-              <div class="detail-meta-badges">
-                <span v-if="app.meta?.verified" class="badge badge-green">✓ Verified</span>
-                <span class="badge badge-gray">{{ app.license }}</span>
-                <span v-if="app.meta?.status && app.meta.status !== 'active'" class="badge badge-gray">{{ app.meta.status }}</span>
-              </div>
-              <h1 class="detail-title">{{ app.title }}</h1>
-              <p class="detail-name">
-                <code>{{ app.name }}</code>
-              </p>
-              <p class="detail-desc">{{ app.description }}</p>
-            </div>
-          </div>
+      <!-- Body: 2-col layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
 
-          <!-- Actions -->
-          <div class="detail-actions">
-            <a
-              :href="app.repository"
-              target="_blank"
-              rel="noopener"
-              class="btn btn-ghost"
-              :aria-label="`View ${app.title} on GitHub`"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0112 6.8c.85.004 1.71.11 2.51.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10.01 10.01 0 0022 12c0-5.52-4.48-10-10-10z"/>
-              </svg>
-              GitHub
-            </a>
-            <a v-if="app.links?.docs" :href="app.links.docs" target="_blank" rel="noopener" class="btn btn-ghost">
-              Docs ↗
-            </a>
-            <a v-if="app.links?.demo" :href="app.links.demo" target="_blank" rel="noopener" class="btn btn-ghost">
-              Live Demo ↗
-            </a>
-          </div>
-        </div>
-      </section>
+        <!-- Left: main content -->
+        <div class="lg:col-span-2 space-y-8">
 
-      <!-- Body -->
-      <div class="container detail-body">
-        <div class="detail-content">
-          <!-- Install -->
-          <section class="detail-section" aria-labelledby="install-heading">
-            <h2 id="install-heading" class="detail-section-title">Installation</h2>
-            <div class="install-card">
-              <div class="install-method">
-                <span class="badge badge-teal">{{ app.install.method }}</span>
-              </div>
-              <div class="install-cmd-wrap">
-                <div class="code-block install-cmd">{{ app.install.command }}</div>
+          <!-- Installation -->
+          <section aria-labelledby="install-heading">
+            <h2 id="install-heading" class="text-base font-semibold text-ink-gray-8 mb-4 flex items-center gap-2">
+              <FeatherIcon name="terminal" class="w-4 h-4 text-ink-gray-4" />
+              Installation
+            </h2>
+            <div class="rounded-xl border border-outline-gray-2 overflow-hidden">
+              <div class="flex items-center justify-between gap-3 px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider">Method</span>
+                  <span class="text-xs font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">{{ app.install.method }}</span>
+                </div>
                 <button
-                  class="copy-btn"
-                  :class="{ copied }"
-                  :aria-label="copied ? 'Copied!' : 'Copy install command'"
+                  class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md border border-outline-gray-2 bg-surface-white text-ink-gray-6 hover:bg-surface-gray-2 transition-colors"
+                  :class="copied ? 'text-green-600 border-green-200 bg-green-50' : ''"
                   @click="copyCommand"
+                  :aria-label="copied ? 'Copied!' : 'Copy command'"
                 >
-                  <span v-if="copied">✓ Copied</span>
-                  <span v-else>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-                    </svg>
-                    Copy
-                  </span>
+                  <FeatherIcon :name="copied ? 'check' : 'copy'" class="w-3.5 h-3.5" />
+                  {{ copied ? 'Copied!' : 'Copy' }}
                 </button>
+              </div>
+              <div class="px-4 py-4 font-mono text-sm text-ink-gray-7 bg-surface-white overflow-x-auto">
+                {{ app.install.command }}
               </div>
             </div>
           </section>
 
           <!-- Compatibility -->
-          <section class="detail-section" aria-labelledby="compat-heading">
-            <h2 id="compat-heading" class="detail-section-title">Compatibility</h2>
-            <div class="compat-grid">
-              <div class="compat-block">
-                <p class="compat-label">Frappe Versions</p>
-                <div class="compat-tags">
-                  <span v-for="v in app.frappe_versions" :key="v" class="badge badge-blue">Frappe {{ v }}</span>
+          <section aria-labelledby="compat-heading">
+            <h2 id="compat-heading" class="text-base font-semibold text-ink-gray-8 mb-4 flex items-center gap-2">
+              <FeatherIcon name="layers" class="w-4 h-4 text-ink-gray-4" />
+              Compatibility
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="rounded-xl border border-outline-gray-1 p-4">
+                <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider mb-3">Frappe Versions</p>
+                <div class="flex gap-2 flex-wrap">
+                  <span v-for="v in app.frappe_versions" :key="v" class="text-sm font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-3 py-1 rounded-full">
+                    Frappe {{ v }}
+                  </span>
                 </div>
               </div>
-              <div class="compat-block">
-                <p class="compat-label">Required Apps</p>
-                <div class="compat-tags">
-                  <span v-for="dep in app.required_apps" :key="dep" class="tag">{{ dep }}</span>
+              <div class="rounded-xl border border-outline-gray-1 p-4">
+                <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider mb-3">Required Apps</p>
+                <div class="flex gap-2 flex-wrap">
+                  <span v-for="dep in app.required_apps" :key="dep" class="text-sm font-mono text-ink-gray-6 bg-surface-gray-1 border border-outline-gray-1 px-3 py-1 rounded-full">
+                    {{ dep }}
+                  </span>
                 </div>
               </div>
             </div>
           </section>
 
           <!-- Tags -->
-          <section v-if="app.tags?.length" class="detail-section" aria-labelledby="tags-heading">
-            <h2 id="tags-heading" class="detail-section-title">Tags</h2>
-            <div class="tags-list">
-              <span v-for="tag in app.tags" :key="tag" class="tag">{{ tag }}</span>
+          <section v-if="app.tags?.length" aria-labelledby="tags-heading">
+            <h2 id="tags-heading" class="text-base font-semibold text-ink-gray-8 mb-3 flex items-center gap-2">
+              <FeatherIcon name="tag" class="w-4 h-4 text-ink-gray-4" />
+              Tags
+            </h2>
+            <div class="flex gap-2 flex-wrap">
+              <span v-for="tag in app.tags" :key="tag" class="text-xs text-ink-gray-5 bg-surface-gray-1 border border-outline-gray-1 px-2.5 py-1 rounded-full">
+                {{ tag }}
+              </span>
             </div>
           </section>
         </div>
 
-        <!-- Sidebar -->
-        <aside class="detail-sidebar" aria-label="App metadata">
-          <div class="sidebar-card card">
-            <h2 class="sidebar-heading">Details</h2>
-            <dl class="detail-dl">
-              <dt>Categories</dt>
-              <dd>
-                <div class="cats-list">
-                  <RouterLink
-                    v-for="cat in app.categories"
-                    :key="cat"
-                    :to="`/categories?cat=${encodeURIComponent(cat)}`"
-                    class="badge badge-blue"
-                  >{{ cat }}</RouterLink>
-                </div>
-              </dd>
-              <dt>License</dt>
-              <dd>{{ app.license }}</dd>
-              <dt>App name</dt>
-              <dd><code class="inline-code">{{ app.install.app_name }}</code></dd>
-              <dt>Status</dt>
-              <dd>
-                <span
-                  class="badge"
-                  :class="app.meta?.status === 'active' ? 'badge-green' : 'badge-gray'"
-                >{{ app.meta?.status || 'active' }}</span>
-              </dd>
-              <template v-if="app.meta?.added_at">
-                <dt>Added</dt>
-                <dd>{{ app.meta.added_at }}</dd>
-              </template>
+        <!-- Right: sidebar -->
+        <aside class="space-y-5" aria-label="App metadata">
+          <!-- Details card -->
+          <div class="rounded-xl border border-outline-gray-1 overflow-hidden">
+            <div class="px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
+              <h2 class="text-xs font-semibold text-ink-gray-5 uppercase tracking-wider">Details</h2>
+            </div>
+            <dl class="divide-y divide-outline-gray-1 text-sm">
+              <div class="flex items-start gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Categories</dt>
+                <dd class="flex gap-1.5 flex-wrap">
+                  <RouterLink v-for="cat in app.categories" :key="cat" :to="`/categories?cat=${encodeURIComponent(cat)}`" class="text-xs font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full hover:bg-blue-100 transition-colors">{{ cat }}</RouterLink>
+                </dd>
+              </div>
+              <div class="flex items-center gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0">License</dt>
+                <dd class="text-ink-gray-7 font-medium">{{ app.license }}</dd>
+              </div>
+              <div class="flex items-center gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0">App name</dt>
+                <dd class="font-mono text-xs text-ink-gray-7 bg-surface-gray-1 px-2 py-1 rounded-md border border-outline-gray-1">{{ app.install.app_name }}</dd>
+              </div>
+              <div class="flex items-center gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0">Status</dt>
+                <dd>
+                  <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full"
+                    :class="app.meta?.status === 'active' ? 'text-green-600 bg-green-50 border border-green-200' : 'text-ink-gray-5 bg-surface-gray-2 border border-outline-gray-1'">
+                    <span v-if="app.meta?.status === 'active'" class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    {{ app.meta?.status || 'active' }}
+                  </span>
+                </dd>
+              </div>
+              <div v-if="app.meta?.added_at" class="flex items-center gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0">Added</dt>
+                <dd class="text-ink-gray-7">{{ app.meta.added_at }}</dd>
+              </div>
             </dl>
           </div>
 
-          <div v-if="app.links?.website || app.links?.docs || app.links?.demo" class="sidebar-card card">
-            <h2 class="sidebar-heading">Links</h2>
-            <div class="links-list">
-              <a v-if="app.links?.website" :href="app.links.website" target="_blank" rel="noopener" class="sidebar-link">
-                🌐 Website ↗
+          <!-- Links card -->
+          <div v-if="app.links?.website || app.links?.docs || app.links?.demo" class="rounded-xl border border-outline-gray-1 overflow-hidden">
+            <div class="px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
+              <h2 class="text-xs font-semibold text-ink-gray-5 uppercase tracking-wider">Links</h2>
+            </div>
+            <div class="divide-y divide-outline-gray-1">
+              <a v-if="app.links?.website" :href="app.links.website" target="_blank" rel="noopener" class="flex items-center gap-2.5 px-4 py-3 text-sm text-ink-gray-6 hover:bg-surface-gray-1 transition-colors">
+                <FeatherIcon name="globe" class="w-4 h-4 text-ink-gray-3" /> Website
+                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
               </a>
-              <a v-if="app.links?.docs" :href="app.links.docs" target="_blank" rel="noopener" class="sidebar-link">
-                📚 Documentation ↗
+              <a v-if="app.links?.docs" :href="app.links.docs" target="_blank" rel="noopener" class="flex items-center gap-2.5 px-4 py-3 text-sm text-ink-gray-6 hover:bg-surface-gray-1 transition-colors">
+                <FeatherIcon name="book" class="w-4 h-4 text-ink-gray-3" /> Documentation
+                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
               </a>
-              <a v-if="app.links?.demo" :href="app.links.demo" target="_blank" rel="noopener" class="sidebar-link">
-                🎯 Live Demo ↗
+              <a v-if="app.links?.demo" :href="app.links.demo" target="_blank" rel="noopener" class="flex items-center gap-2.5 px-4 py-3 text-sm text-ink-gray-6 hover:bg-surface-gray-1 transition-colors">
+                <FeatherIcon name="play-circle" class="w-4 h-4 text-ink-gray-3" /> Live Demo
+                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
               </a>
             </div>
           </div>
@@ -221,127 +235,3 @@ watch(() => route.params.slug, (slug) => slug && loadApp(slug as string))
     </template>
   </div>
 </template>
-
-<style scoped>
-.app-detail { padding-bottom: 80px; }
-
-/* Breadcrumb */
-.breadcrumb-bar { border-bottom: 1px solid var(--border); padding: 12px 0; }
-.breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-.breadcrumb-link { color: var(--text-3); transition: color var(--duration); }
-.breadcrumb-link:hover { color: var(--text-2); }
-.breadcrumb-sep { color: var(--text-3); }
-.breadcrumb-current { color: var(--text-2); }
-
-/* Hero */
-.detail-hero {
-  background: linear-gradient(180deg, hsla(221,80%,55%,0.06) 0%, transparent 100%);
-  border-bottom: 1px solid var(--border);
-  padding: 48px 0;
-}
-.detail-hero-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 32px;
-  flex-wrap: wrap;
-}
-.detail-app-info { display: flex; gap: 24px; align-items: flex-start; flex: 1; }
-.detail-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: var(--r-lg);
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.detail-icon img { width: 100%; height: 100%; object-fit: cover; }
-.detail-icon-fallback { font-size: 32px; font-weight: 800; color: var(--brand-400); }
-.detail-meta { display: flex; flex-direction: column; gap: 8px; }
-.detail-meta-badges { display: flex; gap: 8px; flex-wrap: wrap; }
-.detail-title { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
-.detail-name { font-size: 13px; color: var(--text-3); }
-.detail-desc { font-size: 15px; color: var(--text-2); line-height: 1.7; max-width: 520px; }
-.detail-actions { display: flex; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
-
-/* Body */
-.detail-body {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 40px;
-  padding-top: 48px;
-  align-items: start;
-}
-.detail-content { display: flex; flex-direction: column; gap: 40px; }
-.detail-section { display: flex; flex-direction: column; gap: 16px; }
-.detail-section-title { font-size: 16px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-
-/* Install */
-.install-card { display: flex; flex-direction: column; gap: 12px; }
-.install-method {}
-.install-cmd-wrap { display: flex; align-items: center; gap: 12px; }
-.install-cmd { flex: 1; font-size: 13px; overflow-x: auto; white-space: nowrap; }
-.copy-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  color: var(--text-2);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all var(--duration) var(--ease);
-  flex-shrink: 0;
-}
-.copy-btn:hover { border-color: var(--brand-500); color: var(--text); }
-.copy-btn.copied { background: hsla(142,70%,45%,0.12); border-color: hsl(142,60%,55%); color: hsl(142,60%,55%); }
-
-/* Compat */
-.compat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.compat-block { display: flex; flex-direction: column; gap: 10px; }
-.compat-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); }
-.compat-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-
-/* Tags */
-.tags-list { display: flex; gap: 8px; flex-wrap: wrap; }
-
-/* Sidebar */
-.detail-sidebar { display: flex; flex-direction: column; gap: 20px; position: sticky; top: 80px; }
-.sidebar-card { display: flex; flex-direction: column; gap: 16px; }
-.sidebar-heading { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); }
-.detail-dl { display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; align-items: start; font-size: 13px; }
-.detail-dl dt { color: var(--text-3); white-space: nowrap; }
-.detail-dl dd { color: var(--text-2); }
-.cats-list { display: flex; gap: 6px; flex-wrap: wrap; }
-.inline-code { font-family: var(--font-mono); font-size: 12px; color: var(--accent-400); background: var(--bg-2); padding: 2px 6px; border-radius: 4px; }
-.links-list { display: flex; flex-direction: column; gap: 10px; }
-.sidebar-link { font-size: 13px; color: var(--text-2); transition: color var(--duration); }
-.sidebar-link:hover { color: var(--brand-400); }
-
-/* Skeletons */
-.detail-skeleton { display: flex; flex-direction: column; gap: 24px; padding: 48px 0; }
-.skeleton-header { height: 120px; border-radius: var(--r-lg); background: var(--bg-card); animation: shimmer 1.5s infinite; }
-.skeleton-body { height: 300px; border-radius: var(--r-lg); background: var(--bg-card); animation: shimmer 1.5s infinite; }
-@keyframes shimmer { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-/* Error */
-.error-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 100px 0; text-align: center; }
-.error-icon { font-size: 48px; }
-.error-msg { font-size: 16px; color: var(--text-2); }
-
-@media (max-width: 900px) {
-  .detail-body { grid-template-columns: 1fr; }
-  .detail-sidebar { position: static; }
-  .compat-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 600px) {
-  .detail-app-info { flex-direction: column; }
-  .install-cmd-wrap { flex-direction: column; align-items: stretch; }
-}
-</style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import { FeatherIcon } from 'frappe-ui'
 import { fetchStats, fetchApps } from '../api'
 import type { StatsResponse, AppSummary } from '../types'
 
@@ -9,21 +10,21 @@ const featuredApps = ref<AppSummary[]>([])
 const loading = ref(true)
 
 const categories = [
-  { name: 'CRM',            icon: '🤝' },
-  { name: 'HR',             icon: '👥' },
-  { name: 'Accounting',     icon: '📊' },
-  { name: 'Manufacturing',  icon: '🏭' },
-  { name: 'Reports',        icon: '📈' },
-  { name: 'AI',             icon: '🤖' },
-  { name: 'Integration',    icon: '🔗' },
-  { name: 'Developer Tools',icon: '🛠️' },
+  { name: 'CRM',            icon: 'users' },
+  { name: 'HR',             icon: 'briefcase' },
+  { name: 'Accounting',     icon: 'bar-chart-2' },
+  { name: 'Manufacturing',  icon: 'settings' },
+  { name: 'Reports',        icon: 'trending-up' },
+  { name: 'AI',             icon: 'cpu' },
+  { name: 'Integration',    icon: 'link' },
+  { name: 'Developer Tools',icon: 'code' },
 ]
 
 onMounted(async () => {
   try {
-    const [statsData, appsData] = await Promise.all([fetchStats(), fetchApps()])
-    stats.value = statsData
-    featuredApps.value = appsData.apps.slice(0, 4)
+    const [s, a] = await Promise.all([fetchStats(), fetchApps()])
+    stats.value = s
+    featuredApps.value = a.apps.slice(0, 4)
   } catch (e) {
     console.error(e)
   } finally {
@@ -33,139 +34,156 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="home">
+  <div>
     <!-- ── Hero ── -->
-    <section class="hero">
-      <div class="hero-glow" aria-hidden="true"></div>
-      <div class="container hero-content">
-        <div class="hero-badge animate-fade-up">
-          <span class="badge badge-blue">Open Source · Community-Maintained</span>
-        </div>
-        <h1 class="hero-title animate-fade-up animate-delay-1">
-          The Frappe<br />
-          <span class="gradient-text">App Registry</span>
-        </h1>
-        <p class="hero-subtitle animate-fade-up animate-delay-2">
-          Discover, install, and share Frappe apps.<br />
-          Open data, GitHub-based submissions, static JSON API.
-        </p>
-        <div class="hero-actions animate-fade-up animate-delay-3">
-          <RouterLink to="/apps" class="btn btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            Browse Apps
-          </RouterLink>
-          <RouterLink to="/submit" class="btn btn-ghost">
-            Submit Your App →
-          </RouterLink>
+    <section class="border-b border-outline-gray-1 bg-surface-gray-1">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+        <div class="max-w-2xl">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-outline-gray-2 text-xs font-medium text-ink-gray-5">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+              Open Source · Community Maintained
+            </span>
+          </div>
+          <h1 class="text-4xl sm:text-5xl font-bold text-ink-gray-9 tracking-tight leading-tight">
+            Frappe App Registry
+          </h1>
+          <p class="mt-4 text-lg text-ink-gray-5 leading-relaxed max-w-xl">
+            Discover, install, and share Frappe apps. Open data, GitHub-based submissions, static JSON API — ready for Frappe Local and beyond.
+          </p>
+          <div class="flex flex-wrap gap-3 mt-8">
+            <RouterLink to="/apps" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-ink-gray-9 text-white text-sm font-medium hover:bg-ink-gray-7 transition-colors">
+              <FeatherIcon name="search" class="w-4 h-4" />
+              Browse Apps
+            </RouterLink>
+            <RouterLink to="/submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-gray-2 text-ink-gray-7 text-sm font-medium hover:bg-surface-gray-2 transition-colors">
+              Submit Your App
+              <FeatherIcon name="arrow-right" class="w-4 h-4" />
+            </RouterLink>
+          </div>
         </div>
 
-        <!-- Stats row -->
-        <div v-if="stats" class="hero-stats animate-fade-up">
-          <div class="stat-pill">
-            <span class="stat-num">{{ stats.total_apps }}</span>
-            <span class="stat-label">Apps</span>
+        <!-- Stats pills -->
+        <div v-if="stats" class="flex flex-wrap gap-3 mt-10">
+          <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-white border border-outline-gray-2">
+            <span class="text-xl font-bold text-ink-gray-9">{{ stats.total_apps }}</span>
+            <span class="text-sm text-ink-gray-4">Apps</span>
           </div>
-          <div class="stat-divider" aria-hidden="true"></div>
-          <div class="stat-pill">
-            <span class="stat-num">{{ stats.total_categories }}</span>
-            <span class="stat-label">Categories</span>
+          <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-white border border-outline-gray-2">
+            <span class="text-xl font-bold text-ink-gray-9">{{ stats.total_categories }}</span>
+            <span class="text-sm text-ink-gray-4">Categories</span>
           </div>
-          <div class="stat-divider" aria-hidden="true"></div>
-          <div class="stat-pill">
-            <span class="stat-num">14·15·16</span>
-            <span class="stat-label">Frappe Versions</span>
+          <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-white border border-outline-gray-2">
+            <span class="text-xl font-bold text-ink-gray-9">3</span>
+            <span class="text-sm text-ink-gray-4">Frappe Versions</span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ── Featured Apps ── -->
-    <section class="section">
-      <div class="container">
-        <div class="section-header">
-          <p class="section-eyebrow">Registry</p>
-          <h2 class="section-title">Featured Apps</h2>
-          <p class="section-desc">Official and community-built apps for the Frappe ecosystem.</p>
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-1">Registry</p>
+          <h2 class="text-xl font-semibold text-ink-gray-9">Featured Apps</h2>
         </div>
+        <RouterLink to="/apps" class="text-sm text-ink-gray-5 hover:text-ink-gray-8 flex items-center gap-1 transition-colors">
+          View all <FeatherIcon name="arrow-right" class="w-3.5 h-3.5" />
+        </RouterLink>
+      </div>
 
-        <div v-if="loading" class="loading-row">
-          <div v-for="i in 4" :key="i" class="skeleton-card"></div>
-        </div>
+      <!-- Skeleton -->
+      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div v-for="i in 4" :key="i" class="skeleton h-44 rounded-xl" />
+      </div>
 
-        <div v-else class="apps-grid">
-          <RouterLink
-            v-for="app in featuredApps"
-            :key="app.slug"
-            :to="`/apps/${app.slug}`"
-            class="app-card card"
-            :aria-label="`View ${app.title}`"
-          >
-            <div class="app-card-top">
-              <div class="app-icon">
-                <img v-if="app.icon" :src="app.icon" :alt="app.title" @error="($event.target as HTMLImageElement).style.display='none'" />
-                <span v-else class="app-icon-fallback">{{ app.title[0] }}</span>
-              </div>
-              <div v-if="app.verified" class="badge badge-green">Verified</div>
+      <!-- Cards -->
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <RouterLink
+          v-for="app in featuredApps"
+          :key="app.slug"
+          :to="`/apps/${app.slug}`"
+          class="group flex flex-col gap-3 p-5 rounded-xl border border-outline-gray-1 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm transition-all duration-150"
+          :aria-label="`View ${app.title}`"
+        >
+          <div class="flex items-start justify-between">
+            <!-- Icon -->
+            <div class="w-10 h-10 rounded-lg bg-surface-gray-2 border border-outline-gray-1 overflow-hidden flex items-center justify-center shrink-0">
+              <img v-if="app.icon" :src="app.icon" :alt="app.title" class="w-full h-full object-cover" @error="($event.target as HTMLImageElement).style.display='none'" />
+              <span v-else class="text-lg font-bold text-ink-gray-4">{{ app.title[0] }}</span>
             </div>
-            <h3 class="app-title">{{ app.title }}</h3>
-            <p class="app-desc">{{ app.description }}</p>
-            <div class="app-meta">
-              <div class="app-tags">
-                <span v-for="cat in app.categories" :key="cat" class="badge badge-blue">{{ cat }}</span>
-              </div>
-              <span class="app-versions">v{{ app.frappe_versions.join(', ') }}</span>
-            </div>
-          </RouterLink>
-        </div>
-
-        <div class="section-cta">
-          <RouterLink to="/apps" class="btn btn-ghost">View all apps →</RouterLink>
-        </div>
+            <span v-if="app.verified" class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-full">
+              <FeatherIcon name="check" class="w-3 h-3" />
+              Verified
+            </span>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-sm font-semibold text-ink-gray-9 group-hover:text-ink-blue-3 transition-colors">{{ app.title }}</h3>
+            <p class="text-xs text-ink-gray-4 mt-1 leading-relaxed line-clamp-2">{{ app.description }}</p>
+          </div>
+          <div class="flex items-center gap-1.5 flex-wrap mt-auto">
+            <span v-for="cat in app.categories.slice(0, 1)" :key="cat" class="text-xs font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">{{ cat }}</span>
+            <span class="text-xs text-ink-gray-3 font-mono ml-auto">v{{ app.frappe_versions.join(', ') }}</span>
+          </div>
+        </RouterLink>
       </div>
     </section>
+
+    <!-- ── Divider ── -->
+    <div class="border-t border-outline-gray-1" />
 
     <!-- ── Categories ── -->
-    <section class="section section-alt">
-      <div class="container">
-        <div class="section-header">
-          <p class="section-eyebrow">Browse by</p>
-          <h2 class="section-title">Categories</h2>
-        </div>
-        <div class="cat-grid">
-          <RouterLink
-            v-for="cat in categories"
-            :key="cat.name"
-            :to="`/categories?cat=${encodeURIComponent(cat.name)}`"
-            class="cat-card"
-          >
-            <span class="cat-icon">{{ cat.icon }}</span>
-            <span class="cat-name">{{ cat.name }}</span>
-          </RouterLink>
-        </div>
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+      <div class="mb-6">
+        <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-1">Browse by</p>
+        <h2 class="text-xl font-semibold text-ink-gray-9">Categories</h2>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+        <RouterLink
+          v-for="cat in categories"
+          :key="cat.name"
+          :to="`/categories?cat=${encodeURIComponent(cat.name)}`"
+          class="flex flex-col items-center gap-2.5 py-5 px-3 rounded-xl border border-outline-gray-1 bg-surface-white hover:border-outline-gray-3 hover:bg-surface-gray-1 transition-all duration-150 text-center group"
+        >
+          <div class="w-9 h-9 rounded-lg bg-surface-gray-2 flex items-center justify-center group-hover:bg-surface-gray-3 transition-colors">
+            <FeatherIcon :name="cat.icon" class="w-4 h-4 text-ink-gray-6" />
+          </div>
+          <span class="text-xs font-medium text-ink-gray-6 leading-tight">{{ cat.name }}</span>
+        </RouterLink>
       </div>
     </section>
 
-    <!-- ── API CTA ── -->
-    <section class="section">
-      <div class="container">
-        <div class="api-card">
-          <div class="api-card-left">
-            <p class="section-eyebrow">Static JSON API</p>
-            <h2 class="api-title">Ready for your tools</h2>
-            <p class="api-desc">
-              Frappe Local, custom hosting platforms, and community tools can consume the registry directly.
-              No auth, no rate limits — just static JSON.
+    <!-- ── Divider ── -->
+    <div class="border-t border-outline-gray-1" />
+
+    <!-- ── API section ── -->
+    <section class="bg-surface-gray-1 border-t border-outline-gray-1">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-1">Static JSON API</p>
+            <h2 class="text-2xl font-bold text-ink-gray-9 leading-snug">Ready for your tools</h2>
+            <p class="mt-3 text-ink-gray-5 leading-relaxed">
+              Frappe Local, hosting platforms, and community tools can consume the registry directly. No auth, no rate limits, no database.
             </p>
-            <RouterLink to="/docs" class="btn btn-primary">View API Docs →</RouterLink>
+            <RouterLink to="/docs" class="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 text-sm font-medium hover:bg-surface-gray-2 transition-colors">
+              <FeatherIcon name="book" class="w-4 h-4" />
+              View API Docs
+            </RouterLink>
           </div>
-          <div class="api-card-right">
-            <div class="code-block">
-              <div class="code-line"><span class="code-verb">GET</span> /index/apps.json</div>
-              <div class="code-line"><span class="code-verb">GET</span> /index/frappe-15.json</div>
-              <div class="code-line"><span class="code-verb">GET</span> /apps/erpnext.json</div>
-              <div class="code-line"><span class="code-verb">GET</span> /api/apps?category=CRM</div>
+          <div class="rounded-xl border border-outline-gray-2 bg-surface-white overflow-hidden">
+            <div class="flex items-center gap-2 px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
+              <span class="w-3 h-3 rounded-full bg-red-300"></span>
+              <span class="w-3 h-3 rounded-full bg-yellow-300"></span>
+              <span class="w-3 h-3 rounded-full bg-green-300"></span>
+              <span class="text-xs text-ink-gray-3 ml-2 font-mono">API endpoints</span>
+            </div>
+            <div class="p-5 font-mono text-xs space-y-3">
+              <div v-for="ep in apiEndpoints" :key="ep.path" class="flex items-center gap-3">
+                <span class="shrink-0 text-ink-blue-2 font-semibold">GET</span>
+                <span class="text-ink-gray-6">{{ ep.path }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -174,156 +192,18 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped>
-/* ── Hero ── */
-.hero {
-  position: relative;
-  overflow: hidden;
-  padding: 100px 0 80px;
-  text-align: center;
+<script lang="ts">
+export default {
+  data() {
+    return {
+      apiEndpoints: [
+        { path: '/index/apps.json' },
+        { path: '/index/frappe-15.json' },
+        { path: '/apps/erpnext.json' },
+        { path: '/api/apps?category=CRM' },
+        { path: '/api/apps/:slug' },
+      ],
+    }
+  },
 }
-.hero-glow {
-  position: absolute;
-  inset: -50%;
-  background: radial-gradient(ellipse 60% 50% at 50% 0%, hsla(221,80%,55%,0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero-content { position: relative; display: flex; flex-direction: column; align-items: center; gap: 24px; }
-.hero-badge {}
-.hero-title {
-  font-size: clamp(40px, 7vw, 72px);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  max-width: 700px;
-}
-.gradient-text {
-  background: linear-gradient(135deg, var(--brand-400) 0%, var(--accent-400) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-subtitle {
-  font-size: 18px;
-  color: var(--text-2);
-  max-width: 480px;
-  line-height: 1.7;
-}
-.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-.hero-stats {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-xl);
-  padding: 16px 28px;
-  margin-top: 8px;
-}
-.stat-pill { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.stat-num { font-size: 22px; font-weight: 700; color: var(--text); }
-.stat-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; }
-.stat-divider { width: 1px; height: 36px; background: var(--border); }
-
-/* ── Sections ── */
-.section { padding: 80px 0; }
-.section-alt { background: var(--bg-2); }
-.section-header { text-align: center; margin-bottom: 48px; display: flex; flex-direction: column; gap: 8px; align-items: center; }
-.section-desc { color: var(--text-2); font-size: 16px; max-width: 480px; }
-.section-cta { text-align: center; margin-top: 36px; }
-
-/* ── Apps Grid ── */
-.apps-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-.app-card { display: flex; flex-direction: column; gap: 12px; cursor: pointer; }
-.app-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
-.app-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--r-md);
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.app-icon img { width: 100%; height: 100%; object-fit: cover; }
-.app-icon-fallback { font-size: 20px; font-weight: 700; color: var(--brand-400); }
-.app-title { font-size: 16px; font-weight: 700; color: var(--text); }
-.app-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; flex: 1; }
-.app-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-top: auto; }
-.app-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-.app-versions { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); white-space: nowrap; }
-
-/* Skeleton */
-.loading-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-.skeleton-card {
-  height: 180px;
-  border-radius: var(--r-lg);
-  background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-3) 50%, var(--bg-card) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-/* ── Categories ── */
-.cat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 14px;
-}
-.cat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 24px 16px;
-  border-radius: var(--r-lg);
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  transition: all var(--duration) var(--ease);
-  cursor: pointer;
-}
-.cat-card:hover {
-  border-color: var(--brand-500);
-  background: var(--bg-3);
-  transform: translateY(-2px);
-}
-.cat-icon { font-size: 28px; }
-.cat-name { font-size: 13px; font-weight: 600; color: var(--text-2); text-align: center; }
-
-/* ── API Card ── */
-.api-card {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--r-xl);
-  padding: 56px;
-}
-.api-title { font-size: 32px; font-weight: 800; letter-spacing: -0.02em; margin: 8px 0; }
-.api-desc { font-size: 15px; color: var(--text-2); line-height: 1.7; margin-bottom: 24px; }
-.code-line {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--text-2);
-}
-.code-line + .code-line { border-top: 1px solid var(--border); }
-.code-verb { color: var(--accent-400); font-weight: 700; min-width: 36px; }
-
-@media (max-width: 768px) {
-  .hero { padding: 60px 0 48px; }
-  .api-card { grid-template-columns: 1fr; padding: 32px 24px; gap: 28px; }
-  .hero-stats { gap: 16px; padding: 14px 20px; flex-wrap: wrap; justify-content: center; }
-}
-</style>
+</script>

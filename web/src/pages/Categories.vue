@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
+import { FeatherIcon } from 'frappe-ui'
 import { fetchCategories } from '../api'
 import type { CategoriesResponse, CategoryEntry } from '../types'
 
@@ -10,19 +11,10 @@ const loading = ref(true)
 const selected = ref((route.query.cat as string) || '')
 
 const CATEGORY_ICONS: Record<string, string> = {
-  'CRM': '🤝',
-  'HR': '👥',
-  'Accounting': '📊',
-  'Manufacturing': '🏭',
-  'POS': '🏪',
-  'Healthcare': '🏥',
-  'Education': '🎓',
-  'Integration': '🔗',
-  'Payments': '💳',
-  'Reports': '📈',
-  'Developer Tools': '🛠️',
-  'AI': '🤖',
-  'Utilities': '⚡',
+  'CRM': 'users', 'HR': 'briefcase', 'Accounting': 'bar-chart-2',
+  'Manufacturing': 'settings', 'POS': 'shopping-bag', 'Healthcare': 'activity',
+  'Education': 'book-open', 'Integration': 'link', 'Payments': 'credit-card',
+  'Reports': 'trending-up', 'Developer Tools': 'code', 'AI': 'cpu', 'Utilities': 'zap',
 }
 
 const allCategories = computed(() => data.value?.categories ?? [])
@@ -43,151 +35,92 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="categories-page">
-    <section class="page-header">
-      <div class="container">
-        <h1 class="section-title">Categories</h1>
-        <p class="page-subtitle">Browse apps by category</p>
-      </div>
-    </section>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-ink-gray-9">Categories</h1>
+      <p class="text-sm text-ink-gray-4 mt-1">Browse apps by category</p>
+    </div>
 
-    <div class="container categories-layout">
-      <!-- Category list -->
-      <aside class="cat-list" aria-label="Category list">
-        <div v-if="loading">
-          <div v-for="i in 8" :key="i" class="cat-skeleton"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+      <!-- Category list sidebar -->
+      <aside class="lg:col-span-1 sticky top-[68px]" aria-label="Category list">
+        <div v-if="loading" class="space-y-2">
+          <div v-for="i in 8" :key="i" class="skeleton h-10 rounded-lg" />
         </div>
-        <nav v-else role="navigation" aria-label="App categories">
+        <nav v-else class="space-y-0.5" role="navigation" aria-label="App categories">
           <button
             v-for="cat in allCategories"
             :key="cat.name"
-            class="cat-btn"
-            :class="{ active: selected === cat.name }"
+            class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 text-left"
+            :class="selected === cat.name
+              ? 'bg-surface-gray-3 text-ink-gray-9'
+              : 'text-ink-gray-5 hover:text-ink-gray-8 hover:bg-surface-gray-1'"
             :aria-pressed="selected === cat.name"
             @click="selected = cat.name"
           >
-            <span class="cat-icon">{{ CATEGORY_ICONS[cat.name] ?? '📦' }}</span>
-            <span class="cat-name">{{ cat.name }}</span>
-            <span class="cat-count">{{ cat.count }}</span>
+            <div class="w-7 h-7 rounded-md flex items-center justify-center shrink-0"
+              :class="selected === cat.name ? 'bg-surface-white border border-outline-gray-2' : 'bg-surface-gray-2'">
+              <FeatherIcon :name="CATEGORY_ICONS[cat.name] ?? 'box'" class="w-3.5 h-3.5" :class="selected === cat.name ? 'text-ink-gray-7' : 'text-ink-gray-4'" />
+            </div>
+            <span class="flex-1 truncate">{{ cat.name }}</span>
+            <span class="text-xs text-ink-gray-3 tabular-nums">{{ cat.count }}</span>
           </button>
         </nav>
       </aside>
 
-      <!-- Apps in selected category -->
-      <main class="cat-apps" aria-label="Apps in category">
-        <div v-if="loading" class="apps-grid">
-          <div v-for="i in 6" :key="i" class="skeleton-card"></div>
+      <!-- Apps area -->
+      <main class="lg:col-span-3" aria-label="Apps in category">
+        <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div v-for="i in 6" :key="i" class="skeleton h-40 rounded-xl" />
         </div>
 
         <template v-else-if="activeCategory">
-          <div class="cat-apps-header">
-            <h2 class="cat-apps-title">
-              <span>{{ CATEGORY_ICONS[activeCategory.name] ?? '📦' }}</span>
-              {{ activeCategory.name }}
-            </h2>
-            <span class="cat-apps-count">{{ activeCategory.count }} app{{ activeCategory.count !== 1 ? 's' : '' }}</span>
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-surface-gray-2 flex items-center justify-center">
+                <FeatherIcon :name="CATEGORY_ICONS[activeCategory.name] ?? 'box'" class="w-4 h-4 text-ink-gray-6" />
+              </div>
+              <h2 class="text-lg font-semibold text-ink-gray-9">{{ activeCategory.name }}</h2>
+            </div>
+            <span class="text-sm text-ink-gray-4 bg-surface-gray-2 border border-outline-gray-1 px-3 py-1 rounded-full">
+              {{ activeCategory.count }} app{{ activeCategory.count !== 1 ? 's' : '' }}
+            </span>
           </div>
 
-          <div class="apps-grid">
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             <RouterLink
               v-for="app in activeCategory.apps"
               :key="app.slug"
               :to="`/apps/${app.slug}`"
-              class="app-card card"
+              class="group flex flex-col gap-3 p-5 rounded-xl border border-outline-gray-1 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm transition-all duration-150"
               :aria-label="`View ${app.title}`"
             >
-              <div class="app-card-top">
-                <div class="app-icon">
-                  <img v-if="app.icon" :src="app.icon" :alt="app.title" @error="($event.target as HTMLImageElement).style.display='none'" />
-                  <span v-else class="app-icon-fallback">{{ app.title[0] }}</span>
+              <div class="flex items-start justify-between">
+                <div class="w-10 h-10 rounded-lg bg-surface-gray-2 border border-outline-gray-1 overflow-hidden flex items-center justify-center">
+                  <img v-if="app.icon" :src="app.icon" :alt="app.title" class="w-full h-full object-cover" @error="($event.target as HTMLImageElement).style.display='none'" />
+                  <span v-else class="text-lg font-bold text-ink-gray-4">{{ app.title[0] }}</span>
                 </div>
-                <span v-if="app.verified" class="badge badge-green">✓</span>
+                <span v-if="app.verified" class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-full">
+                  <FeatherIcon name="check" class="w-3 h-3" />
+                </span>
               </div>
-              <h3 class="app-title">{{ app.title }}</h3>
-              <p class="app-desc">{{ app.description }}</p>
-              <div class="app-versions">
-                <span v-for="v in app.frappe_versions" :key="v" class="tag">v{{ v }}</span>
-                <span class="tag">{{ app.license }}</span>
+              <div class="flex-1">
+                <h3 class="text-sm font-semibold text-ink-gray-9 group-hover:text-ink-blue-3 transition-colors">{{ app.title }}</h3>
+                <p class="text-xs text-ink-gray-4 mt-1 leading-relaxed line-clamp-2">{{ app.description }}</p>
+              </div>
+              <div class="flex items-center gap-1.5 flex-wrap pt-2 border-t border-outline-gray-1 mt-auto">
+                <span v-for="v in app.frappe_versions" :key="v" class="text-xs text-ink-gray-3 bg-surface-gray-1 border border-outline-gray-1 px-2 py-0.5 rounded-full font-mono">v{{ v }}</span>
+                <span class="ml-auto text-xs text-ink-gray-3">{{ app.license }}</span>
               </div>
             </RouterLink>
           </div>
         </template>
 
-        <div v-else class="empty-state">
+        <div v-else class="flex flex-col items-center py-20 text-center text-ink-gray-4">
+          <FeatherIcon name="grid" class="w-8 h-8 text-ink-gray-3 mb-3" />
           <p>Select a category to browse apps</p>
         </div>
       </main>
     </div>
   </div>
 </template>
-
-<style scoped>
-.categories-page { padding-bottom: 80px; }
-.page-header { padding: 48px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
-.page-subtitle { color: var(--text-3); margin-top: 4px; font-size: 14px; }
-
-.categories-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 40px;
-  align-items: start;
-}
-
-/* Category list */
-.cat-list { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 4px; }
-.cat-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: var(--r-md);
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-2);
-  font-size: 14px;
-  cursor: pointer;
-  transition: all var(--duration) var(--ease);
-  text-align: left;
-}
-.cat-btn:hover { background: var(--bg-3); color: var(--text); }
-.cat-btn.active { background: hsla(221,80%,55%,0.1); border-color: hsla(221,80%,55%,0.2); color: var(--brand-400); }
-.cat-icon { font-size: 16px; }
-.cat-name { flex: 1; font-weight: 500; }
-.cat-count { font-size: 12px; color: var(--text-3); background: var(--bg-2); padding: 2px 7px; border-radius: var(--r-full); }
-.cat-btn.active .cat-count { background: hsla(221,80%,55%,0.15); color: var(--brand-400); }
-
-.cat-skeleton { height: 42px; border-radius: var(--r-md); background: var(--bg-card); margin-bottom: 4px; animation: shimmer 1.5s infinite; }
-
-/* Apps */
-.cat-apps-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-.cat-apps-title { font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-.cat-apps-count { font-size: 13px; color: var(--text-3); background: var(--bg-3); padding: 4px 12px; border-radius: var(--r-full); border: 1px solid var(--border); }
-
-.apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
-.app-card { display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
-.app-card-top { display: flex; align-items: flex-start; justify-content: space-between; }
-.app-icon {
-  width: 44px; height: 44px;
-  border-radius: var(--r-md);
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-}
-.app-icon img { width: 100%; height: 100%; object-fit: cover; }
-.app-icon-fallback { font-size: 20px; font-weight: 700; color: var(--brand-400); }
-.app-title { font-size: 15px; font-weight: 700; }
-.app-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.app-versions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
-
-.skeleton-card { height: 180px; border-radius: var(--r-lg); background: var(--bg-card); animation: shimmer 1.5s infinite; }
-@keyframes shimmer { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-.empty-state { color: var(--text-3); padding: 60px 0; text-align: center; }
-
-@media (max-width: 768px) {
-  .categories-layout { grid-template-columns: 1fr; }
-  .cat-list { position: static; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
-}
-</style>
