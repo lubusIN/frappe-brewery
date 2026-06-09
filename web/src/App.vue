@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute, RouterLink, RouterView } from 'vue-router'
+import { ref, onMounted, computed, markRaw } from 'vue'
+import { useRoute, useRouter, RouterLink, RouterView } from 'vue-router'
 import { FeatherIcon, Button } from 'frappe-ui'
+import AppCommandPalette from './components/AppCommandPalette.vue'
+import PaletteAppItem from './components/PaletteAppItem.vue'
 
 const route = useRoute()
 const menuOpen = ref(false)
@@ -10,9 +12,84 @@ const navLinks = [
   { to: '/apps',       label: 'Browse Apps' },
   { to: '/categories', label: 'Categories' },
   { to: '/docs',       label: 'API' },
+  { to: '/submit',     label: 'Submit' },
 ]
 
 const isActive = (path: string) => route.path === path || (path !== '/' && route.path.startsWith(path))
+
+const isDark = ref(false)
+const toggleDark = () => {
+  isDark.value = !isDark.value
+  if (isDark.value) {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    localStorage.setItem('theme', 'dark')
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light')
+    localStorage.setItem('theme', 'light')
+  }
+}
+
+onMounted(() => {
+  const storedTheme = localStorage.getItem('theme')
+  if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    isDark.value = true
+    document.documentElement.setAttribute('data-theme', 'dark')
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light')
+  }
+
+  fetchApps()
+})
+
+// Search logic
+const showSearch = ref(false)
+const searchQuery = ref('')
+const apps = ref([])
+const router = useRouter()
+
+const fetchApps = async () => {
+  try {
+    const res = await fetch('/index/apps.json')
+    if (res.ok) {
+      const data = await res.json()
+      apps.value = data.apps || []
+    }
+  } catch (error) {
+    console.error('Failed to fetch apps for search:', error)
+  }
+}
+
+const searchGroups = computed(() => {
+  const query = searchQuery.value.toLowerCase()
+  let filtered = apps.value
+  
+  if (query) {
+    filtered = apps.value.filter(app => 
+      app.title.toLowerCase().includes(query) || 
+      (app.description && app.description.toLowerCase().includes(query)) ||
+      (app.categories && app.categories.some((c: string) => c.toLowerCase().includes(query))) ||
+      (app.tags && app.tags.some((t: string) => t.toLowerCase().includes(query)))
+    )
+  }
+
+  return [
+    {
+      title: 'Apps',
+      hideTitle: false,
+      component: markRaw(PaletteAppItem),
+      items: filtered.slice(0, 10).map(app => ({
+        ...app,
+        name: app.slug, // required unique key for CommandPalette
+      }))
+    }
+  ]
+})
+
+const onSearchSelect = (item: any) => {
+  if (item && item.slug) {
+    router.push(`/apps/${item.slug}`)
+  }
+}
 </script>
 
 <template>
@@ -47,18 +124,48 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
 
           <!-- Right actions -->
           <div class="flex items-center gap-2">
+            
+            <!-- Search / Cmd K -->
             <Button
-              link="https://github.com/frappe/frappe-app-registry"
-              variant="ghost"
+              variant="subtle"
               theme="gray"
-              icon-left="github"
-              class="hidden sm:inline-flex"
+              class="hidden sm:flex items-center"
+              aria-label="Search"
+              @click="showSearch = true"
             >
-              <span class="hidden lg:inline">GitHub</span>
+              <template #prefix><FeatherIcon name="search" class="w-4 h-4" /></template>
+              <span class="mr-2">Search</span>
+              <template #suffix>
+                <div class="flex items-center gap-0.5 text-[11px] font-medium text-ink-gray-5">
+                  <span>⌘</span>
+                  <span>K</span>
+                </div>
+              </template>
             </Button>
-            <Button :route="{ path: '/submit' }" variant="solid" theme="gray" class="hidden sm:inline-flex" icon-left="plus">
-              Submit App
-            </Button>
+
+            <!-- Dark Mode Toggle -->
+            <Button 
+              variant="subtle"
+              theme="gray"
+              :icon="isDark ? 'sun' : 'moon'"
+              @click="toggleDark"
+              class="hidden sm:flex"
+              aria-label="Toggle dark mode"
+            />
+
+            <!-- GitHub -->
+            <a 
+              href="https://github.com/frappe/frappe-app-registry"
+              target="_blank"
+              rel="noopener"
+              class="hidden sm:flex items-center text-ink-gray-9 hover:opacity-75 transition-opacity"
+              aria-label="GitHub Repository"
+            >
+              <svg class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"></path>
+              </svg>
+            </a>
+
             <!-- Mobile hamburger -->
             <Button
               class="md:hidden"
@@ -132,5 +239,12 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
       </div>
     </footer>
 
+    <!-- Global Search -->
+    <AppCommandPalette
+      v-model:show="showSearch"
+      v-model:searchQuery="searchQuery"
+      :groups="searchGroups"
+      @select="onSearchSelect"
+    />
   </div>
 </template>

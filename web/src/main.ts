@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { FrappeUI } from 'frappe-ui'
+import { FrappeUI, Dialog, FeatherIcon } from 'frappe-ui'
 import './style.css'
 import App from './App.vue'
 
@@ -29,5 +29,8 @@ const router = createRouter({
 const app = createApp(App)
 app.use(router)
 app.use(FrappeUI, { socketio: false })
+
+app.component('Dialog', Dialog)
+app.component('FeatherIcon', FeatherIcon)
 
 app.mount('#app')
