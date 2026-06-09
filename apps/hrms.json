@@ -20,7 +20,9 @@
   },
   "media": {
     "icon": "https://raw.githubusercontent.com/frappe/hrms/develop/hrms/public/images/frappe-hr-logo.svg",
-    "screenshots": []
+    "screenshots": [
+      "https://raw.githubusercontent.com/frappe/hrms/refs/heads/develop/.github/hrms-hero.png"
+    ]
   },
   "meta": {
     "source": "manual",

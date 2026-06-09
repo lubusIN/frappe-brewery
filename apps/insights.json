@@ -21,7 +21,9 @@
   },
   "media": {
     "icon": "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/frontend/public/favicon.png",
-    "screenshots": []
+    "screenshots": [
+      "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/.github/hero-image.png"
+    ]
   },
   "meta": {
     "source": "manual",

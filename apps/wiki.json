@@ -20,7 +20,9 @@
   },
   "media": {
     "icon": "https://raw.githubusercontent.com/frappe/wiki/develop/frontend/src/assets/wiki-logo.png",
-    "screenshots": []
+    "screenshots": [
+      "https://frappe.io/files/W1%20(1).webp"
+    ]
   },
   "meta": {
     "source": "manual",

@@ -11,6 +11,13 @@ const loading = ref(true)
 const error = ref('')
 const copied = ref(false)
 const imageError = ref(false)
+const showLightbox = ref(false)
+const selectedScreenshot = ref('')
+
+function openScreenshot(url: string) {
+  selectedScreenshot.value = url
+  showLightbox.value = true
+}
 
 watch(() => app.value?.media?.icon, () => {
   imageError.value = false
@@ -162,6 +169,24 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               <Badge v-for="tag in app.tags" :key="tag" theme="gray" :label="tag" />
             </div>
           </section>
+
+          <!-- Screenshots -->
+          <section v-if="app.media?.screenshots?.length" aria-labelledby="screenshots-heading">
+            <h2 id="screenshots-heading" class="text-base font-semibold text-ink-gray-8 mb-4 flex items-center gap-2">
+              <FeatherIcon name="image" class="w-4 h-4 text-ink-gray-4" />
+              Screenshots
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button 
+                v-for="(screenshot, idx) in app.media.screenshots" 
+                :key="idx" 
+                @click="openScreenshot(screenshot)"
+                class="rounded-lg border border-outline-gray-2 overflow-hidden bg-surface-gray-1 hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-ink-gray-9"
+              >
+                <img :src="screenshot" :alt="`${app.title} screenshot ${idx + 1}`" class="w-full h-auto object-cover" loading="lazy" />
+              </button>
+            </div>
+          </section>
         </div>
 
         <!-- Right: sidebar -->
@@ -229,5 +254,27 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
         </aside>
       </div>
     </template>
+
+    <!-- Screenshot Lightbox -->
+    <Dialog
+      v-model="showLightbox"
+      :options="{ size: '4xl' }"
+      bare
+      @after-leave="selectedScreenshot = ''"
+    >
+      <template #body>
+        <div class="relative flex justify-center items-center w-full h-full p-2" v-if="selectedScreenshot">
+          <img :src="selectedScreenshot" class="max-w-full max-h-[90vh] object-contain" />
+          <Button
+            icon="x"
+            variant="solid"
+            theme="gray"
+            class="fixed top-4 right-4 z-50"
+            @click="showLightbox = false"
+            aria-label="Close"
+          />
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>

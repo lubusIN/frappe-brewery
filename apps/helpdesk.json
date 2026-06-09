@@ -21,7 +21,9 @@
   },
   "media": {
     "icon": "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/desk/public/favicon.svg",
-    "screenshots": []
+    "screenshots": [
+      "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/.github/Hero2.png"
+    ]
   },
   "meta": {
     "source": "manual",

@@ -22,7 +22,7 @@
   "media": {
     "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png",
     "screenshots": [
-      "https://erpnext.com/files/erpnext-home.png"
+      "https://github.com/frappe/erpnext/blob/develop/erpnext/public/images/v16/hero_image.png?raw=true"
     ]
   },
   "meta": {
