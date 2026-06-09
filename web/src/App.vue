@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute, RouterLink, RouterView } from 'vue-router'
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, Button } from 'frappe-ui'
 
 const route = useRoute()
 const menuOpen = ref(false)
@@ -38,17 +38,15 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
 
           <!-- Desktop nav links -->
           <nav class="hidden md:flex items-center gap-0.5" role="navigation" aria-label="Main navigation">
-            <RouterLink
+            <Button
               v-for="link in navLinks"
               :key="link.to"
-              :to="link.to"
-              class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors duration-150"
-              :class="isActive(link.to)
-                ? 'bg-surface-gray-2 text-ink-gray-9'
-                : 'text-ink-gray-5 hover:text-ink-gray-8 hover:bg-surface-gray-1'"
+              :route="{ path: link.to }"
+              :variant="isActive(link.to) ? 'subtle' : 'ghost'"
+              theme="gray"
             >
               {{ link.label }}
-            </RouterLink>
+            </Button>
           </nav>
 
           <!-- Spacer -->
@@ -56,52 +54,54 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
 
           <!-- Right actions -->
           <div class="flex items-center gap-2">
-            <a
-              href="https://github.com/frappe/frappe-app-registry"
-              target="_blank"
-              rel="noopener"
-              class="hidden sm:flex items-center gap-1.5 text-sm text-ink-gray-5 hover:text-ink-gray-8 transition-colors px-2 py-1"
-              aria-label="GitHub"
+            <Button
+              link="https://github.com/frappe/frappe-app-registry"
+              variant="ghost"
+              theme="gray"
+              icon-left="github"
+              class="hidden sm:inline-flex"
             >
-              <FeatherIcon name="github" class="w-4 h-4" />
-              <span class="hidden lg:block">GitHub</span>
-            </a>
-            <RouterLink
-              to="/submit"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-ink-gray-9 text-white text-sm font-medium hover:bg-ink-gray-7 transition-colors"
-            >
-              <FeatherIcon name="plus" class="w-3.5 h-3.5" />
+              <span class="hidden lg:inline">GitHub</span>
+            </Button>
+            <Button :route="{ path: '/submit' }" variant="solid" theme="gray" class="hidden sm:inline-flex" icon-left="plus">
               Submit App
-            </RouterLink>
+            </Button>
             <!-- Mobile hamburger -->
-            <button
-              class="md:hidden flex items-center justify-center w-8 h-8 rounded-md text-ink-gray-5 hover:bg-surface-gray-2 transition-colors"
+            <Button
+              class="md:hidden"
+              variant="ghost"
+              theme="gray"
+              :icon="menuOpen ? 'x' : 'menu'"
               :aria-expanded="menuOpen"
               aria-controls="mobile-menu"
               @click="menuOpen = !menuOpen"
-            >
-              <FeatherIcon :name="menuOpen ? 'x' : 'menu'" class="w-4 h-4" />
-            </button>
+            />
           </div>
         </div>
       </div>
 
       <!-- Mobile menu -->
-      <Transition name="slide-down">
+      <Transition
+        enter-active-class="transition-all duration-150 ease-out"
+        enter-from-class="opacity-0 -translate-y-1.5"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-1.5"
+      >
         <div v-if="menuOpen" id="mobile-menu" class="md:hidden border-t border-outline-gray-1 bg-surface-white px-4 pb-3 pt-2">
           <nav class="flex flex-col gap-0.5">
-            <RouterLink
+            <Button
               v-for="link in navLinks"
               :key="link.to"
-              :to="link.to"
-              class="px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              :class="isActive(link.to)
-                ? 'bg-surface-gray-2 text-ink-gray-9'
-                : 'text-ink-gray-5 hover:text-ink-gray-8 hover:bg-surface-gray-1'"
+              :route="{ path: link.to }"
+              :variant="isActive(link.to) ? 'subtle' : 'ghost'"
+              theme="gray"
+              class="w-full !justify-start"
               @click="menuOpen = false"
             >
               {{ link.label }}
-            </RouterLink>
+            </Button>
           </nav>
         </div>
       </Transition>
@@ -110,7 +110,15 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
     <!-- ── Page Content ── -->
     <main class="flex-1">
       <RouterView v-slot="{ Component }">
-        <Transition name="page" mode="out-in">
+        <Transition
+          enter-active-class="transition duration-150 ease-out"
+          enter-from-class="opacity-0 translate-y-1"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0"
+          mode="out-in"
+        >
           <component :is="Component" />
         </Transition>
       </RouterView>
@@ -142,10 +150,3 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
 
   </div>
 </template>
-
-<style scoped>
-.slide-down-enter-active,
-.slide-down-leave-active { transition: all 0.15s ease; }
-.slide-down-enter-from,
-.slide-down-leave-to { opacity: 0; transform: translateY(-6px); }
-</style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, Button, Avatar } from 'frappe-ui'
 
 const copied = ref<string | null>(null)
 async function copy(text: string) {
@@ -78,9 +78,9 @@ const endpoints = [
       <h2 id="overview-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Overview</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div v-for="card in overviewCards" :key="card.title" class="rounded-xl border border-outline-gray-1 p-5 bg-surface-white">
-          <div class="w-8 h-8 rounded-lg bg-surface-gray-2 flex items-center justify-center mb-3">
+          <Avatar shape="square" size="xl" class="mb-3">
             <FeatherIcon :name="card.icon" class="w-4 h-4 text-ink-gray-5" />
-          </div>
+          </Avatar>
           <h3 class="text-sm font-semibold text-ink-gray-8 mb-1">{{ card.title }}</h3>
           <p class="text-xs text-ink-gray-4 leading-relaxed">{{ card.desc }}</p>
         </div>
@@ -92,15 +92,15 @@ const endpoints = [
       <h2 id="base-url-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Base URL</h2>
       <div class="flex items-center gap-3 p-4 rounded-xl border border-outline-gray-2 bg-surface-gray-1">
         <code class="flex-1 font-mono text-sm text-ink-gray-7">https://registry.frappe.io</code>
-        <button
-          class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md border border-outline-gray-2 bg-surface-white text-ink-gray-5 hover:bg-surface-gray-2 transition-colors"
-          :class="copied === 'https://registry.frappe.io' ? 'text-green-600 border-green-200 bg-green-50' : ''"
+        <Button
+          :variant="copied === 'https://registry.frappe.io' ? 'subtle' : 'outline'"
+          :theme="copied === 'https://registry.frappe.io' ? 'green' : 'gray'"
           @click="copy('https://registry.frappe.io')"
           aria-label="Copy base URL"
+          :icon-left="copied === 'https://registry.frappe.io' ? 'check' : 'copy'"
         >
-          <FeatherIcon :name="copied === 'https://registry.frappe.io' ? 'check' : 'copy'" class="w-3.5 h-3.5" />
           {{ copied === 'https://registry.frappe.io' ? 'Copied' : 'Copy' }}
-        </button>
+        </Button>
       </div>
     </section>
 
@@ -118,10 +118,15 @@ const endpoints = [
             <div v-if="ep.example">
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-xs text-ink-gray-3 uppercase tracking-wider font-semibold">Example response</span>
-                <button class="inline-flex items-center gap-1 text-xs text-ink-gray-4 hover:text-ink-gray-7 transition-colors" @click="copy(ep.example!)" :aria-label="`Copy example`">
-                  <FeatherIcon :name="copied === ep.example ? 'check' : 'copy'" class="w-3 h-3" />
+                <Button
+                  variant="ghost"
+                  :theme="copied === ep.example ? 'green' : 'gray'"
+                  @click="copy(ep.example!)"
+                  aria-label="Copy example"
+                  :icon-left="copied === ep.example ? 'check' : 'copy'"
+                >
                   {{ copied === ep.example ? 'Copied' : 'Copy' }}
-                </button>
+                </Button>
               </div>
               <pre class="font-mono text-xs text-ink-gray-5 bg-surface-gray-1 border border-outline-gray-1 rounded-lg p-4 overflow-x-auto leading-relaxed">{{ ep.example }}</pre>
             </div>

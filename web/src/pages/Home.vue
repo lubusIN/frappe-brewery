@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, Badge, Button, Avatar } from 'frappe-ui'
 import { fetchStats, fetchApps } from '../api'
 import type { StatsResponse, AppSummary } from '../types'
 
@@ -40,10 +40,12 @@ onMounted(async () => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <div class="max-w-2xl">
           <div class="flex items-center gap-2 mb-4">
-            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-outline-gray-2 text-xs font-medium text-ink-gray-5">
-              <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            <Badge variant="outline" theme="gray">
+              <template #prefix>
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+              </template>
               Open Source · Community Maintained
-            </span>
+            </Badge>
           </div>
           <h1 class="text-4xl sm:text-5xl font-bold text-ink-gray-9 tracking-tight leading-tight">
             Frappe App Registry
@@ -52,14 +54,18 @@ onMounted(async () => {
             Discover, install, and share Frappe apps. Open data, GitHub-based submissions, static JSON API — ready for Frappe Local and beyond.
           </p>
           <div class="flex flex-wrap gap-3 mt-8">
-            <RouterLink to="/apps" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-ink-gray-9 text-white text-sm font-medium hover:bg-ink-gray-7 transition-colors">
-              <FeatherIcon name="search" class="w-4 h-4" />
+            <Button
+              :route="{ path: '/apps' }"
+              size="xl"
+              variant="solid"
+              theme="gray"
+              icon-left="search"
+            >
               Browse Apps
-            </RouterLink>
-            <RouterLink to="/submit" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-gray-2 text-ink-gray-7 text-sm font-medium hover:bg-surface-gray-2 transition-colors">
+            </Button>
+            <Button :route="{ path: '/submit' }" size="xl" variant="outline" theme="gray" icon-right="arrow-right">
               Submit Your App
-              <FeatherIcon name="arrow-right" class="w-4 h-4" />
-            </RouterLink>
+            </Button>
           </div>
         </div>
 
@@ -88,14 +94,14 @@ onMounted(async () => {
           <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-1">Registry</p>
           <h2 class="text-xl font-semibold text-ink-gray-9">Featured Apps</h2>
         </div>
-        <RouterLink to="/apps" class="text-sm text-ink-gray-5 hover:text-ink-gray-8 flex items-center gap-1 transition-colors">
-          View all <FeatherIcon name="arrow-right" class="w-3.5 h-3.5" />
-        </RouterLink>
+        <Button :route="{ path: '/apps' }" variant="ghost" theme="gray" icon-right="arrow-right">
+          View all
+        </Button>
       </div>
 
       <!-- Skeleton -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div v-for="i in 4" :key="i" class="skeleton h-44 rounded-xl" />
+        <div v-for="i in 4" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-xl" />
       </div>
 
       <!-- Cards -->
@@ -109,21 +115,17 @@ onMounted(async () => {
         >
           <div class="flex items-start justify-between">
             <!-- Icon -->
-            <div class="w-10 h-10 rounded-lg bg-surface-gray-2 border border-outline-gray-1 overflow-hidden flex items-center justify-center shrink-0">
-              <img v-if="app.icon" :src="app.icon" :alt="app.title" class="w-full h-full object-cover" @error="($event.target as HTMLImageElement).style.display='none'" />
-              <span v-else class="text-lg font-bold text-ink-gray-4">{{ app.title[0] }}</span>
-            </div>
-            <span v-if="app.verified" class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-full">
-              <FeatherIcon name="check" class="w-3 h-3" />
-              Verified
-            </span>
+            <Avatar shape="square" size="2xl" :image="app.icon" :label="app.title" />
+            <Badge v-if="app.verified" theme="green" label="Verified">
+              <template #prefix><FeatherIcon name="check" class="w-3 h-3" /></template>
+            </Badge>
           </div>
           <div class="flex-1">
             <h3 class="text-sm font-semibold text-ink-gray-9 group-hover:text-ink-blue-3 transition-colors">{{ app.title }}</h3>
             <p class="text-xs text-ink-gray-4 mt-1 leading-relaxed line-clamp-2">{{ app.description }}</p>
           </div>
           <div class="flex items-center gap-1.5 flex-wrap mt-auto">
-            <span v-for="cat in app.categories.slice(0, 1)" :key="cat" class="text-xs font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">{{ cat }}</span>
+            <Badge v-for="cat in app.categories.slice(0, 1)" :key="cat" theme="blue" :label="cat" />
             <span class="text-xs text-ink-gray-3 font-mono ml-auto">v{{ app.frappe_versions.join(', ') }}</span>
           </div>
         </RouterLink>
@@ -146,9 +148,9 @@ onMounted(async () => {
           :to="`/categories?cat=${encodeURIComponent(cat.name)}`"
           class="flex flex-col items-center gap-2.5 py-5 px-3 rounded-xl border border-outline-gray-1 bg-surface-white hover:border-outline-gray-3 hover:bg-surface-gray-1 transition-all duration-150 text-center group"
         >
-          <div class="w-9 h-9 rounded-lg bg-surface-gray-2 flex items-center justify-center group-hover:bg-surface-gray-3 transition-colors">
+          <Avatar shape="square" size="xl">
             <FeatherIcon :name="cat.icon" class="w-4 h-4 text-ink-gray-6" />
-          </div>
+          </Avatar>
           <span class="text-xs font-medium text-ink-gray-6 leading-tight">{{ cat.name }}</span>
         </RouterLink>
       </div>
@@ -167,10 +169,9 @@ onMounted(async () => {
             <p class="mt-3 text-ink-gray-5 leading-relaxed">
               Frappe Local, hosting platforms, and community tools can consume the registry directly. No auth, no rate limits, no database.
             </p>
-            <RouterLink to="/docs" class="inline-flex items-center gap-2 mt-6 px-4 py-2 rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 text-sm font-medium hover:bg-surface-gray-2 transition-colors">
-              <FeatherIcon name="book" class="w-4 h-4" />
+            <Button :route="{ path: '/docs' }" variant="outline" theme="gray" class="mt-6" icon-left="book">
               View API Docs
-            </RouterLink>
+            </Button>
           </div>
           <div class="rounded-xl border border-outline-gray-2 bg-surface-white overflow-hidden">
             <div class="flex items-center gap-2 px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">

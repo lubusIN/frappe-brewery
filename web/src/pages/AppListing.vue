@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, FormControl, Button, Badge, Avatar } from 'frappe-ui'
 import { fetchApps } from '../api'
 import type { AppSummary, IndexResponse } from '../types'
 
@@ -25,6 +25,21 @@ const CATEGORIES = [
   'Reports', 'Developer Tools', 'AI', 'Utilities',
 ]
 const LICENSES = ['MIT', 'GPL-3.0', 'AGPL-3.0', 'Apache-2.0', 'LGPL-3.0']
+
+const versionOptions = [
+  { label: 'All versions', value: '' },
+  ...FRAPPE_VERSIONS.map(v => ({ label: `Frappe ${v}`, value: v }))
+]
+
+const categoryOptions = [
+  { label: 'All categories', value: '' },
+  ...CATEGORIES.map(c => ({ label: c, value: c }))
+]
+
+const licenseOptions = [
+  { label: 'All licenses', value: '' },
+  ...LICENSES.map(l => ({ label: l, value: l }))
+]
 
 const hasFilters = computed(() =>
   searchQuery.value || selectedVersion.value || selectedCategory.value ||
@@ -97,67 +112,57 @@ onMounted(async () => {
         <div class="space-y-5">
 
           <!-- Search -->
-          <div>
-            <label for="app-search" class="block text-xs font-semibold text-ink-gray-4 uppercase tracking-widest mb-2">Search</label>
-            <div class="relative">
-              <FeatherIcon name="search" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-gray-3 pointer-events-none" />
-              <input
-                id="app-search"
-                v-model="searchQuery"
-                type="search"
-                placeholder="Search apps…"
-                class="w-full pl-8 pr-3 py-2 text-sm rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-8 placeholder-ink-gray-3 focus:outline-none focus:ring-1 focus:ring-outline-gray-3 focus:border-outline-gray-3 transition-colors"
-                aria-label="Search apps"
-              />
-            </div>
-          </div>
+          <FormControl
+            type="text"
+            label="Search"
+            v-model="searchQuery"
+            placeholder="Search apps…"
+          >
+            <template #prefix>
+              <FeatherIcon name="search" class="w-3.5 h-3.5 text-ink-gray-4" />
+            </template>
+          </FormControl>
 
           <!-- Frappe Version -->
-          <div>
-            <label for="version-filter" class="block text-xs font-semibold text-ink-gray-4 uppercase tracking-widest mb-2">Frappe Version</label>
-            <select id="version-filter" v-model="selectedVersion" class="w-full text-sm rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-outline-gray-3 transition-colors appearance-none">
-              <option value="">All versions</option>
-              <option v-for="v in FRAPPE_VERSIONS" :key="v" :value="v">Frappe {{ v }}</option>
-            </select>
-          </div>
+          <FormControl
+            type="select"
+            label="Frappe Version"
+            :options="versionOptions"
+            v-model="selectedVersion"
+          />
 
           <!-- Category -->
-          <div>
-            <label for="category-filter" class="block text-xs font-semibold text-ink-gray-4 uppercase tracking-widest mb-2">Category</label>
-            <select id="category-filter" v-model="selectedCategory" class="w-full text-sm rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-outline-gray-3 transition-colors appearance-none">
-              <option value="">All categories</option>
-              <option v-for="cat in CATEGORIES" :key="cat" :value="cat">{{ cat }}</option>
-            </select>
-          </div>
+          <FormControl
+            type="select"
+            label="Category"
+            :options="categoryOptions"
+            v-model="selectedCategory"
+          />
 
           <!-- License -->
-          <div>
-            <label for="license-filter" class="block text-xs font-semibold text-ink-gray-4 uppercase tracking-widest mb-2">License</label>
-            <select id="license-filter" v-model="selectedLicense" class="w-full text-sm rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-outline-gray-3 transition-colors appearance-none">
-              <option value="">All licenses</option>
-              <option v-for="lic in LICENSES" :key="lic" :value="lic">{{ lic }}</option>
-            </select>
-          </div>
+          <FormControl
+            type="select"
+            label="License"
+            :options="licenseOptions"
+            v-model="selectedLicense"
+          />
 
           <!-- Verified -->
-          <div class="flex items-center gap-2">
-            <input
-              id="verified-filter"
-              v-model="showVerifiedOnly"
-              type="checkbox"
-              class="rounded border-outline-gray-2 text-ink-blue-2 focus:ring-outline-gray-3 w-4 h-4 cursor-pointer"
-            />
-            <label for="verified-filter" class="text-sm text-ink-gray-6 cursor-pointer select-none">Verified only</label>
-          </div>
+          <FormControl
+            type="checkbox"
+            label="Verified only"
+            v-model="showVerifiedOnly"
+          />
 
           <!-- Clear -->
-          <button
+          <Button
             v-if="hasFilters"
-            class="w-full text-sm text-ink-gray-4 hover:text-ink-gray-7 py-1.5 border border-outline-gray-2 rounded-lg hover:bg-surface-gray-1 transition-colors"
+            class="w-full mt-2"
+            variant="outline"
             @click="resetFilters"
           >
             Clear filters
-          </button>
+          </Button>
         </div>
       </aside>
 
@@ -166,7 +171,7 @@ onMounted(async () => {
 
         <!-- Loading -->
         <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <div v-for="i in 6" :key="i" class="skeleton h-44 rounded-xl" />
+          <div v-for="i in 6" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-xl" />
         </div>
 
         <!-- Error -->
@@ -179,7 +184,7 @@ onMounted(async () => {
         <div v-else-if="filteredApps.length === 0" class="flex flex-col items-center py-20 text-center">
           <FeatherIcon name="search" class="w-8 h-8 text-ink-gray-3 mb-3" />
           <p class="text-ink-gray-5 font-medium">No apps match your filters</p>
-          <button class="mt-4 text-sm text-ink-gray-4 hover:text-ink-gray-7 underline" @click="resetFilters">Clear filters</button>
+          <Button variant="ghost" class="mt-4" @click="resetFilters">Clear filters</Button>
         </div>
 
         <!-- Apps -->
@@ -192,15 +197,12 @@ onMounted(async () => {
             :aria-label="`View ${app.title}`"
           >
             <div class="flex items-start justify-between gap-3">
-              <div class="w-10 h-10 rounded-lg bg-surface-gray-2 border border-outline-gray-1 overflow-hidden flex items-center justify-center shrink-0">
-                <img v-if="app.icon" :src="app.icon" :alt="app.title" class="w-full h-full object-cover" @error="($event.target as HTMLImageElement).style.display='none'" />
-                <span v-else class="text-lg font-bold text-ink-gray-4">{{ app.title[0] }}</span>
-              </div>
+              <Avatar shape="square" size="2xl" :image="app.icon" :label="app.title" />
               <div class="flex gap-1.5 flex-wrap">
-                <span v-if="app.verified" class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-full">
-                  <FeatherIcon name="check" class="w-3 h-3" />Verified
-                </span>
-                <span v-if="app.status !== 'active'" class="text-xs font-medium text-ink-gray-4 bg-surface-gray-2 border border-outline-gray-1 px-1.5 py-0.5 rounded-full">{{ app.status }}</span>
+                <Badge v-if="app.verified" theme="green" label="Verified">
+                  <template #prefix><FeatherIcon name="check" class="w-3 h-3" /></template>
+                </Badge>
+                <Badge v-if="app.status !== 'active'" theme="gray" :label="app.status" />
               </div>
             </div>
 
@@ -210,7 +212,7 @@ onMounted(async () => {
             </div>
 
             <div class="flex items-center gap-1.5 flex-wrap mt-auto pt-1 border-t border-outline-gray-1">
-              <span v-for="cat in app.categories.slice(0, 2)" :key="cat" class="text-xs font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">{{ cat }}</span>
+              <Badge v-for="cat in app.categories.slice(0, 2)" :key="cat" theme="blue" :label="cat" />
               <span class="text-xs text-ink-gray-3 ml-auto font-mono">{{ app.license }}</span>
             </div>
           </RouterLink>

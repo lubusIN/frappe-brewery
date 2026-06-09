@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, Badge, Button } from 'frappe-ui'
 import { fetchApp } from '../api'
 import type { App } from '../types'
 
@@ -39,9 +39,9 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
 
     <!-- Loading -->
     <div v-if="loading" class="space-y-4">
-      <div class="skeleton h-10 w-64 rounded-lg" />
-      <div class="skeleton h-32 rounded-xl" />
-      <div class="skeleton h-48 rounded-xl" />
+      <div class="animate-pulse bg-surface-gray-2 h-10 w-64 rounded-lg" />
+      <div class="animate-pulse bg-surface-gray-2 h-32 rounded-xl" />
+      <div class="animate-pulse bg-surface-gray-2 h-48 rounded-xl" />
     </div>
 
     <!-- Error -->
@@ -71,11 +71,11 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
           <div class="flex items-start gap-3 flex-wrap">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1 flex-wrap">
-                <span v-if="app.meta?.verified" class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-full">
-                  <FeatherIcon name="check-circle" class="w-3 h-3" /> Verified
-                </span>
-                <span class="text-xs font-medium text-ink-gray-4 bg-surface-gray-2 border border-outline-gray-1 px-2 py-0.5 rounded-full">{{ app.license }}</span>
-                <span v-if="app.meta?.status && app.meta.status !== 'active'" class="text-xs font-medium text-ink-gray-4 bg-surface-gray-2 border border-outline-gray-1 px-2 py-0.5 rounded-full">{{ app.meta.status }}</span>
+                <Badge v-if="app.meta?.verified" theme="green" label="Verified">
+                  <template #prefix><FeatherIcon name="check-circle" class="w-3 h-3" /></template>
+                </Badge>
+                <Badge theme="gray" :label="app.license" />
+                <Badge v-if="app.meta?.status && app.meta.status !== 'active'" theme="gray" :label="app.meta.status" />
               </div>
               <h1 class="text-2xl font-bold text-ink-gray-9 leading-tight">{{ app.title }}</h1>
               <p class="text-sm text-ink-gray-4 mt-0.5 font-mono">{{ app.name }}</p>
@@ -83,15 +83,9 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
             </div>
             <!-- Action buttons -->
             <div class="flex gap-2 shrink-0 flex-wrap">
-              <a :href="app.repository" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 text-sm font-medium hover:bg-surface-gray-1 transition-colors">
-                <FeatherIcon name="github" class="w-4 h-4" /> GitHub
-              </a>
-              <a v-if="app.links?.docs" :href="app.links.docs" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-outline-gray-2 bg-surface-white text-ink-gray-7 text-sm font-medium hover:bg-surface-gray-1 transition-colors">
-                <FeatherIcon name="book-open" class="w-4 h-4" /> Docs
-              </a>
-              <a v-if="app.links?.demo" :href="app.links.demo" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-ink-gray-9 text-white text-sm font-medium hover:bg-ink-gray-7 transition-colors">
-                <FeatherIcon name="external-link" class="w-4 h-4" /> Live Demo
-              </a>
+              <Button :link="app.repository" variant="outline" icon-left="github">GitHub</Button>
+              <Button v-if="app.links?.docs" :link="app.links.docs" variant="outline" icon-left="book-open">Docs</Button>
+              <Button v-if="app.links?.demo" :link="app.links.demo" variant="solid" theme="gray" icon-left="external-link">Live Demo</Button>
             </div>
           </div>
         </div>
@@ -113,17 +107,17 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               <div class="flex items-center justify-between gap-3 px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider">Method</span>
-                  <span class="text-xs font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full">{{ app.install.method }}</span>
+                  <Badge theme="blue" :label="app.install.method" />
                 </div>
-                <button
-                  class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md border border-outline-gray-2 bg-surface-white text-ink-gray-6 hover:bg-surface-gray-2 transition-colors"
-                  :class="copied ? 'text-green-600 border-green-200 bg-green-50' : ''"
+                <Button
+                  variant="outline"
+                  size="sm"
+                  :theme="copied ? 'green' : 'gray'"
+                  :icon-left="copied ? 'check' : 'copy'"
                   @click="copyCommand"
-                  :aria-label="copied ? 'Copied!' : 'Copy command'"
                 >
-                  <FeatherIcon :name="copied ? 'check' : 'copy'" class="w-3.5 h-3.5" />
                   {{ copied ? 'Copied!' : 'Copy' }}
-                </button>
+                </Button>
               </div>
               <div class="px-4 py-4 font-mono text-sm text-ink-gray-7 bg-surface-white overflow-x-auto">
                 {{ app.install.command }}
@@ -141,17 +135,13 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               <div class="rounded-xl border border-outline-gray-1 p-4">
                 <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider mb-3">Frappe Versions</p>
                 <div class="flex gap-2 flex-wrap">
-                  <span v-for="v in app.frappe_versions" :key="v" class="text-sm font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-3 py-1 rounded-full">
-                    Frappe {{ v }}
-                  </span>
+                  <Badge v-for="v in app.frappe_versions" :key="v" theme="blue" size="md" :label="`Frappe ${v}`" />
                 </div>
               </div>
               <div class="rounded-xl border border-outline-gray-1 p-4">
                 <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider mb-3">Required Apps</p>
                 <div class="flex gap-2 flex-wrap">
-                  <span v-for="dep in app.required_apps" :key="dep" class="text-sm font-mono text-ink-gray-6 bg-surface-gray-1 border border-outline-gray-1 px-3 py-1 rounded-full">
-                    {{ dep }}
-                  </span>
+                  <Badge v-for="dep in app.required_apps" :key="dep" theme="gray" size="md" :label="dep" class="font-mono" />
                 </div>
               </div>
             </div>
@@ -164,9 +154,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               Tags
             </h2>
             <div class="flex gap-2 flex-wrap">
-              <span v-for="tag in app.tags" :key="tag" class="text-xs text-ink-gray-5 bg-surface-gray-1 border border-outline-gray-1 px-2.5 py-1 rounded-full">
-                {{ tag }}
-              </span>
+              <Badge v-for="tag in app.tags" :key="tag" theme="gray" :label="tag" />
             </div>
           </section>
         </div>
@@ -182,7 +170,9 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               <div class="flex items-start gap-3 px-4 py-3">
                 <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Categories</dt>
                 <dd class="flex gap-1.5 flex-wrap">
-                  <RouterLink v-for="cat in app.categories" :key="cat" :to="`/categories?cat=${encodeURIComponent(cat)}`" class="text-xs font-medium text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full hover:bg-blue-100 transition-colors">{{ cat }}</RouterLink>
+                  <RouterLink v-for="cat in app.categories" :key="cat" :to="`/categories?cat=${encodeURIComponent(cat)}`">
+                    <Badge theme="blue" :label="cat" />
+                  </RouterLink>
                 </dd>
               </div>
               <div class="flex items-center gap-3 px-4 py-3">
@@ -196,11 +186,11 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               <div class="flex items-center gap-3 px-4 py-3">
                 <dt class="text-ink-gray-4 w-24 shrink-0">Status</dt>
                 <dd>
-                  <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full"
-                    :class="app.meta?.status === 'active' ? 'text-green-600 bg-green-50 border border-green-200' : 'text-ink-gray-5 bg-surface-gray-2 border border-outline-gray-1'">
-                    <span v-if="app.meta?.status === 'active'" class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
-                    {{ app.meta?.status || 'active' }}
-                  </span>
+                  <Badge :theme="app.meta?.status === 'active' ? 'green' : 'gray'" :label="app.meta?.status || 'active'">
+                    <template #prefix>
+                      <span v-if="app.meta?.status === 'active'" class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    </template>
+                  </Badge>
                 </dd>
               </div>
               <div v-if="app.meta?.added_at" class="flex items-center gap-3 px-4 py-3">
@@ -215,20 +205,24 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
             <div class="px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
               <h2 class="text-xs font-semibold text-ink-gray-5 uppercase tracking-wider">Links</h2>
             </div>
-            <div class="divide-y divide-outline-gray-1">
-              <a v-if="app.links?.website" :href="app.links.website" target="_blank" rel="noopener" class="flex items-center gap-2.5 px-4 py-3 text-sm text-ink-gray-6 hover:bg-surface-gray-1 transition-colors">
-                <FeatherIcon name="globe" class="w-4 h-4 text-ink-gray-3" /> Website
-                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
-              </a>
-              <a v-if="app.links?.docs" :href="app.links.docs" target="_blank" rel="noopener" class="flex items-center gap-2.5 px-4 py-3 text-sm text-ink-gray-6 hover:bg-surface-gray-1 transition-colors">
-                <FeatherIcon name="book" class="w-4 h-4 text-ink-gray-3" /> Documentation
-                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
-              </a>
-              <a v-if="app.links?.demo" :href="app.links.demo" target="_blank" rel="noopener" class="flex items-center gap-2.5 px-4 py-3 text-sm text-ink-gray-6 hover:bg-surface-gray-1 transition-colors">
-                <FeatherIcon name="play-circle" class="w-4 h-4 text-ink-gray-3" /> Live Demo
-                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
-              </a>
-            </div>
+              <Button v-if="app.links?.website" :link="app.links.website" variant="ghost" theme="gray" class="w-full !justify-start rounded-none h-auto py-3 px-4 text-ink-gray-6" icon-left="globe">
+                Website
+                <template #suffix>
+                  <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
+                </template>
+              </Button>
+              <Button v-if="app.links?.docs" :link="app.links.docs" variant="ghost" theme="gray" class="w-full !justify-start rounded-none h-auto py-3 px-4 text-ink-gray-6" icon-left="book">
+                Documentation
+                <template #suffix>
+                  <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
+                </template>
+              </Button>
+              <Button v-if="app.links?.demo" :link="app.links.demo" variant="ghost" theme="gray" class="w-full !justify-start rounded-none h-auto py-3 px-4 text-ink-gray-6" icon-left="play-circle">
+                Live Demo
+                <template #suffix>
+                  <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
+                </template>
+              </Button>
           </div>
         </aside>
       </div>

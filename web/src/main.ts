@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { FrappeUI, Button, Badge, Input } from 'frappe-ui'
+import { FrappeUI } from 'frappe-ui'
 import './style.css'
 import App from './App.vue'
 
@@ -29,7 +29,5 @@ const router = createRouter({
 const app = createApp(App)
 app.use(router)
 app.use(FrappeUI, { socketio: false })
-app.component('FButton', Button)
-app.component('FBadge', Badge)
-app.component('FInput', Input)
+
 app.mount('#app')

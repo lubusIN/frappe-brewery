@@ -12,27 +12,3 @@
   }
 }
 
-/* Page transition */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 150ms ease, transform 150ms ease;
-}
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(4px);
-}
-.page-leave-to {
-  opacity: 0;
-}
-
-/* Shimmer skeleton */
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-.skeleton {
-  background: linear-gradient(90deg, theme('colors.gray.100') 25%, theme('colors.gray.50') 50%, theme('colors.gray.100') 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  border-radius: theme('borderRadius.lg');
-}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FeatherIcon } from 'frappe-ui'
+import { FeatherIcon, Button } from 'frappe-ui'
 
 const steps = [
   {
@@ -75,16 +75,16 @@ const schemaExample = `{
       <p class="mt-3 text-base text-ink-gray-5 max-w-xl leading-relaxed">
         The registry is GitHub-based. Submit your app by opening a Pull Request with a single JSON file.
       </p>
-      <a
+      <Button
         id="open-pr-btn"
-        href="https://github.com/frappe/frappe-app-registry/compare"
-        target="_blank"
-        rel="noopener"
-        class="inline-flex items-center gap-2 mt-5 px-4 py-2.5 rounded-lg bg-ink-gray-9 text-white text-sm font-medium hover:bg-ink-gray-7 transition-colors"
+        link="https://github.com/frappe/frappe-app-registry/compare"
+        variant="solid"
+        theme="gray"
+        class="mt-5"
+        icon-left="github"
       >
-        <FeatherIcon name="github" class="w-4 h-4" />
         Open Pull Request on GitHub
-      </a>
+      </Button>
     </div>
 
     <!-- Steps -->
