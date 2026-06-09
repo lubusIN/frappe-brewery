@@ -129,6 +129,7 @@ onMounted(async () => {
             label="Frappe Version"
             :options="versionOptions"
             v-model="selectedVersion"
+            class="[&_button]:w-full [&_select]:w-full"
           />
 
           <!-- Category -->
@@ -137,6 +138,7 @@ onMounted(async () => {
             label="Category"
             :options="categoryOptions"
             v-model="selectedCategory"
+            class="[&_button]:w-full [&_select]:w-full"
           />
 
           <!-- License -->
@@ -145,6 +147,7 @@ onMounted(async () => {
             label="License"
             :options="licenseOptions"
             v-model="selectedLicense"
+            class="[&_button]:w-full [&_select]:w-full"
           />
 
           <!-- Verified -->
@@ -171,7 +174,7 @@ onMounted(async () => {
 
         <!-- Loading -->
         <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <div v-for="i in 6" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-xl" />
+          <div v-for="i in 6" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-lg" />
         </div>
 
         <!-- Error -->
@@ -193,7 +196,7 @@ onMounted(async () => {
             v-for="app in filteredApps"
             :key="app.slug"
             :to="`/apps/${app.slug}`"
-            class="group flex flex-col gap-3 p-5 rounded-xl border border-outline-gray-1 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm transition-all duration-150"
+            class="group flex flex-col gap-3 p-5 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200"
             :aria-label="`View ${app.title}`"
           >
             <div class="flex items-start justify-between gap-3">
@@ -207,11 +210,11 @@ onMounted(async () => {
             </div>
 
             <div class="flex-1">
-              <h3 class="text-sm font-semibold text-ink-gray-9 group-hover:text-ink-blue-3 transition-colors">{{ app.title }}</h3>
-              <p class="text-xs text-ink-gray-4 mt-1 leading-relaxed line-clamp-3">{{ app.description }}</p>
+              <h3 class="text-base font-semibold text-ink-gray-9">{{ app.title }}</h3>
+              <p class="text-sm text-ink-gray-5 mt-1.5 leading-relaxed line-clamp-3">{{ app.description }}</p>
             </div>
 
-            <div class="flex items-center gap-1.5 flex-wrap mt-auto pt-1 border-t border-outline-gray-1">
+            <div class="flex items-center gap-1.5 flex-wrap mt-auto pt-3 border-t border-outline-gray-1">
               <Badge v-for="cat in app.categories.slice(0, 2)" :key="cat" theme="blue" :label="cat" />
               <span class="text-xs text-ink-gray-3 ml-auto font-mono">{{ app.license }}</span>
             </div>

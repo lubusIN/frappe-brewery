@@ -77,7 +77,7 @@ const endpoints = [
     <section class="mb-12" aria-labelledby="overview-heading">
       <h2 id="overview-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Overview</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div v-for="card in overviewCards" :key="card.title" class="rounded-xl border border-outline-gray-1 p-5 bg-surface-white">
+        <div v-for="card in overviewCards" :key="card.title" class="rounded-lg border border-outline-gray-1 p-5 bg-surface-white">
           <Avatar shape="square" size="xl" class="mb-3">
             <FeatherIcon :name="card.icon" class="w-4 h-4 text-ink-gray-5" />
           </Avatar>
@@ -90,7 +90,7 @@ const endpoints = [
     <!-- Base URL -->
     <section class="mb-12" aria-labelledby="base-url-heading">
       <h2 id="base-url-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Base URL</h2>
-      <div class="flex items-center gap-3 p-4 rounded-xl border border-outline-gray-2 bg-surface-gray-1">
+      <div class="flex items-center gap-3 p-4 rounded-lg border border-outline-gray-2 bg-surface-gray-1">
         <code class="flex-1 font-mono text-sm text-ink-gray-7">https://registry.frappe.io</code>
         <Button
           :variant="copied === 'https://registry.frappe.io' ? 'subtle' : 'outline'"
@@ -107,7 +107,7 @@ const endpoints = [
     <!-- Endpoints -->
     <section class="mb-12" aria-labelledby="endpoints-heading">
       <h2 id="endpoints-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Endpoints</h2>
-      <div class="rounded-xl border border-outline-gray-1 overflow-hidden divide-y divide-outline-gray-1">
+      <div class="rounded-lg border border-outline-gray-1 overflow-hidden divide-y divide-outline-gray-1">
         <div v-for="ep in endpoints" :key="ep.path" class="bg-surface-white">
           <div class="flex items-center gap-3 px-5 py-4">
             <span class="shrink-0 text-xs font-bold font-mono text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">{{ ep.method }}</span>
@@ -139,7 +139,7 @@ const endpoints = [
     <section class="mb-12" aria-labelledby="usage-heading">
       <h2 id="usage-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Usage examples</h2>
       <div class="space-y-4">
-        <div v-for="ex in usageExamples" :key="ex.title" class="rounded-xl border border-outline-gray-1 overflow-hidden">
+        <div v-for="ex in usageExamples" :key="ex.title" class="rounded-lg border border-outline-gray-1 overflow-hidden">
           <div class="px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
             <h3 class="text-sm font-semibold text-ink-gray-7">{{ ex.title }}</h3>
           </div>
@@ -151,7 +151,7 @@ const endpoints = [
     <!-- Self-hosting -->
     <section aria-labelledby="selfhost-heading">
       <h2 id="selfhost-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Self-hosting</h2>
-      <div class="rounded-xl border border-outline-gray-1 p-6 bg-surface-white">
+      <div class="rounded-lg border border-outline-gray-1 p-6 bg-surface-white">
         <p class="text-sm text-ink-gray-5 leading-relaxed mb-4">The registry is fully open source. Fork it, add your own apps, and deploy your instance to Cloudflare Pages.</p>
         <ol class="space-y-2 text-sm text-ink-gray-6">
           <li class="flex gap-3">

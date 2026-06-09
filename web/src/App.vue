@@ -25,28 +25,21 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
 
           <!-- Logo -->
           <RouterLink to="/" class="flex items-center gap-2 shrink-0" aria-label="Frappe App Registry">
-            <div class="w-6 h-6 rounded bg-ink-gray-9 flex items-center justify-center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="8" height="8" rx="1.5" fill="white" opacity="0.9"/>
-                <rect x="13" y="3" width="8" height="8" rx="1.5" fill="white" opacity="0.55"/>
-                <rect x="3" y="13" width="8" height="8" rx="1.5" fill="white" opacity="0.55"/>
-                <rect x="13" y="13" width="8" height="8" rx="1.5" fill="white" opacity="0.25"/>
-              </svg>
-            </div>
-            <span class="text-base font-semibold text-ink-gray-9 tracking-tight">Frappe Registry</span>
+
+            <span class="text-base font-semibold text-ink-gray-9 tracking-tight">Frappe Brewery</span>
           </RouterLink>
 
           <!-- Desktop nav links -->
-          <nav class="hidden md:flex items-center gap-0.5" role="navigation" aria-label="Main navigation">
-            <Button
+          <nav class="hidden md:flex items-center gap-4" role="navigation" aria-label="Main navigation">
+            <RouterLink
               v-for="link in navLinks"
               :key="link.to"
-              :route="{ path: link.to }"
-              :variant="isActive(link.to) ? 'subtle' : 'ghost'"
-              theme="gray"
+              :to="link.to"
+              class="text-sm font-medium transition-colors"
+              :class="isActive(link.to) ? 'text-ink-gray-9' : 'text-ink-gray-5 hover:text-ink-gray-8'"
             >
               {{ link.label }}
-            </Button>
+            </RouterLink>
           </nav>
 
           <!-- Spacer -->
@@ -91,17 +84,16 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
       >
         <div v-if="menuOpen" id="mobile-menu" class="md:hidden border-t border-outline-gray-1 bg-surface-white px-4 pb-3 pt-2">
           <nav class="flex flex-col gap-0.5">
-            <Button
+            <RouterLink
               v-for="link in navLinks"
               :key="link.to"
-              :route="{ path: link.to }"
-              :variant="isActive(link.to) ? 'subtle' : 'ghost'"
-              theme="gray"
-              class="w-full !justify-start"
+              :to="link.to"
+              class="flex items-center w-full px-3 py-2 rounded text-sm transition-colors"
+              :class="isActive(link.to) ? 'bg-surface-gray-2 text-ink-gray-9 font-medium' : 'text-ink-gray-7 hover:bg-surface-gray-2'"
               @click="menuOpen = false"
             >
               {{ link.label }}
-            </Button>
+            </RouterLink>
           </nav>
         </div>
       </Transition>
@@ -127,24 +119,16 @@ const isActive = (path: string) => route.path === path || (path !== '/' && route
     <!-- ── Footer ── -->
     <footer class="border-t border-outline-gray-1 bg-surface-gray-1 mt-auto">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-2">
-            <div class="w-5 h-5 rounded bg-ink-gray-9 flex items-center justify-center">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="3" width="8" height="8" rx="1.5" fill="white" opacity="0.9"/>
-                <rect x="13" y="3" width="8" height="8" rx="1.5" fill="white" opacity="0.55"/>
-                <rect x="3" y="13" width="8" height="8" rx="1.5" fill="white" opacity="0.55"/>
-                <rect x="13" y="13" width="8" height="8" rx="1.5" fill="white" opacity="0.25"/>
-              </svg>
-            </div>
-            <span class="text-sm text-ink-gray-5">Community-maintained Frappe app index</span>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div class="flex flex-col gap-1">
+            <span class="text-sm font-medium text-ink-gray-5">Community-maintained Frappe app index</span>
+            <span class="text-xs text-ink-gray-4">Open data · MIT License · Built for the Frappe community</span>
           </div>
-          <div class="flex items-center gap-5">
-            <RouterLink v-for="link in [...navLinks, { to: '/submit', label: 'Submit' }]" :key="link.to" :to="link.to" class="text-xs text-ink-gray-4 hover:text-ink-gray-7 transition-colors">{{ link.label }}</RouterLink>
-            <a href="https://github.com/frappe/frappe-app-registry" target="_blank" rel="noopener" class="text-xs text-ink-gray-4 hover:text-ink-gray-7 transition-colors">GitHub</a>
+          <div class="flex flex-wrap items-center gap-5 mt-4 sm:mt-0">
+            <RouterLink v-for="link in [...navLinks, { to: '/submit', label: 'Submit' }]" :key="link.to" :to="link.to" class="text-xs font-medium text-ink-gray-4 hover:text-ink-gray-7 transition-colors">{{ link.label }}</RouterLink>
+            <a href="https://github.com/frappe/frappe-app-registry" target="_blank" rel="noopener" class="text-xs font-medium text-ink-gray-4 hover:text-ink-gray-7 transition-colors">GitHub</a>
           </div>
         </div>
-        <p class="mt-4 text-xs text-ink-gray-3">Open data · MIT License · Built for the Frappe community</p>
       </div>
     </footer>
 

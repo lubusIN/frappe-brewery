@@ -52,18 +52,21 @@ onMounted(async () => {
             v-for="cat in allCategories"
             :key="cat.name"
             :label="cat.name"
-            :icon="CATEGORY_ICONS[cat.name] ?? 'box'"
             :is-active="selected === cat.name"
             :suffix="cat.count?.toString()"
             @click="selected = cat.name"
-          />
+          >
+            <template #icon>
+              <FeatherIcon :name="CATEGORY_ICONS[cat.name] ?? 'box'" class="w-4 h-4" />
+            </template>
+          </SidebarItem>
         </nav>
       </aside>
 
       <!-- Apps area -->
       <main class="lg:col-span-3" aria-label="Apps in category">
         <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <div v-for="i in 6" :key="i" class="animate-pulse bg-surface-gray-2 h-40 rounded-xl" />
+          <div v-for="i in 6" :key="i" class="animate-pulse bg-surface-gray-2 h-40 rounded-lg" />
         </div>
 
         <template v-else-if="activeCategory">
@@ -82,7 +85,7 @@ onMounted(async () => {
               v-for="app in activeCategory.apps"
               :key="app.slug"
               :to="`/apps/${app.slug}`"
-              class="group flex flex-col gap-3 p-5 rounded-xl border border-outline-gray-1 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm transition-all duration-150"
+              class="group flex flex-col gap-3 p-5 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200"
               :aria-label="`View ${app.title}`"
             >
               <div class="flex items-start justify-between">
@@ -92,10 +95,10 @@ onMounted(async () => {
                 </Badge>
               </div>
               <div class="flex-1">
-                <h3 class="text-sm font-semibold text-ink-gray-9 group-hover:text-ink-blue-3 transition-colors">{{ app.title }}</h3>
-                <p class="text-xs text-ink-gray-4 mt-1 leading-relaxed line-clamp-2">{{ app.description }}</p>
+                <h3 class="text-base font-semibold text-ink-gray-9">{{ app.title }}</h3>
+                <p class="text-sm text-ink-gray-5 mt-1.5 leading-relaxed line-clamp-2">{{ app.description }}</p>
               </div>
-              <div class="flex items-center gap-1.5 flex-wrap pt-2 border-t border-outline-gray-1 mt-auto">
+              <div class="flex items-center gap-1.5 flex-wrap pt-3 border-t border-outline-gray-1 mt-auto">
                 <Badge v-for="v in app.frappe_versions" :key="v" theme="gray" :label="`v${v}`" class="font-mono" />
                 <span class="ml-auto text-xs text-ink-gray-3">{{ app.license }}</span>
               </div>

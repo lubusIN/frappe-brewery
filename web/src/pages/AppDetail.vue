@@ -40,8 +40,8 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
     <!-- Loading -->
     <div v-if="loading" class="space-y-4">
       <div class="animate-pulse bg-surface-gray-2 h-10 w-64 rounded-lg" />
-      <div class="animate-pulse bg-surface-gray-2 h-32 rounded-xl" />
-      <div class="animate-pulse bg-surface-gray-2 h-48 rounded-xl" />
+      <div class="animate-pulse bg-surface-gray-2 h-32 rounded-lg" />
+      <div class="animate-pulse bg-surface-gray-2 h-48 rounded-lg" />
     </div>
 
     <!-- Error -->
@@ -63,7 +63,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
 
       <!-- Hero bar -->
       <div class="flex flex-col sm:flex-row sm:items-start gap-5 pb-7 border-b border-outline-gray-1">
-        <div class="w-16 h-16 rounded-xl bg-surface-gray-2 border border-outline-gray-1 overflow-hidden flex items-center justify-center shrink-0">
+        <div class="w-16 h-16 rounded-lg bg-surface-gray-2 border border-outline-gray-1 overflow-hidden flex items-center justify-center shrink-0">
           <img v-if="app.media?.icon" :src="app.media.icon" :alt="app.title" class="w-full h-full object-cover" @error="($event.target as HTMLImageElement).style.display='none'" />
           <span v-else class="text-2xl font-bold text-ink-gray-4">{{ app.title[0] }}</span>
         </div>
@@ -103,7 +103,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               <FeatherIcon name="terminal" class="w-4 h-4 text-ink-gray-4" />
               Installation
             </h2>
-            <div class="rounded-xl border border-outline-gray-2 overflow-hidden">
+            <div class="rounded-lg border border-outline-gray-2 overflow-hidden">
               <div class="flex items-center justify-between gap-3 px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
                 <div class="flex items-center gap-2">
                   <span class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider">Method</span>
@@ -132,13 +132,13 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               Compatibility
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="rounded-xl border border-outline-gray-1 p-4">
+              <div class="rounded-lg border border-outline-gray-1 p-4">
                 <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider mb-3">Frappe Versions</p>
                 <div class="flex gap-2 flex-wrap">
                   <Badge v-for="v in app.frappe_versions" :key="v" theme="blue" size="md" :label="`Frappe ${v}`" />
                 </div>
               </div>
-              <div class="rounded-xl border border-outline-gray-1 p-4">
+              <div class="rounded-lg border border-outline-gray-1 p-4">
                 <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider mb-3">Required Apps</p>
                 <div class="flex gap-2 flex-wrap">
                   <Badge v-for="dep in app.required_apps" :key="dep" theme="gray" size="md" :label="dep" class="font-mono" />
@@ -162,7 +162,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
         <!-- Right: sidebar -->
         <aside class="space-y-5" aria-label="App metadata">
           <!-- Details card -->
-          <div class="rounded-xl border border-outline-gray-1 overflow-hidden">
+          <div class="rounded-lg border border-outline-gray-2 bg-surface-white overflow-hidden">
             <div class="px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
               <h2 class="text-xs font-semibold text-ink-gray-5 uppercase tracking-wider">Details</h2>
             </div>
@@ -201,8 +201,8 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
           </div>
 
           <!-- Links card -->
-          <div v-if="app.links?.website || app.links?.docs || app.links?.demo" class="rounded-xl border border-outline-gray-1 overflow-hidden">
-            <div class="px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
+          <div v-if="app.links?.website || app.links?.docs || app.links?.demo" class="rounded-lg border border-outline-gray-2 bg-surface-white overflow-hidden">
+            <div class="px-4 py-3 border-b border-outline-gray-2 bg-surface-gray-1">
               <h2 class="text-xs font-semibold text-ink-gray-5 uppercase tracking-wider">Links</h2>
             </div>
               <a v-if="app.links?.website" :href="app.links.website" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 w-full hover:bg-surface-gray-2 transition-colors py-3 px-4 text-ink-gray-7 text-base font-medium">

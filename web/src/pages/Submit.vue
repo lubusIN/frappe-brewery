@@ -91,7 +91,7 @@ const schemaExample = `{
     <section class="mb-12" aria-labelledby="steps-heading">
       <h2 id="steps-heading" class="text-lg font-semibold text-ink-gray-8 mb-6">How to submit</h2>
       <div class="space-y-4">
-        <div v-for="(step, i) in steps" :key="i" class="flex gap-4 p-5 rounded-xl border border-outline-gray-1 bg-surface-white">
+        <div v-for="(step, i) in steps" :key="i" class="flex gap-4 p-5 rounded-lg border border-outline-gray-1 bg-surface-white">
           <div class="flex flex-col items-center gap-2">
             <div class="w-8 h-8 rounded-full bg-surface-gray-2 border border-outline-gray-2 flex items-center justify-center shrink-0">
               <span class="text-xs font-bold text-ink-gray-6">{{ i + 1 }}</span>
@@ -119,7 +119,7 @@ const schemaExample = `{
         Create <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">apps/your-app-slug.json</code> with this structure. Copy
         <a href="https://github.com/frappe/frappe-app-registry/blob/main/apps/example-app.json" target="_blank" rel="noopener" class="text-ink-blue-2 hover:underline">example-app.json</a> as a starting point.
       </p>
-      <div class="rounded-xl border border-outline-gray-2 overflow-hidden">
+      <div class="rounded-lg border border-outline-gray-2 overflow-hidden">
         <div class="flex items-center gap-2 px-4 py-2.5 bg-surface-gray-1 border-b border-outline-gray-1">
           <span class="w-2.5 h-2.5 rounded-full bg-red-300"></span>
           <span class="w-2.5 h-2.5 rounded-full bg-yellow-300"></span>
@@ -133,7 +133,7 @@ const schemaExample = `{
     <!-- Required fields table -->
     <section aria-labelledby="fields-heading">
       <h2 id="fields-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Required fields</h2>
-      <div class="rounded-xl border border-outline-gray-1 overflow-hidden">
+      <div class="rounded-lg border border-outline-gray-1 overflow-hidden">
         <table class="w-full text-sm" aria-label="Required fields">
           <thead>
             <tr class="bg-surface-gray-1 border-b border-outline-gray-1">

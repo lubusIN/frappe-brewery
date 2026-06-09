@@ -82,7 +82,7 @@ onMounted(async () => {
 
       <!-- Skeleton -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div v-for="i in 4" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-xl" />
+        <div v-for="i in 4" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-lg" />
       </div>
 
       <!-- Cards -->
@@ -91,7 +91,7 @@ onMounted(async () => {
           v-for="app in featuredApps"
           :key="app.slug"
           :to="`/apps/${app.slug}`"
-          class="group flex flex-col gap-3 p-5 rounded-xl border border-outline-gray-1 bg-surface-white hover:border-outline-gray-3 hover:shadow-sm transition-all duration-150"
+          class="group flex flex-col gap-3 p-5 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200"
           :aria-label="`View ${app.title}`"
         >
           <div class="flex items-start justify-between">
@@ -102,10 +102,10 @@ onMounted(async () => {
             </Badge>
           </div>
           <div class="flex-1">
-            <h3 class="text-sm font-semibold text-ink-gray-9 group-hover:text-ink-blue-3 transition-colors">{{ app.title }}</h3>
-            <p class="text-xs text-ink-gray-4 mt-1 leading-relaxed line-clamp-2">{{ app.description }}</p>
+            <h3 class="text-base font-semibold text-ink-gray-9">{{ app.title }}</h3>
+            <p class="text-sm text-ink-gray-5 mt-1.5 leading-relaxed line-clamp-2">{{ app.description }}</p>
           </div>
-          <div class="flex items-center gap-1.5 flex-wrap mt-auto">
+          <div class="flex items-center gap-1.5 flex-wrap mt-auto pt-3 border-t border-outline-gray-1">
             <Badge v-for="cat in app.categories.slice(0, 1)" :key="cat" theme="blue" :label="cat" />
             <span class="text-xs text-ink-gray-3 font-mono ml-auto">v{{ app.frappe_versions.join(', ') }}</span>
           </div>
@@ -127,7 +127,7 @@ onMounted(async () => {
           v-for="cat in categories"
           :key="cat.name"
           :to="`/categories?cat=${encodeURIComponent(cat.name)}`"
-          class="flex flex-col items-center gap-2.5 py-5 px-3 rounded-xl border border-outline-gray-1 bg-surface-white hover:border-outline-gray-3 hover:bg-surface-gray-1 transition-all duration-150 text-center group"
+          class="flex flex-col items-center gap-2.5 py-5 px-3 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200 text-center group"
         >
           <Avatar shape="square" size="xl">
             <FeatherIcon :name="cat.icon" class="w-4 h-4 text-ink-gray-6" />
@@ -154,7 +154,7 @@ onMounted(async () => {
               View API Docs
             </Button>
           </div>
-          <div class="rounded-xl border border-outline-gray-2 bg-surface-white overflow-hidden">
+          <div class="rounded-lg border border-outline-gray-2 bg-surface-white overflow-hidden">
             <div class="flex items-center gap-2 px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
               <span class="w-3 h-3 rounded-full bg-red-300"></span>
               <span class="w-3 h-3 rounded-full bg-yellow-300"></span>
