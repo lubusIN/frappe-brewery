@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-06-09T09:45:55.175Z",
+  "total_apps": 5,
+  "total_categories": 6,
+  "by_frappe_version": {
+    "14": 5,
+    "15": 5,
+    "16": 5
+  },
+  "by_category": {
+    "Accounting": 1,
+    "Manufacturing": 1,
+    "HR": 2,
+    "CRM": 2,
+    "Utilities": 2,
+    "Reports": 1
+  }
+}
