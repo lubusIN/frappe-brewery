@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { FeatherIcon, Badge, Button, Avatar } from 'frappe-ui'
+import { FeatherIcon, Badge, Button, Avatar, SidebarItem } from 'frappe-ui'
 import { fetchCategories } from '../api'
 import type { CategoriesResponse, CategoryEntry } from '../types'
 
@@ -48,22 +48,15 @@ onMounted(async () => {
           <div v-for="i in 8" :key="i" class="animate-pulse bg-surface-gray-2 h-10 rounded-lg" />
         </div>
         <nav v-else class="space-y-0.5" role="navigation" aria-label="App categories">
-          <Button
+          <SidebarItem
             v-for="cat in allCategories"
             :key="cat.name"
-            class="w-full !justify-between"
-            :variant="selected === cat.name ? 'subtle' : 'ghost'"
-            theme="gray"
+            :label="cat.name"
+            :icon="CATEGORY_ICONS[cat.name] ?? 'box'"
+            :is-active="selected === cat.name"
+            :suffix="cat.count?.toString()"
             @click="selected = cat.name"
-          >
-            <div class="flex items-center gap-2 truncate">
-              <FeatherIcon :name="CATEGORY_ICONS[cat.name] ?? 'box'" class="w-4 h-4 text-ink-gray-5 shrink-0" />
-              <span class="truncate">{{ cat.name }}</span>
-            </div>
-            <template #suffix>
-              <span class="text-xs text-ink-gray-4 tabular-nums">{{ cat.count }}</span>
-            </template>
-          </Button>
+          />
         </nav>
       </aside>
 

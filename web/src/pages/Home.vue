@@ -37,51 +37,32 @@ onMounted(async () => {
   <div>
     <!-- ── Hero ── -->
     <section class="border-b border-outline-gray-1 bg-surface-gray-1">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
-        <div class="max-w-2xl">
-          <div class="flex items-center gap-2 mb-4">
-            <Badge variant="outline" theme="gray">
-              <template #prefix>
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-              </template>
-              Open Source · Community Maintained
-            </Badge>
-          </div>
-          <h1 class="text-4xl sm:text-5xl font-bold text-ink-gray-9 tracking-tight leading-tight">
-            Frappe App Registry
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div class="max-w-3xl mx-auto flex flex-col items-center text-center">
+          <h1 class="text-3xl sm:text-4xl font-bold text-ink-gray-9 tracking-tight leading-tight">
+            Frappe Brewery
           </h1>
-          <p class="mt-4 text-lg text-ink-gray-5 leading-relaxed max-w-xl">
-            Discover, install, and share Frappe apps. Open data, GitHub-based submissions, static JSON API — ready for Frappe Local and beyond.
+          <p class="mt-3 text-base text-ink-gray-5 leading-relaxed max-w-xl">
+            Discover, share, and install apps from a community-maintained registry with open data, GitHub-based submissions, and APIs for Frappe Local, Bench, and beyond.
           </p>
-          <div class="flex flex-wrap gap-3 mt-8">
+          <div class="flex flex-wrap justify-center gap-3 mt-6">
+            <Button
+              :route="{ path: '/submit' }"
+              size="md"
+              variant="outline"
+              theme="gray"
+            >
+              Submit Your App
+            </Button>
             <Button
               :route="{ path: '/apps' }"
-              size="xl"
+              size="md"
               variant="solid"
               theme="gray"
-              icon-left="search"
+              icon-right="arrow-right"
             >
               Browse Apps
             </Button>
-            <Button :route="{ path: '/submit' }" size="xl" variant="outline" theme="gray" icon-right="arrow-right">
-              Submit Your App
-            </Button>
-          </div>
-        </div>
-
-        <!-- Stats pills -->
-        <div v-if="stats" class="flex flex-wrap gap-3 mt-10">
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-white border border-outline-gray-2">
-            <span class="text-xl font-bold text-ink-gray-9">{{ stats.total_apps }}</span>
-            <span class="text-sm text-ink-gray-4">Apps</span>
-          </div>
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-white border border-outline-gray-2">
-            <span class="text-xl font-bold text-ink-gray-9">{{ stats.total_categories }}</span>
-            <span class="text-sm text-ink-gray-4">Categories</span>
-          </div>
-          <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-white border border-outline-gray-2">
-            <span class="text-xl font-bold text-ink-gray-9">3</span>
-            <span class="text-sm text-ink-gray-4">Frappe Versions</span>
           </div>
         </div>
       </div>

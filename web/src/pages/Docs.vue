@@ -36,7 +36,7 @@ const endpoints = [
   },
   {
     method: 'GET', path: '/index/stats.json',
-    desc: 'Registry stats — totals by version and category',
+    desc: 'Registry stats, totals by version and category',
     example: `{
   "total_apps": 5,
   "total_categories": 6,
@@ -46,7 +46,7 @@ const endpoints = [
   },
   {
     method: 'GET', path: '/api/apps',
-    desc: 'Filtered via Pages Function — supports ?frappe_version, ?category, ?q',
+    desc: 'Filtered via Pages Function, supports ?frappe_version, ?category, ?q',
     example: null,
   },
   {
@@ -160,11 +160,11 @@ const endpoints = [
           </li>
           <li class="flex gap-3">
             <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5">2</span>
-            Connect to Cloudflare Pages — build command: <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">npm run generate:index && npm run --prefix web build</code>, output: <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">web/dist</code>
+            Connect to Cloudflare Pages, build command: <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">npm run generate:index && npm run --prefix web build</code>, output: <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">web/dist</code>
           </li>
           <li class="flex gap-3">
             <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5">3</span>
-            Add apps to <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">apps/</code> — CI regenerates the index automatically on merge
+            Add apps to <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">apps/</code>, CI regenerates the index automatically on merge
           </li>
         </ol>
       </div>

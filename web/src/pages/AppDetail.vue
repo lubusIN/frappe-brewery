@@ -205,24 +205,21 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
             <div class="px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
               <h2 class="text-xs font-semibold text-ink-gray-5 uppercase tracking-wider">Links</h2>
             </div>
-              <Button v-if="app.links?.website" :link="app.links.website" variant="ghost" theme="gray" class="w-full !justify-start rounded-none h-auto py-3 px-4 text-ink-gray-6" icon-left="globe">
-                Website
-                <template #suffix>
-                  <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
-                </template>
-              </Button>
-              <Button v-if="app.links?.docs" :link="app.links.docs" variant="ghost" theme="gray" class="w-full !justify-start rounded-none h-auto py-3 px-4 text-ink-gray-6" icon-left="book">
-                Documentation
-                <template #suffix>
-                  <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
-                </template>
-              </Button>
-              <Button v-if="app.links?.demo" :link="app.links.demo" variant="ghost" theme="gray" class="w-full !justify-start rounded-none h-auto py-3 px-4 text-ink-gray-6" icon-left="play-circle">
-                Live Demo
-                <template #suffix>
-                  <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto" />
-                </template>
-              </Button>
+              <a v-if="app.links?.website" :href="app.links.website" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 w-full hover:bg-surface-gray-2 transition-colors py-3 px-4 text-ink-gray-7 text-base font-medium">
+                <FeatherIcon name="globe" class="w-4 h-4 text-ink-gray-5 shrink-0" />
+                <span class="truncate">Website</span>
+                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto shrink-0" />
+              </a>
+              <a v-if="app.links?.docs" :href="app.links.docs" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 w-full hover:bg-surface-gray-2 transition-colors py-3 px-4 text-ink-gray-7 text-base font-medium">
+                <FeatherIcon name="book" class="w-4 h-4 text-ink-gray-5 shrink-0" />
+                <span class="truncate">Documentation</span>
+                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto shrink-0" />
+              </a>
+              <a v-if="app.links?.demo" :href="app.links.demo" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 w-full hover:bg-surface-gray-2 transition-colors py-3 px-4 text-ink-gray-7 text-base font-medium">
+                <FeatherIcon name="play-circle" class="w-4 h-4 text-ink-gray-5 shrink-0" />
+                <span class="truncate">Live Demo</span>
+                <FeatherIcon name="external-link" class="w-3.5 h-3.5 text-ink-gray-3 ml-auto shrink-0" />
+              </a>
           </div>
         </aside>
       </div>
