@@ -9,7 +9,7 @@ const route = useRoute()
 const menuOpen = ref(false)
 
 const navLinks = [
-  { to: '/apps',       label: 'Browse Apps' },
+  { to: '/apps',       label: 'Browse' },
   { to: '/categories', label: 'Categories' },
   { to: '/docs',       label: 'API' },
   { to: '/submit',     label: 'Submit' },
@@ -102,7 +102,7 @@ const onSearchSelect = (item: any) => {
 
           <!-- Logo -->
           <RouterLink to="/" class="flex items-center gap-2 shrink-0" aria-label="Frappe App Registry">
-
+            <FeatherIcon name="codesandbox" class="w-5 h-5 text-ink-gray-9" />
             <span class="text-base font-semibold text-ink-gray-9 tracking-tight">Frappe Brewery</span>
           </RouterLink>
 
@@ -232,7 +232,7 @@ const onSearchSelect = (item: any) => {
             <span class="text-xs text-ink-gray-4">Open data · MIT License · Built for the Frappe community</span>
           </div>
           <div class="flex flex-wrap items-center gap-5 mt-4 sm:mt-0">
-            <RouterLink v-for="link in [...navLinks, { to: '/submit', label: 'Submit' }]" :key="link.to" :to="link.to" class="text-xs font-medium text-ink-gray-4 hover:text-ink-gray-7 transition-colors">{{ link.label }}</RouterLink>
+            <RouterLink v-for="link in navLinks" :key="link.to" :to="link.to" class="text-xs font-medium text-ink-gray-4 hover:text-ink-gray-7 transition-colors">{{ link.label }}</RouterLink>
             <a href="https://github.com/frappe/frappe-app-registry" target="_blank" rel="noopener" class="text-xs font-medium text-ink-gray-4 hover:text-ink-gray-7 transition-colors">GitHub</a>
           </div>
         </div>

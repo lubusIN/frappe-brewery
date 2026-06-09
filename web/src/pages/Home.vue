@@ -52,7 +52,7 @@ onMounted(async () => {
               variant="outline"
               theme="gray"
             >
-              Submit Your App
+              Submit
             </Button>
             <Button
               :route="{ path: '/apps' }"
@@ -61,7 +61,7 @@ onMounted(async () => {
               theme="gray"
               icon-right="arrow-right"
             >
-              Browse Apps
+              Browse
             </Button>
           </div>
         </div>
@@ -149,7 +149,7 @@ onMounted(async () => {
               Frappe Local, hosting platforms, and community tools can consume the registry directly. No auth, no rate limits, no database.
             </p>
             <Button :route="{ path: '/docs' }" variant="outline" theme="gray" class="mt-6" icon-left="book">
-              View API Docs
+              API Docs
             </Button>
           </div>
           <div class="rounded-lg border border-outline-gray-2 bg-surface-white overflow-hidden">
