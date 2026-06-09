@@ -1,29 +1,31 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { FeatherIcon, Badge, Button, Avatar } from 'frappe-ui'
+import { FeatherIcon, Badge, Button } from 'frappe-ui'
 import { fetchStats, fetchApps } from '../api'
+import { CATEGORY_ICONS } from '../constants'
+import AppCard from '../components/AppCard.vue'
 import type { StatsResponse, AppSummary } from '../types'
 
-const stats = ref<StatsResponse | null>(null)
 const featuredApps = ref<AppSummary[]>([])
 const loading = ref(true)
 
 const categories = [
-  { name: 'CRM',            icon: 'users' },
-  { name: 'HR',             icon: 'briefcase' },
-  { name: 'Accounting',     icon: 'bar-chart-2' },
-  { name: 'Manufacturing',  icon: 'settings' },
-  { name: 'Reports',        icon: 'trending-up' },
-  { name: 'AI',             icon: 'cpu' },
-  { name: 'Integration',    icon: 'link' },
-  { name: 'Developer Tools',icon: 'code' },
+  'CRM', 'HR', 'Accounting', 'Manufacturing',
+  'Reports', 'AI', 'Integration', 'Developer Tools',
+].map(name => ({ name, icon: CATEGORY_ICONS[name] || 'box' }))
+
+const apiEndpoints = [
+  { path: '/index/apps.json' },
+  { path: '/index/frappe-15.json' },
+  { path: '/apps/erpnext.json' },
+  { path: '/api/apps?category=CRM' },
+  { path: '/api/apps/:slug' },
 ]
 
 onMounted(async () => {
   try {
-    const [s, a] = await Promise.all([fetchStats(), fetchApps()])
-    stats.value = s
+    const [, a] = await Promise.all([fetchStats(), fetchApps()])
     featuredApps.value = a.apps.slice(0, 4)
   } catch (e) {
     console.error(e)
@@ -87,29 +89,12 @@ onMounted(async () => {
 
       <!-- Cards -->
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <RouterLink
-          v-for="app in featuredApps"
-          :key="app.slug"
-          :to="`/apps/${app.slug}`"
-          class="group flex flex-col gap-3 p-5 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200"
-          :aria-label="`View ${app.title}`"
-        >
-          <div class="flex items-start justify-between">
-            <!-- Icon -->
-            <Avatar shape="square" size="2xl" :image="app.icon" :label="app.title" />
-            <Badge v-if="app.verified" theme="green" label="Verified">
-              <template #prefix><FeatherIcon name="check" class="w-3 h-3" /></template>
-            </Badge>
-          </div>
-          <div class="flex-1">
-            <h3 class="text-base font-semibold text-ink-gray-9">{{ app.title }}</h3>
-            <p class="text-sm text-ink-gray-5 mt-1.5 leading-relaxed line-clamp-2">{{ app.description }}</p>
-          </div>
-          <div class="flex items-center gap-1.5 flex-wrap mt-auto pt-3 border-t border-outline-gray-1">
+        <AppCard v-for="app in featuredApps" :key="app.slug" :app="app">
+          <template #footer>
             <Badge v-for="cat in app.categories.slice(0, 1)" :key="cat" theme="gray" :label="cat" />
             <span class="text-xs text-ink-gray-3 font-mono ml-auto">v{{ app.frappe_versions.join(', ') }}</span>
-          </div>
-        </RouterLink>
+          </template>
+        </AppCard>
       </div>
     </section>
 
@@ -171,19 +156,3 @@ onMounted(async () => {
     </section>
   </div>
 </template>
-
-<script lang="ts">
-export default {
-  data() {
-    return {
-      apiEndpoints: [
-        { path: '/index/apps.json' },
-        { path: '/index/frappe-15.json' },
-        { path: '/apps/erpnext.json' },
-        { path: '/api/apps?category=CRM' },
-        { path: '/api/apps/:slug' },
-      ],
-    }
-  },
-}
-</script>

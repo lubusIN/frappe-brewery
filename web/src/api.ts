@@ -9,11 +9,7 @@ export async function fetchApps() {
   return res.json()
 }
 
-export async function fetchAppsByVersion(version: string) {
-  const res = await fetch(`${BASE}/index/frappe-${version}.json`)
-  if (!res.ok) throw new Error(`Failed to fetch apps for Frappe ${version}`)
-  return res.json()
-}
+
 
 export async function fetchCategories() {
   const res = await fetch(`${BASE}/index/categories.json`)

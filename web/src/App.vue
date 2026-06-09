@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, markRaw } from 'vue'
 import { useRoute, useRouter, RouterLink, RouterView } from 'vue-router'
 import { FeatherIcon, Button } from 'frappe-ui'
+import { fetchApps as fetchAppsApi } from './api'
 import AppCommandPalette from './components/AppCommandPalette.vue'
 import PaletteAppItem from './components/PaletteAppItem.vue'
 
@@ -38,7 +39,7 @@ onMounted(() => {
     document.documentElement.setAttribute('data-theme', 'light')
   }
 
-  fetchApps()
+  loadApps()
 })
 
 // Search logic
@@ -47,13 +48,10 @@ const searchQuery = ref('')
 const apps = ref([])
 const router = useRouter()
 
-const fetchApps = async () => {
+const loadApps = async () => {
   try {
-    const res = await fetch('/index/apps.json')
-    if (res.ok) {
-      const data = await res.json()
-      apps.value = data.apps || []
-    }
+    const data = await fetchAppsApi()
+    apps.value = data.apps || []
   } catch (error) {
     console.error('Failed to fetch apps for search:', error)
   }

@@ -16,6 +16,11 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
+const SCHEMA_PATH = path.join(ROOT, "schema", "app.schema.json");
+
+const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
+const SCHEMA_LICENSES = schema.properties.license.enum as string[];
+const SCHEMA_FRAPPE_VERSIONS = schema.properties.frappe_versions.items.enum as string[];
 
 // ──────────────────────────────────────────────
 // Types
@@ -126,18 +131,14 @@ function detectFrappeVersions(topics: string[]): string[] {
     }
   }
   // Default: all versions if none detected
-  return versions.length > 0 ? versions : ["14", "15", "16"];
+  return versions.length > 0 ? versions : SCHEMA_FRAPPE_VERSIONS;
 }
 
 function detectLicense(spdxId: string | undefined): string {
-  const allowed = [
-    "MIT", "Apache-2.0", "GPL-3.0", "LGPL-3.0", "AGPL-3.0",
-    "BSD-2-Clause", "BSD-3-Clause", "ISC", "MPL-2.0",
-  ];
   if (!spdxId || spdxId === "NOASSERTION") return "other";
   // Normalize GPL-3.0-only → GPL-3.0 etc.
   const normalized = spdxId.replace("-only", "").replace("-or-later", "");
-  return allowed.includes(normalized) ? normalized : "other";
+  return SCHEMA_LICENSES.includes(normalized) ? normalized : "other";
 }
 
 function topicsToCategories(topics: string[]): string[] {

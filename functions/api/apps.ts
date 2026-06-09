@@ -8,28 +8,7 @@
  *   q               — search query (title, description, tags)
  */
 
-interface AppSummary {
-  slug: string
-  name: string
-  title: string
-  description: string
-  repository: string
-  license: string
-  frappe_versions: string[]
-  required_apps: string[]
-  categories: string[]
-  tags: string[]
-  verified: boolean
-  status: string
-  icon: string | null
-}
-
-interface IndexResponse {
-  generated_at: string
-  count: number
-  apps: AppSummary[]
-}
-
+import type { AppSummary, IndexResponse } from '../../web/src/types'
 export const onRequestGet: PagesFunction = async ({ request, env }) => {
   const url = new URL(request.url)
 

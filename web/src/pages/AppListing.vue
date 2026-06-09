@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { FeatherIcon, FormControl, Button, Badge, Avatar } from 'frappe-ui'
+import { useRoute, useRouter } from 'vue-router'
+import { FeatherIcon, FormControl, Button, Badge } from 'frappe-ui'
 import { fetchApps } from '../api'
+import AppCard from '../components/AppCard.vue'
+import { CATEGORIES, FRAPPE_VERSIONS, LICENSES } from '../constants'
 import type { AppSummary, IndexResponse } from '../types'
 
 const route = useRoute()
@@ -18,13 +20,6 @@ const selectedCategory = ref((route.query.category as string) || '')
 const selectedLicense = ref((route.query.license as string) || '')
 const showVerifiedOnly = ref(route.query.verified === 'true')
 
-const FRAPPE_VERSIONS = ['14', '15', '16']
-const CATEGORIES = [
-  'CRM', 'HR', 'Accounting', 'Manufacturing', 'POS',
-  'Healthcare', 'Education', 'Integration', 'Payments',
-  'Reports', 'Developer Tools', 'AI', 'Utilities',
-]
-const LICENSES = ['MIT', 'GPL-3.0', 'AGPL-3.0', 'Apache-2.0', 'LGPL-3.0']
 
 const versionOptions = [
   { label: 'All versions', value: '' },
@@ -192,33 +187,15 @@ onMounted(async () => {
 
         <!-- Apps -->
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <RouterLink
-            v-for="app in filteredApps"
-            :key="app.slug"
-            :to="`/apps/${app.slug}`"
-            class="group flex flex-col gap-3 p-5 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200"
-            :aria-label="`View ${app.title}`"
-          >
-            <div class="flex items-start justify-between gap-3">
-              <Avatar shape="square" size="2xl" :image="app.icon" :label="app.title" />
-              <div class="flex gap-1.5 flex-wrap">
-                <Badge v-if="app.verified" theme="green" label="Verified">
-                  <template #prefix><FeatherIcon name="check" class="w-3 h-3" /></template>
-                </Badge>
-                <Badge v-if="app.status !== 'active'" theme="gray" :label="app.status" />
-              </div>
-            </div>
-
-            <div class="flex-1">
-              <h3 class="text-base font-semibold text-ink-gray-9">{{ app.title }}</h3>
-              <p class="text-sm text-ink-gray-5 mt-1.5 leading-relaxed line-clamp-3">{{ app.description }}</p>
-            </div>
-
-            <div class="flex items-center gap-1.5 flex-wrap mt-auto pt-3 border-t border-outline-gray-1">
+          <AppCard v-for="app in filteredApps" :key="app.slug" :app="app">
+            <template #badges>
+              <Badge v-if="app.status !== 'active'" theme="gray" :label="app.status" />
+            </template>
+            <template #footer>
               <Badge v-for="cat in app.categories.slice(0, 2)" :key="cat" theme="gray" :label="cat" />
               <span class="text-xs text-ink-gray-3 ml-auto font-mono">{{ app.license }}</span>
-            </div>
-          </RouterLink>
+            </template>
+          </AppCard>
         </div>
       </main>
     </div>

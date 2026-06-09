@@ -7,24 +7,7 @@ const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
 const SCHEMA_PATH = path.join(ROOT, "schema", "app.schema.json");
 
-// ──────────────────────────────────────────────
-// Allowed categories (must stay in sync with schema)
-// ──────────────────────────────────────────────
-const allowedCategories = [
-  "CRM",
-  "HR",
-  "Accounting",
-  "Manufacturing",
-  "POS",
-  "Healthcare",
-  "Education",
-  "Integration",
-  "Payments",
-  "Reports",
-  "Developer Tools",
-  "AI",
-  "Utilities",
-] as const;
+
 
 // ──────────────────────────────────────────────
 // Helpers
@@ -42,12 +25,15 @@ function isGitHubUrl(url: string): boolean {
 }
 
 // ──────────────────────────────────────────────
-// Setup AJV
+// Setup AJV & Schema
 // ──────────────────────────────────────────────
 const schema = readJson(SCHEMA_PATH);
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const validateSchema = ajv.compile(schema as object);
+
+// Dynamically extract allowed categories from schema
+const allowedCategories = (schema as any).properties.categories.items.enum as string[];
 
 // ──────────────────────────────────────────────
 // Collect app files

@@ -1,21 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
-import { FeatherIcon, Badge, Button, Avatar, SidebarItem } from 'frappe-ui'
+import { useRoute } from 'vue-router'
+import { FeatherIcon, Badge } from 'frappe-ui'
 import { fetchCategories } from '../api'
+import { CATEGORY_ICONS } from '../constants'
+import AppCard from '../components/AppCard.vue'
 import type { CategoriesResponse, CategoryEntry } from '../types'
 
 const route = useRoute()
 const data = ref<CategoriesResponse | null>(null)
 const loading = ref(true)
 const selected = ref((route.query.cat as string) || '')
-
-const CATEGORY_ICONS: Record<string, string> = {
-  'CRM': 'users', 'HR': 'briefcase', 'Accounting': 'bar-chart-2',
-  'Manufacturing': 'settings', 'POS': 'shopping-bag', 'Healthcare': 'activity',
-  'Education': 'book-open', 'Integration': 'link', 'Payments': 'credit-card',
-  'Reports': 'trending-up', 'Developer Tools': 'code', 'AI': 'cpu', 'Utilities': 'zap',
-}
 
 const allCategories = computed(() => data.value?.categories ?? [])
 
@@ -41,6 +36,11 @@ const displayCategories = computed<CategoryEntry[]>(() => [
 const activeCategory = computed<CategoryEntry | undefined>(() =>
   selected.value ? displayCategories.value.find(c => c.name === selected.value) : undefined
 )
+
+function categoryIcon(name: string): string {
+  if (name === 'All') return 'layers'
+  return CATEGORY_ICONS[name] ?? 'box'
+}
 
 onMounted(async () => {
   try {
@@ -76,7 +76,7 @@ onMounted(async () => {
             :class="selected === cat.name ? 'bg-surface-gray-2 text-ink-gray-9 font-medium' : 'text-ink-gray-6 hover:bg-surface-gray-2'"
           >
             <div class="flex items-center gap-2.5">
-              <FeatherIcon :name="cat.name === 'All' ? 'layers' : CATEGORY_ICONS[cat.name] ?? 'box'" class="w-4 h-4" :class="selected === cat.name ? 'text-ink-gray-9' : 'text-ink-gray-5'" />
+              <FeatherIcon :name="categoryIcon(cat.name)" class="w-4 h-4" :class="selected === cat.name ? 'text-ink-gray-9' : 'text-ink-gray-5'" />
               <span>{{ cat.name }}</span>
             </div>
             <span class="text-xs" :class="selected === cat.name ? 'text-ink-gray-9 font-medium' : 'text-ink-gray-4'">{{ cat.count }}</span>
@@ -93,35 +93,19 @@ onMounted(async () => {
         <template v-else-if="activeCategory">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2">
-              <FeatherIcon :name="activeCategory.name === 'All' ? 'layers' : CATEGORY_ICONS[activeCategory.name] ?? 'box'" class="w-6 h-6 text-ink-gray-8" />
+              <FeatherIcon :name="categoryIcon(activeCategory.name)" class="w-6 h-6 text-ink-gray-8" />
               <h2 class="text-lg font-semibold text-ink-gray-9">{{ activeCategory.name }}</h2>
             </div>
             <Badge size="lg" theme="gray" :label="`${activeCategory.count} app${activeCategory.count !== 1 ? 's' : ''}`" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-            <RouterLink
-              v-for="app in activeCategory.apps"
-              :key="app.slug"
-              :to="`/apps/${app.slug}`"
-              class="group flex flex-col gap-3 p-5 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200"
-              :aria-label="`View ${app.title}`"
-            >
-              <div class="flex items-start justify-between">
-                <Avatar shape="square" size="2xl" :image="app.icon" :label="app.title" />
-                <Badge v-if="app.verified" theme="green" label="Verified">
-                  <template #prefix><FeatherIcon name="check" class="w-3 h-3" /></template>
-                </Badge>
-              </div>
-              <div class="flex-1">
-                <h3 class="text-base font-semibold text-ink-gray-9">{{ app.title }}</h3>
-                <p class="text-sm text-ink-gray-5 mt-1.5 leading-relaxed line-clamp-2">{{ app.description }}</p>
-              </div>
-              <div class="flex items-center gap-1.5 flex-wrap pt-3 border-t border-outline-gray-1 mt-auto">
+            <AppCard v-for="app in activeCategory.apps" :key="app.slug" :app="app">
+              <template #footer>
                 <Badge v-for="v in app.frappe_versions" :key="v" theme="gray" :label="`v${v}`" class="font-mono" />
                 <span class="ml-auto text-xs text-ink-gray-3">{{ app.license }}</span>
-              </div>
-            </RouterLink>
+              </template>
+            </AppCard>
           </div>
         </template>
 

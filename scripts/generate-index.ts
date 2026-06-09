@@ -4,43 +4,9 @@ import path from "node:path";
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
 const INDEX_DIR = path.join(ROOT, "index");
+const SCHEMA_PATH = path.join(ROOT, "schema", "app.schema.json");
 
-// ──────────────────────────────────────────────
-// Types
-// ──────────────────────────────────────────────
-type App = {
-  slug: string;
-  name: string;
-  title: string;
-  description: string;
-  repository: string;
-  license: string;
-  frappe_versions: string[];
-  required_apps: string[];
-  categories: string[];
-  tags?: string[];
-  install: {
-    method: string;
-    command: string;
-    app_name: string;
-  };
-  links?: {
-    docs?: string;
-    demo?: string;
-    website?: string;
-  };
-  media?: {
-    icon?: string;
-    screenshots?: string[];
-  };
-  meta?: {
-    source?: string;
-    verified?: boolean;
-    status?: string;
-    added_at?: string;
-    updated_at?: string;
-  };
-};
+import type { App } from "../web/src/types";
 
 // ──────────────────────────────────────────────
 // Helpers
@@ -133,7 +99,8 @@ writeJson(path.join(INDEX_DIR, "categories.json"), {
 // ──────────────────────────────────────────────
 // index/frappe-{14,15,16}.json — filtered by version
 // ──────────────────────────────────────────────
-const frappeVersions = ["14", "15", "16"];
+const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
+const frappeVersions = schema.properties.frappe_versions.items.enum as string[];
 
 for (const version of frappeVersions) {
   const compatibleApps = apps

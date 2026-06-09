@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { FeatherIcon, Button, Avatar } from 'frappe-ui'
+import { FeatherIcon, Button } from 'frappe-ui'
 
 const copied = ref<string | null>(null)
 async function copy(text: string) {
@@ -8,6 +8,29 @@ async function copy(text: string) {
   copied.value = text
   setTimeout(() => { copied.value = null }, 2000)
 }
+
+const overviewCards = [
+  { icon: 'zap', title: 'Static files', desc: 'All endpoints return pre-generated JSON. No server-side processing.' },
+  { icon: 'unlock', title: 'No auth required', desc: 'Read-only, publicly accessible. No API keys needed.' },
+  { icon: 'refresh-cw', title: 'Auto-updated', desc: 'Index regenerated on every merge to main via GitHub Actions.' },
+]
+
+const usageExamples = [
+  {
+    title: 'Fetch all apps (JavaScript)',
+    code: `fetch('https://registry.frappe.io/index/apps.json')
+  .then(r => r.json())
+  .then(data => console.log(data.apps))`,
+  },
+  {
+    title: 'Get install command (curl + jq)',
+    code: `curl https://registry.frappe.io/apps/erpnext.json | jq '.install.command'`,
+  },
+  {
+    title: 'Filter CRM apps via Pages Function',
+    code: `fetch('https://registry.frappe.io/api/apps?category=CRM&frappe_version=15')`,
+  },
+]
 
 const endpoints = [
   {
@@ -185,33 +208,3 @@ const endpoints = [
     </section>
   </div>
 </template>
-
-<script lang="ts">
-export default {
-  data() {
-    return {
-      overviewCards: [
-        { icon: 'zap', title: 'Static files', desc: 'All endpoints return pre-generated JSON. No server-side processing.' },
-        { icon: 'unlock', title: 'No auth required', desc: 'Read-only, publicly accessible. No API keys needed.' },
-        { icon: 'refresh-cw', title: 'Auto-updated', desc: 'Index regenerated on every merge to main via GitHub Actions.' },
-      ],
-      usageExamples: [
-        {
-          title: 'Fetch all apps (JavaScript)',
-          code: `fetch('https://registry.frappe.io/index/apps.json')
-  .then(r => r.json())
-  .then(data => console.log(data.apps))`,
-        },
-        {
-          title: 'Get install command (curl + jq)',
-          code: `curl https://registry.frappe.io/apps/erpnext.json | jq '.install.command'`,
-        },
-        {
-          title: 'Filter CRM apps via Pages Function',
-          code: `fetch('https://registry.frappe.io/api/apps?category=CRM&frappe_version=15')`,
-        },
-      ],
-    }
-  },
-}
-</script>
