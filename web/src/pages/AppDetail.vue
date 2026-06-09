@@ -106,8 +106,8 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
             <div class="rounded-lg border border-outline-gray-2 overflow-hidden">
               <div class="flex items-center justify-between gap-3 px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
                 <div class="flex items-center gap-2">
-                  <span class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider">Method</span>
-                  <Badge theme="blue" :label="app.install.method" />
+                  <span class="text-xs font-semibold text-ink-gray-4 uppercase tracking-widest">Method</span>
+                  <Badge theme="gray" :label="app.install.method" />
                 </div>
                 <Button
                   variant="outline"
@@ -133,13 +133,13 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="rounded-lg border border-outline-gray-1 p-4">
-                <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider mb-3">Frappe Versions</p>
+                <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-widest mb-3">Frappe Versions</p>
                 <div class="flex gap-2 flex-wrap">
-                  <Badge v-for="v in app.frappe_versions" :key="v" theme="blue" size="md" :label="`Frappe ${v}`" />
+                  <Badge v-for="v in app.frappe_versions" :key="v" theme="gray" size="md" :label="`Frappe ${v}`" />
                 </div>
               </div>
               <div class="rounded-lg border border-outline-gray-1 p-4">
-                <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-wider mb-3">Required Apps</p>
+                <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-widest mb-3">Required Apps</p>
                 <div class="flex gap-2 flex-wrap">
                   <Badge v-for="dep in app.required_apps" :key="dep" theme="gray" size="md" :label="dep" class="font-mono" />
                 </div>
@@ -164,14 +164,14 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
           <!-- Details card -->
           <div class="rounded-lg border border-outline-gray-2 bg-surface-white overflow-hidden">
             <div class="px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
-              <h2 class="text-xs font-semibold text-ink-gray-5 uppercase tracking-wider">Details</h2>
+              <h2 class="text-xs font-semibold text-ink-gray-4 uppercase tracking-widest">Details</h2>
             </div>
             <dl class="divide-y divide-outline-gray-1 text-sm">
               <div class="flex items-start gap-3 px-4 py-3">
                 <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Categories</dt>
                 <dd class="flex gap-1.5 flex-wrap">
                   <RouterLink v-for="cat in app.categories" :key="cat" :to="`/categories?cat=${encodeURIComponent(cat)}`">
-                    <Badge theme="blue" :label="cat" />
+                    <Badge theme="gray" :label="cat" />
                   </RouterLink>
                 </dd>
               </div>
@@ -203,7 +203,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
           <!-- Links card -->
           <div v-if="app.links?.website || app.links?.docs || app.links?.demo" class="rounded-lg border border-outline-gray-2 bg-surface-white overflow-hidden">
             <div class="px-4 py-3 border-b border-outline-gray-2 bg-surface-gray-1">
-              <h2 class="text-xs font-semibold text-ink-gray-5 uppercase tracking-wider">Links</h2>
+              <h2 class="text-xs font-semibold text-ink-gray-4 uppercase tracking-widest">Links</h2>
             </div>
               <a v-if="app.links?.website" :href="app.links.website" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 w-full hover:bg-surface-gray-2 transition-colors py-3 px-4 text-ink-gray-7 text-base font-medium">
                 <FeatherIcon name="globe" class="w-4 h-4 text-ink-gray-5 shrink-0" />

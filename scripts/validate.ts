@@ -50,11 +50,11 @@ addFormats(ajv);
 const validateSchema = ajv.compile(schema as object);
 
 // ──────────────────────────────────────────────
-// Collect app files (skip example-app.json)
+// Collect app files
 // ──────────────────────────────────────────────
 const files = fs
   .readdirSync(APPS_DIR)
-  .filter((file) => file.endsWith(".json") && file !== "example-app.json")
+  .filter((file) => file.endsWith(".json"))
   .sort();
 
 if (files.length === 0) {

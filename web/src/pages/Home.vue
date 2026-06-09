@@ -72,7 +72,7 @@ onMounted(async () => {
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-1">Registry</p>
+          <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Registry</p>
           <h2 class="text-xl font-semibold text-ink-gray-9">Featured Apps</h2>
         </div>
         <Button :route="{ path: '/apps' }" variant="ghost" theme="gray" icon-right="arrow-right">
@@ -106,7 +106,7 @@ onMounted(async () => {
             <p class="text-sm text-ink-gray-5 mt-1.5 leading-relaxed line-clamp-2">{{ app.description }}</p>
           </div>
           <div class="flex items-center gap-1.5 flex-wrap mt-auto pt-3 border-t border-outline-gray-1">
-            <Badge v-for="cat in app.categories.slice(0, 1)" :key="cat" theme="blue" :label="cat" />
+            <Badge v-for="cat in app.categories.slice(0, 1)" :key="cat" theme="gray" :label="cat" />
             <span class="text-xs text-ink-gray-3 font-mono ml-auto">v{{ app.frappe_versions.join(', ') }}</span>
           </div>
         </RouterLink>
@@ -119,7 +119,7 @@ onMounted(async () => {
     <!-- ── Categories ── -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
       <div class="mb-6">
-        <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-1">Browse by</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Browse by</p>
         <h2 class="text-xl font-semibold text-ink-gray-9">Categories</h2>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
@@ -129,9 +129,7 @@ onMounted(async () => {
           :to="`/categories?cat=${encodeURIComponent(cat.name)}`"
           class="flex flex-col items-center gap-2.5 py-5 px-3 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200 text-center group"
         >
-          <Avatar shape="square" size="xl">
-            <FeatherIcon :name="cat.icon" class="w-4 h-4 text-ink-gray-6" />
-          </Avatar>
+          <FeatherIcon :name="cat.icon" class="w-6 h-6 text-ink-gray-8 mb-1" />
           <span class="text-xs font-medium text-ink-gray-6 leading-tight">{{ cat.name }}</span>
         </RouterLink>
       </div>
@@ -145,7 +143,7 @@ onMounted(async () => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-1">Static JSON API</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Static JSON API</p>
             <h2 class="text-2xl font-bold text-ink-gray-9 leading-snug">Ready for your tools</h2>
             <p class="mt-3 text-ink-gray-5 leading-relaxed">
               Frappe Local, hosting platforms, and community tools can consume the registry directly. No auth, no rate limits, no database.

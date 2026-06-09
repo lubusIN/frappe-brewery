@@ -215,7 +215,7 @@ onMounted(async () => {
             </div>
 
             <div class="flex items-center gap-1.5 flex-wrap mt-auto pt-3 border-t border-outline-gray-1">
-              <Badge v-for="cat in app.categories.slice(0, 2)" :key="cat" theme="blue" :label="cat" />
+              <Badge v-for="cat in app.categories.slice(0, 2)" :key="cat" theme="gray" :label="cat" />
               <span class="text-xs text-ink-gray-3 ml-auto font-mono">{{ app.license }}</span>
             </div>
           </RouterLink>

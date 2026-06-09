@@ -10,8 +10,8 @@ const steps = [
   },
   {
     title: 'Create your app JSON',
-    desc: 'Copy apps/example-app.json to apps/your-app-slug.json and fill in your details.',
-    code: 'cp apps/example-app.json apps/my-app.json',
+    desc: 'Copy example-app.json to apps/your-app-slug.json and fill in your details.',
+    code: 'cp example-app.json apps/my-app.json',
     icon: 'file-plus',
   },
   {
@@ -70,7 +70,7 @@ const schemaExample = `{
   <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
     <!-- Header -->
     <div class="mb-10 pb-8 border-b border-outline-gray-1">
-      <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-2">Open Source</p>
+      <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-2">Open Source</p>
       <h1 class="text-3xl font-bold text-ink-gray-9">Submit Your App</h1>
       <p class="mt-3 text-base text-ink-gray-5 max-w-xl leading-relaxed">
         The registry is GitHub-based. Submit your app by opening a Pull Request with a single JSON file.
@@ -90,22 +90,16 @@ const schemaExample = `{
     <!-- Steps -->
     <section class="mb-12" aria-labelledby="steps-heading">
       <h2 id="steps-heading" class="text-lg font-semibold text-ink-gray-8 mb-6">How to submit</h2>
-      <div class="space-y-4">
-        <div v-for="(step, i) in steps" :key="i" class="flex gap-4 p-5 rounded-lg border border-outline-gray-1 bg-surface-white">
-          <div class="flex flex-col items-center gap-2">
-            <div class="w-8 h-8 rounded-full bg-surface-gray-2 border border-outline-gray-2 flex items-center justify-center shrink-0">
-              <span class="text-xs font-bold text-ink-gray-6">{{ i + 1 }}</span>
-            </div>
-            <div v-if="i < steps.length - 1" class="w-px flex-1 bg-outline-gray-1 min-h-[12px]" aria-hidden="true" />
+      <div class="flex flex-col">
+        <div v-for="(step, i) in steps" :key="i" class="flex gap-4 py-6 border-b border-outline-gray-1 last:border-b-0">
+          <div class="w-7 h-7 rounded-full bg-surface-gray-2 flex items-center justify-center shrink-0 mt-0.5">
+            <span class="text-sm font-medium text-ink-gray-9">{{ i + 1 }}</span>
           </div>
-          <div class="flex-1 pb-1">
-            <div class="flex items-center gap-2 mb-1.5">
-              <FeatherIcon :name="step.icon" class="w-4 h-4 text-ink-gray-4" />
-              <h3 class="text-sm font-semibold text-ink-gray-8">{{ step.title }}</h3>
-            </div>
-            <p class="text-sm text-ink-gray-5 leading-relaxed">{{ step.desc }}</p>
-            <div v-if="step.code" class="mt-3 flex items-center gap-0 rounded-lg overflow-hidden border border-outline-gray-2">
-              <span class="px-3 py-2 text-xs font-mono text-ink-gray-6 bg-surface-gray-1 flex-1 overflow-x-auto">{{ step.code }}</span>
+          <div class="flex-1">
+            <h3 class="text-base font-semibold text-ink-gray-9 mb-1.5">{{ step.title }}</h3>
+            <p class="text-sm text-ink-gray-6 leading-relaxed">{{ step.desc }}</p>
+            <div v-if="step.code" class="mt-4 rounded-lg overflow-hidden border border-outline-gray-2">
+              <div class="px-4 py-3 text-xs font-mono text-ink-gray-6 bg-surface-gray-1 overflow-x-auto">{{ step.code }}</div>
             </div>
           </div>
         </div>
@@ -117,7 +111,7 @@ const schemaExample = `{
       <h2 id="schema-heading" class="text-lg font-semibold text-ink-gray-8 mb-2">Required JSON structure</h2>
       <p class="text-sm text-ink-gray-5 mb-4">
         Create <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">apps/your-app-slug.json</code> with this structure. Copy
-        <a href="https://github.com/frappe/frappe-app-registry/blob/main/apps/example-app.json" target="_blank" rel="noopener" class="text-ink-blue-2 hover:underline">example-app.json</a> as a starting point.
+        <a href="https://github.com/frappe/frappe-app-registry/blob/main/example-app.json" target="_blank" rel="noopener" class="text-ink-blue-2 hover:underline">example-app.json</a> as a starting point.
       </p>
       <div class="rounded-lg border border-outline-gray-2 overflow-hidden">
         <div class="flex items-center gap-2 px-4 py-2.5 bg-surface-gray-1 border-b border-outline-gray-1">

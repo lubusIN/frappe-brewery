@@ -18,15 +18,35 @@ const CATEGORY_ICONS: Record<string, string> = {
 }
 
 const allCategories = computed(() => data.value?.categories ?? [])
+
+const allAppsCategory = computed<CategoryEntry>(() => {
+  const allApps = new Map<string, any>()
+  for (const cat of allCategories.value) {
+    for (const app of cat.apps) {
+      allApps.set(app.slug, app)
+    }
+  }
+  return {
+    name: 'All',
+    count: allApps.size,
+    apps: Array.from(allApps.values())
+  }
+})
+
+const displayCategories = computed<CategoryEntry[]>(() => [
+  allAppsCategory.value,
+  ...allCategories.value
+])
+
 const activeCategory = computed<CategoryEntry | undefined>(() =>
-  selected.value ? allCategories.value.find(c => c.name === selected.value) : undefined
+  selected.value ? displayCategories.value.find(c => c.name === selected.value) : undefined
 )
 
 onMounted(async () => {
   try {
     data.value = await fetchCategories()
-    if (!selected.value && allCategories.value.length) {
-      selected.value = allCategories.value[0].name
+    if (!selected.value) {
+      selected.value = 'All'
     }
   } finally {
     loading.value = false
@@ -48,18 +68,19 @@ onMounted(async () => {
           <div v-for="i in 8" :key="i" class="animate-pulse bg-surface-gray-2 h-10 rounded-lg" />
         </div>
         <nav v-else class="space-y-0.5" role="navigation" aria-label="App categories">
-          <SidebarItem
-            v-for="cat in allCategories"
+          <button
+            v-for="cat in displayCategories"
             :key="cat.name"
-            :label="cat.name"
-            :is-active="selected === cat.name"
-            :suffix="cat.count?.toString()"
             @click="selected = cat.name"
+            class="w-full flex items-center justify-between px-2.5 py-1.5 text-sm rounded-md transition-colors duration-200"
+            :class="selected === cat.name ? 'bg-surface-gray-2 text-ink-gray-9 font-medium' : 'text-ink-gray-6 hover:bg-surface-gray-2'"
           >
-            <template #icon>
-              <FeatherIcon :name="CATEGORY_ICONS[cat.name] ?? 'box'" class="w-4 h-4" />
-            </template>
-          </SidebarItem>
+            <div class="flex items-center gap-2.5">
+              <FeatherIcon :name="cat.name === 'All' ? 'layers' : CATEGORY_ICONS[cat.name] ?? 'box'" class="w-4 h-4" :class="selected === cat.name ? 'text-ink-gray-9' : 'text-ink-gray-5'" />
+              <span>{{ cat.name }}</span>
+            </div>
+            <span class="text-xs" :class="selected === cat.name ? 'text-ink-gray-9 font-medium' : 'text-ink-gray-4'">{{ cat.count }}</span>
+          </button>
         </nav>
       </aside>
 
@@ -72,9 +93,7 @@ onMounted(async () => {
         <template v-else-if="activeCategory">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2">
-              <Avatar shape="square" size="xl">
-                <FeatherIcon :name="CATEGORY_ICONS[activeCategory.name] ?? 'box'" class="w-4 h-4 text-ink-gray-6" />
-              </Avatar>
+              <FeatherIcon :name="activeCategory.name === 'All' ? 'layers' : CATEGORY_ICONS[activeCategory.name] ?? 'box'" class="w-6 h-6 text-ink-gray-8" />
               <h2 class="text-lg font-semibold text-ink-gray-9">{{ activeCategory.name }}</h2>
             </div>
             <Badge size="lg" theme="gray" :label="`${activeCategory.count} app${activeCategory.count !== 1 ? 's' : ''}`" />

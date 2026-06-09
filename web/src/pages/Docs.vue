@@ -66,7 +66,7 @@ const endpoints = [
   <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
     <!-- Header -->
     <div class="mb-10 pb-8 border-b border-outline-gray-1">
-      <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-3 mb-2">Developer Docs</p>
+      <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-2">Developer Docs</p>
       <h1 class="text-3xl font-bold text-ink-gray-9">API Reference</h1>
       <p class="mt-3 text-base text-ink-gray-5 max-w-xl leading-relaxed">
         The registry exposes a static JSON API via Cloudflare Pages. No auth, no rate limits, no database.
@@ -78,9 +78,7 @@ const endpoints = [
       <h2 id="overview-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Overview</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div v-for="card in overviewCards" :key="card.title" class="rounded-lg border border-outline-gray-1 p-5 bg-surface-white">
-          <Avatar shape="square" size="xl" class="mb-3">
-            <FeatherIcon :name="card.icon" class="w-4 h-4 text-ink-gray-5" />
-          </Avatar>
+          <FeatherIcon :name="card.icon" class="w-6 h-6 text-ink-gray-8 mb-3" />
           <h3 class="text-sm font-semibold text-ink-gray-8 mb-1">{{ card.title }}</h3>
           <p class="text-xs text-ink-gray-4 leading-relaxed">{{ card.desc }}</p>
         </div>
@@ -154,17 +152,33 @@ const endpoints = [
       <div class="rounded-lg border border-outline-gray-1 p-6 bg-surface-white">
         <p class="text-sm text-ink-gray-5 leading-relaxed mb-4">The registry is fully open source. Fork it, add your own apps, and deploy your instance to Cloudflare Pages.</p>
         <ol class="space-y-2 text-sm text-ink-gray-6">
-          <li class="flex gap-3">
-            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5">1</span>
-            Fork <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">frappe/frappe-app-registry</code> on GitHub
+          <li class="flex gap-3 items-start">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5 mt-0.5">1</span>
+            <div class="leading-relaxed">
+              Fork <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">frappe/frappe-app-registry</code> on GitHub
+            </div>
           </li>
-          <li class="flex gap-3">
-            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5">2</span>
-            Connect to Cloudflare Pages, build command: <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">npm run generate:index && npm run --prefix web build</code>, output: <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">web/dist</code>
+          <li class="flex gap-3 items-start">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5 mt-0.5">2</span>
+            <div class="leading-relaxed">
+              Connect to Cloudflare Pages and configure the project settings:
+              <ul class="mt-1.5 space-y-1">
+                <li class="flex items-center gap-2">
+                  <span class="text-ink-gray-5">Build command:</span>
+                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1 flex-1 overflow-x-auto whitespace-nowrap">npm run generate:index && npm run --prefix web build</code>
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="text-ink-gray-5">Output directory:</span>
+                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">web/dist</code>
+                </li>
+              </ul>
+            </div>
           </li>
-          <li class="flex gap-3">
-            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5">3</span>
-            Add apps to <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded mx-1 border border-outline-gray-1">apps/</code>, CI regenerates the index automatically on merge
+          <li class="flex gap-3 items-start">
+            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5 mt-0.5">3</span>
+            <div class="leading-relaxed">
+              Add apps to <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">apps/</code>, CI regenerates the index automatically on merge
+            </div>
           </li>
         </ol>
       </div>

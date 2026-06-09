@@ -49,7 +49,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
 **Quick steps:**
 
 1. Fork this repository
-2. Copy `apps/example-app.json` → `apps/your-app-slug.json`
+2. Copy `example-app.json` → `apps/your-app-slug.json`
 3. Fill in all required fields
 4. Run `pnpm validate` locally
 5. Open a Pull Request

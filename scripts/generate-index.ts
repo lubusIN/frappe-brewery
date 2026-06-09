@@ -80,11 +80,11 @@ if (!fs.existsSync(INDEX_DIR)) {
 }
 
 // ──────────────────────────────────────────────
-// Load apps (skip example-app.json)
+// Load apps
 // ──────────────────────────────────────────────
 const files = fs
   .readdirSync(APPS_DIR)
-  .filter((file) => file.endsWith(".json") && file !== "example-app.json")
+  .filter((file) => file.endsWith(".json"))
   .sort();
 
 const apps: App[] = files
