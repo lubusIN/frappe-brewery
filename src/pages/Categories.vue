@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { FeatherIcon, Badge } from 'frappe-ui'
+import { FeatherIcon, Badge, Dropdown, Button } from 'frappe-ui'
 import { fetchCategories } from '../api'
 import { CATEGORY_ICONS } from '../constants'
 import AppCard from '../components/AppCard.vue'
@@ -42,6 +42,13 @@ function categoryIcon(name: string): string {
   return CATEGORY_ICONS[name] ?? 'box'
 }
 
+const categoryOptions = computed(() => displayCategories.value.map(c => ({
+  label: c.name,
+  value: c.name,
+  count: c.count,
+  onClick: () => selected.value = c.name,
+})))
+
 onMounted(async () => {
   try {
     data.value = await fetchCategories()
@@ -62,26 +69,62 @@ onMounted(async () => {
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-      <!-- Category list sidebar -->
-      <aside class="lg:col-span-1 sticky top-[68px]" aria-label="Category list">
-        <div v-if="loading" class="space-y-2">
-          <div v-for="i in 8" :key="i" class="animate-pulse bg-surface-gray-2 h-10 rounded-lg" />
+      <aside class="lg:col-span-1 lg:sticky lg:top-[68px]" aria-label="Category list">
+        <div v-if="loading" class="flex flex-col gap-2">
+          <!-- Mobile loading -->
+          <div class="lg:hidden animate-pulse bg-surface-gray-2 h-9 w-full rounded-md mb-4" />
+          <!-- Desktop loading -->
+          <div class="hidden lg:flex flex-col gap-2">
+            <div v-for="i in 8" :key="i" class="animate-pulse bg-surface-gray-2 h-10 w-full rounded-lg" />
+          </div>
         </div>
-        <nav v-else class="space-y-0.5" role="navigation" aria-label="App categories">
-          <button
-            v-for="cat in displayCategories"
-            :key="cat.name"
-            @click="selected = cat.name"
-            class="w-full flex items-center justify-between px-2.5 py-1.5 text-sm rounded-md transition-colors duration-200"
-            :class="selected === cat.name ? 'bg-surface-gray-2 text-ink-gray-9 font-medium' : 'text-ink-gray-6 hover:bg-surface-gray-2'"
-          >
-            <div class="flex items-center gap-2.5">
-              <FeatherIcon :name="categoryIcon(cat.name)" class="w-4 h-4" :class="selected === cat.name ? 'text-ink-gray-9' : 'text-ink-gray-5'" />
-              <span>{{ cat.name }}</span>
-            </div>
-            <span class="text-xs" :class="selected === cat.name ? 'text-ink-gray-9 font-medium' : 'text-ink-gray-4'">{{ cat.count }}</span>
-          </button>
-        </nav>
+        <div v-else>
+          <!-- Mobile Dropdown -->
+          <div class="lg:hidden pb-6">
+            <Dropdown
+              :options="categoryOptions"
+              class="w-full"
+            >
+              <template #default="{ toggle }">
+                <button
+                  class="w-full flex items-center justify-between px-3 py-[7px] text-base sm:text-sm rounded-md border border-outline-gray-2 bg-surface-white text-ink-gray-8 hover:bg-surface-gray-1 focus:outline-none focus:ring-2 focus:ring-outline-gray-3 transition-colors"
+                  @click="toggle"
+                >
+                  <div class="flex items-center gap-2">
+                    <FeatherIcon :name="categoryIcon(selected || 'All')" class="w-4 h-4 text-ink-gray-5" />
+                    <span>{{ selected || 'All' }}</span>
+                  </div>
+                  <FeatherIcon name="chevron-down" class="w-4 h-4 text-ink-gray-4" />
+                </button>
+              </template>
+              
+              <template #item-prefix="{ item }">
+                <FeatherIcon :name="categoryIcon(item.value)" class="w-4 h-4 text-ink-gray-5" />
+              </template>
+              
+              <template #item-suffix="{ item }">
+                <span class="text-xs text-ink-gray-4 ml-6">{{ item.count }}</span>
+              </template>
+            </Dropdown>
+          </div>
+
+          <!-- Desktop Sidebar -->
+          <nav class="hidden lg:flex flex-col space-y-0.5" role="navigation" aria-label="App categories">
+            <button
+              v-for="cat in displayCategories"
+              :key="cat.name"
+              @click="selected = cat.name"
+              class="w-full flex items-center justify-between px-2.5 py-1.5 text-sm rounded-md transition-colors duration-200"
+              :class="selected === cat.name ? 'bg-surface-gray-2 text-ink-gray-9 font-medium' : 'text-ink-gray-6 hover:bg-surface-gray-2'"
+            >
+              <div class="flex items-center gap-2.5">
+                <FeatherIcon :name="categoryIcon(cat.name)" class="w-4 h-4" :class="selected === cat.name ? 'text-ink-gray-9' : 'text-ink-gray-5'" />
+                <span>{{ cat.name }}</span>
+              </div>
+              <span class="text-xs" :class="selected === cat.name ? 'text-ink-gray-9 font-medium' : 'text-ink-gray-4'">{{ cat.count }}</span>
+            </button>
+          </nav>
+        </div>
       </aside>
 
       <!-- Apps area -->

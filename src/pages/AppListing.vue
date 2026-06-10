@@ -101,9 +101,9 @@ onMounted(async () => {
       </p>
     </div>
 
-    <div class="flex gap-8 items-start">
+    <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
       <!-- ── Sidebar ── -->
-      <aside class="w-56 shrink-0 sticky top-[68px]" aria-label="Filter apps">
+      <aside class="w-full md:w-56 shrink-0 md:sticky md:top-[68px]" aria-label="Filter apps">
         <div class="space-y-5">
 
           <!-- Search -->

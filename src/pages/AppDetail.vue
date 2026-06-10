@@ -80,7 +80,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
           <span v-else class="text-2xl font-bold text-ink-gray-4">{{ app.title[0] }}</span>
         </div>
         <div class="flex-1 min-w-0">
-          <div class="flex items-start gap-3 flex-wrap">
+          <div class="flex flex-col md:flex-row md:items-start gap-5 md:gap-3">
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-1 flex-wrap">
                 <Badge v-if="app.meta?.verified" theme="green" label="Verified">
