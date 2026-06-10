@@ -188,11 +188,11 @@ const endpoints = [
               <ul class="mt-1.5 space-y-1">
                 <li class="flex items-center gap-2">
                   <span class="text-ink-gray-5">Build command:</span>
-                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1 flex-1 overflow-x-auto whitespace-nowrap">npm run generate:index && npm run --prefix web build</code>
+                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1 flex-1 overflow-x-auto whitespace-nowrap">npm run build</code>
                 </li>
                 <li class="flex items-center gap-2">
                   <span class="text-ink-gray-5">Output directory:</span>
-                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">web/dist</code>
+                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">dist</code>
                 </li>
               </ul>
             </div>

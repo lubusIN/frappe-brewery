@@ -8,7 +8,7 @@
  *   q               — search query (title, description, tags)
  */
 
-import type { AppSummary, IndexResponse } from '../../web/src/types'
+import type { AppSummary, IndexResponse } from '../../src/types'
 export const onRequestGet: PagesFunction = async ({ request, env }) => {
   const url = new URL(request.url)
 

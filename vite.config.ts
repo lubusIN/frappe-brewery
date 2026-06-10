@@ -18,7 +18,7 @@ export default defineConfig({
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
           if (req.url?.startsWith('/index/') || req.url?.startsWith('/apps/')) {
-            const filePath = path.join(__dirname, '..', req.url)
+            const filePath = path.join(__dirname, req.url)
             if (fs.existsSync(filePath)) {
               res.setHeader('Content-Type', 'application/json')
               res.end(fs.readFileSync(filePath))

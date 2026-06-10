@@ -4,6 +4,6 @@ dist/
 .DS_Store
 scratch/
 
-# Web SPA build output
-web/dist/
-web/node_modules/
+# Generated types
+auto-imports.d.ts
+components.d.ts

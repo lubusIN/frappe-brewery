@@ -16,7 +16,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
-const SCHEMA_PATH = path.join(ROOT, "schema", "app.schema.json");
+const SCHEMA_PATH = path.join(ROOT, "scripts", "app.schema.json");
 
 const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
 const SCHEMA_LICENSES = schema.properties.license.enum as string[];

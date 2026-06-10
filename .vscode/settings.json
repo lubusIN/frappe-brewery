@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    "auto-imports.d.ts": true,
+    "components.d.ts": true
+  }
+}

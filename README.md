@@ -49,9 +49,9 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
 **Quick steps:**
 
 1. Fork this repository
-2. Copy `example-app.json` → `apps/your-app-slug.json`
+2. Copy `apps/_example-app.json` → `apps/your-app-slug.json`
 3. Fill in all required fields
-4. Run `pnpm validate` locally
+4. Run `npm run registry:validate` locally
 5. Open a Pull Request
 
 ---
@@ -62,9 +62,8 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
 frappe-app-registry/
 ├── apps/               # Individual app JSON files (one per app)
 ├── index/              # Generated index files (auto-committed by CI)
-├── schema/             # JSON Schema for app entries
-├── scripts/            # TypeScript build/validate scripts
-├── web/                # Vue 3 SPA (Cloudflare Pages)
+├── scripts/            # TypeScript scripts and JSON schema
+├── src/                # Vue 3 SPA frontend code
 ├── functions/          # Cloudflare Pages Functions (API endpoints)
 └── .github/            # Workflows and PR template
 ```
@@ -78,16 +77,16 @@ frappe-app-registry/
 npm install
 
 # Validate all app files
-npm run validate
+npm run registry:validate
 
 # Generate index files
-npm run generate:index
+npm run registry:build
 
 # Extract app metadata from a GitHub repo URL
-npm run extract https://github.com/your-org/your-app
+npm run registry:extract https://github.com/your-org/your-app
 
 # Start the website locally
-npm run --prefix web dev
+npm run dev
 ```
 
 ---

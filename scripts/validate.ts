@@ -5,7 +5,7 @@ import addFormats from "ajv-formats";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
-const SCHEMA_PATH = path.join(ROOT, "schema", "app.schema.json");
+const SCHEMA_PATH = path.join(ROOT, "scripts", "app.schema.json");
 
 
 
@@ -40,7 +40,7 @@ const allowedCategories = (schema as any).properties.categories.items.enum as st
 // ──────────────────────────────────────────────
 const files = fs
   .readdirSync(APPS_DIR)
-  .filter((file) => file.endsWith(".json"))
+  .filter((file) => file.endsWith(".json") && !file.startsWith("_"))
   .sort();
 
 if (files.length === 0) {

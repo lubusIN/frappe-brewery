@@ -4,10 +4,9 @@ on:
   pull_request:
     paths:
       - "apps/**/*.json"
-      - "schema/**/*.json"
       - "scripts/**"
       - "package.json"
-      - "pnpm-lock.yaml"
+      - "package-lock.json"
 
 permissions:
   contents: read
@@ -31,4 +30,4 @@ jobs:
         run: npm ci
 
       - name: Validate app JSON files
-        run: npm run validate
+        run: npm run registry:validate

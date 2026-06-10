@@ -10,14 +10,14 @@ const steps = [
   },
   {
     title: 'Create your app JSON',
-    desc: 'Copy example-app.json to apps/your-app-slug.json and fill in your details.',
-    code: 'cp example-app.json apps/my-app.json',
+    desc: 'Copy apps/_example-app.json to apps/your-app-slug.json and fill in your details.',
+    code: 'cp apps/_example-app.json apps/my-app.json',
     icon: 'file-plus',
   },
   {
     title: 'Validate locally',
     desc: 'Run the validator to catch any schema errors before submitting.',
-    code: 'npm install && npm run validate',
+    code: 'npm install && npm run registry:validate',
     icon: 'check-square',
   },
   {
@@ -111,7 +111,7 @@ const schemaExample = `{
       <h2 id="schema-heading" class="text-lg font-semibold text-ink-gray-8 mb-2">Required JSON structure</h2>
       <p class="text-sm text-ink-gray-5 mb-4">
         Create <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">apps/your-app-slug.json</code> with this structure. Copy
-        <a href="https://github.com/frappe/frappe-app-registry/blob/main/example-app.json" target="_blank" rel="noopener" class="text-ink-blue-2 hover:underline">example-app.json</a> as a starting point.
+        <a href="https://github.com/frappe/frappe-app-registry/blob/main/apps/_example-app.json" target="_blank" rel="noopener" class="text-ink-blue-2 hover:underline">apps/_example-app.json</a> as a starting point.
       </p>
       <div class="rounded-lg border border-outline-gray-2 overflow-hidden">
         <div class="flex items-center gap-2 px-4 py-2.5 bg-surface-gray-1 border-b border-outline-gray-1">

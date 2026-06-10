@@ -4,9 +4,9 @@ import path from "node:path";
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
 const INDEX_DIR = path.join(ROOT, "index");
-const SCHEMA_PATH = path.join(ROOT, "schema", "app.schema.json");
+const SCHEMA_PATH = path.join(ROOT, "scripts", "app.schema.json");
 
-import type { App } from "../web/src/types";
+import type { App } from "../src/types";
 
 // ──────────────────────────────────────────────
 // Helpers
@@ -15,7 +15,22 @@ function readJson(filePath: string): App {
   return JSON.parse(fs.readFileSync(filePath, "utf8")) as App;
 }
 
-function writeJson(filePath: string, data: unknown): void {
+function writeJson(filePath: string, data: Record<string, any>): void {
+  if (fs.existsSync(filePath)) {
+    try {
+      const existingData = JSON.parse(fs.readFileSync(filePath, "utf8"));
+      const existingForCompare = { ...existingData, generated_at: "" };
+      const newForCompare = { ...data, generated_at: "" };
+      
+      if (JSON.stringify(existingForCompare) === JSON.stringify(newForCompare)) {
+        console.log(`  → skipped ${path.relative(ROOT, filePath)} (no changes)`);
+        return;
+      }
+    } catch {
+      // If parsing fails, proceed to overwrite
+    }
+  }
+
   fs.writeFileSync(filePath, `${JSON.stringify(data, null, 2)}\n`);
   console.log(`  → wrote ${path.relative(ROOT, filePath)}`);
 }
@@ -50,7 +65,7 @@ if (!fs.existsSync(INDEX_DIR)) {
 // ──────────────────────────────────────────────
 const files = fs
   .readdirSync(APPS_DIR)
-  .filter((file) => file.endsWith(".json"))
+  .filter((file) => file.endsWith(".json") && !file.startsWith("_"))
   .sort();
 
 const apps: App[] = files

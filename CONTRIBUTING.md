@@ -19,13 +19,13 @@ Thank you for helping grow the Frappe ecosystem! This guide explains how to subm
 ## How to Submit an App
 
 1. **Fork** this repository
-2. **Copy** `example-app.json` to `apps/your-app-slug.json`
+2. **Copy** `apps/_example-app.json` to `apps/your-app-slug.json`
    - The filename must use lowercase letters, numbers, and hyphens only (e.g. `my-crm-app.json`)
 3. **Fill in** all required fields (see below)
 4. **Run validation locally**:
    ```bash
    npm install
-   npm run validate
+   npm run registry:validate
    ```
 5. **Open a Pull Request** — the PR template will guide you through the checklist
 

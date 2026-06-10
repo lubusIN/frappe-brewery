@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "apps/**/*.json"
-      - "schema/**/*.json"
       - "scripts/**"
 
 permissions:
@@ -32,10 +31,10 @@ jobs:
         run: npm ci
 
       - name: Validate all apps
-        run: npm run validate
+        run: npm run registry:validate
 
       - name: Generate index
-        run: npm run generate:index
+        run: npm run registry:build
 
       - name: Commit generated index
         uses: stefanzweifel/git-auto-commit-action@v5

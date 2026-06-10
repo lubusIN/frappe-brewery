@@ -1,5 +1,5 @@
 // Shared constants
-import schema from '../../schema/app.schema.json'
+import schema from '../scripts/app.schema.json'
 
 export const CATEGORY_ICONS: Record<string, string> = {
   'CRM': 'users',
