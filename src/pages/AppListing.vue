@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { FeatherIcon, FormControl, Button, Badge } from 'frappe-ui'
+import { FeatherIcon, FormControl, Button, Badge, Switch } from 'frappe-ui'
 import { fetchApps } from '../api'
 import AppCard from '../components/AppCard.vue'
 import { CATEGORIES, FRAPPE_VERSIONS, LICENSES } from '../constants'
@@ -94,110 +94,99 @@ onMounted(async () => {
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
     <!-- Page header -->
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-ink-gray-9">Apps</h1>
-      <p class="text-sm text-ink-gray-4 mt-1">
-        {{ filteredApps.length }} of {{ allApps.length }} apps
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-ink-gray-9">Apps</h1>
+      <p class="text-base text-ink-gray-5 mt-2">
+        Extend the functionality of your Frappe sites by integrating apps that suit your needs. Seamlessly install in just a few steps.
       </p>
     </div>
 
-    <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
-      <!-- ── Sidebar ── -->
-      <aside class="w-full md:w-56 shrink-0 md:sticky md:top-[68px]" aria-label="Filter apps">
-        <div class="space-y-5">
-
-          <!-- Search -->
-          <FormControl
-            type="text"
-            label="Search"
-            v-model="searchQuery"
-            placeholder="Search apps…"
-          >
-            <template #prefix>
-              <FeatherIcon name="search" class="w-3.5 h-3.5 text-ink-gray-4" />
-            </template>
-          </FormControl>
-
-          <!-- Frappe Version -->
-          <FormControl
-            type="select"
-            label="Frappe Version"
-            :options="versionOptions"
-            v-model="selectedVersion"
-            class="[&_button]:w-full [&_select]:w-full"
-          />
-
-          <!-- Category -->
-          <FormControl
-            type="select"
-            label="Category"
-            :options="categoryOptions"
-            v-model="selectedCategory"
-            class="[&_button]:w-full [&_select]:w-full"
-          />
-
-          <!-- License -->
-          <FormControl
-            type="select"
-            label="License"
-            :options="licenseOptions"
-            v-model="selectedLicense"
-            class="[&_button]:w-full [&_select]:w-full"
-          />
-
-          <!-- Verified -->
-          <FormControl
-            type="checkbox"
-            label="Verified only"
-            v-model="showVerifiedOnly"
-          />
-
-          <!-- Clear -->
-          <Button
-            v-if="hasFilters"
-            class="w-full mt-2"
-            variant="outline"
-            @click="resetFilters"
-          >
-            Clear filters
-          </Button>
+    <!-- Filters Topbar -->
+    <div class="flex flex-col md:flex-row gap-3 mb-4 w-full">
+      <div class="grid grid-cols-2 md:flex items-center gap-3 w-full md:w-auto shrink-0">
+        <FormControl
+          type="select"
+          :options="categoryOptions"
+          v-model="selectedCategory"
+          class="w-full md:w-auto [&_button]:w-full [&_select]:w-full"
+        />
+        <FormControl
+          type="select"
+          :options="versionOptions"
+          v-model="selectedVersion"
+          class="w-full md:w-auto [&_button]:w-full [&_select]:w-full"
+        />
+        <FormControl
+          type="select"
+          :options="licenseOptions"
+          v-model="selectedLicense"
+          class="w-full md:w-auto [&_button]:w-full [&_select]:w-full"
+        />
+        <div class="flex items-center gap-2 px-2 shrink-0">
+          <Switch v-model="showVerifiedOnly" />
+          <span class="text-sm text-ink-gray-7">Verified</span>
         </div>
-      </aside>
-
-      <!-- ── Grid ── -->
-      <main class="flex-1 min-w-0" aria-label="App listing">
-
-        <!-- Loading -->
-        <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <div v-for="i in 6" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-lg" />
-        </div>
-
-        <!-- Error -->
-        <div v-else-if="error" class="flex flex-col items-center py-20 text-center" role="alert">
-          <FeatherIcon name="alert-circle" class="w-8 h-8 text-ink-gray-3 mb-3" />
-          <p class="text-ink-gray-5">{{ error }}</p>
-        </div>
-
-        <!-- Empty -->
-        <div v-else-if="filteredApps.length === 0" class="flex flex-col items-center py-20 text-center">
-          <FeatherIcon name="search" class="w-8 h-8 text-ink-gray-3 mb-3" />
-          <p class="text-ink-gray-5 font-medium">No apps match your filters</p>
-          <Button variant="ghost" class="mt-4" @click="resetFilters">Clear filters</Button>
-        </div>
-
-        <!-- Apps -->
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-          <AppCard v-for="app in filteredApps" :key="app.slug" :app="app">
-            <template #badges>
-              <Badge v-if="app.status !== 'active'" theme="gray" :label="app.status" />
-            </template>
-            <template #footer>
-              <Badge v-for="cat in app.categories.slice(0, 2)" :key="cat" theme="gray" :label="cat" />
-              <span class="text-xs text-ink-gray-3 ml-auto font-mono">{{ app.license }}</span>
-            </template>
-          </AppCard>
-        </div>
-      </main>
+      </div>
+      <FormControl
+        type="text"
+        v-model="searchQuery"
+        placeholder="Search for an app"
+        class="w-full md:flex-1"
+      >
+        <template #prefix>
+          <FeatherIcon name="search" class="w-4 h-4 text-ink-gray-4" />
+        </template>
+      </FormControl>
     </div>
+
+    <!-- Showing apps count -->
+    <div class="flex items-center justify-between mb-6">
+      <p class="text-sm text-ink-gray-5">
+        Showing {{ filteredApps.length }} apps
+      </p>
+      <Button
+        v-if="hasFilters"
+        variant="ghost"
+        size="sm"
+        theme="gray"
+        @click="resetFilters"
+      >
+        Clear filters
+      </Button>
+    </div>
+
+    <!-- Grid -->
+    <main aria-label="App listing">
+      <!-- Loading -->
+      <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div v-for="i in 8" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-lg" />
+      </div>
+
+      <!-- Error -->
+      <div v-else-if="error" class="flex flex-col items-center py-20 text-center" role="alert">
+        <FeatherIcon name="alert-circle" class="w-8 h-8 text-ink-gray-3 mb-3" />
+        <p class="text-ink-gray-5">{{ error }}</p>
+      </div>
+
+      <!-- Empty -->
+      <div v-else-if="filteredApps.length === 0" class="flex flex-col items-center py-20 text-center">
+        <FeatherIcon name="search" class="w-8 h-8 text-ink-gray-3 mb-3" />
+        <p class="text-ink-gray-5 font-medium">No apps match your filters</p>
+        <Button variant="ghost" class="mt-4" @click="resetFilters">Clear filters</Button>
+      </div>
+
+      <!-- Apps -->
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <AppCard v-for="app in filteredApps" :key="app.slug" :app="app">
+          <template #badges>
+            <Badge v-if="app.status !== 'active'" theme="gray" :label="app.status" />
+          </template>
+          <template #footer>
+            <Badge v-for="cat in app.categories.slice(0, 2)" :key="cat" theme="gray" :label="cat" />
+            <span class="text-xs text-ink-gray-3 ml-auto font-mono">{{ app.license }}</span>
+          </template>
+        </AppCard>
+      </div>
+    </main>
   </div>
 </template>
