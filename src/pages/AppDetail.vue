@@ -137,38 +137,6 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
             </div>
           </section>
 
-          <!-- Compatibility -->
-          <section aria-labelledby="compat-heading">
-            <h2 id="compat-heading" class="text-base font-semibold text-ink-gray-8 mb-4 flex items-center gap-2">
-              <FeatherIcon name="layers" class="w-4 h-4 text-ink-gray-4" />
-              Compatibility
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="rounded-lg border border-outline-gray-1 p-4">
-                <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-widest mb-3">Frappe Versions</p>
-                <div class="flex gap-2 flex-wrap">
-                  <Badge v-for="v in app.frappe_versions" :key="v" theme="gray" size="md" :label="`Frappe ${v}`" />
-                </div>
-              </div>
-              <div class="rounded-lg border border-outline-gray-1 p-4">
-                <p class="text-xs font-semibold text-ink-gray-4 uppercase tracking-widest mb-3">Required Apps</p>
-                <div class="flex gap-2 flex-wrap">
-                  <Badge v-for="dep in app.required_apps" :key="dep" theme="gray" size="md" :label="dep" class="font-mono" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Tags -->
-          <section v-if="app.tags?.length" aria-labelledby="tags-heading">
-            <h2 id="tags-heading" class="text-base font-semibold text-ink-gray-8 mb-3 flex items-center gap-2">
-              <FeatherIcon name="tag" class="w-4 h-4 text-ink-gray-4" />
-              Tags
-            </h2>
-            <div class="flex gap-2 flex-wrap">
-              <Badge v-for="tag in app.tags" :key="tag" theme="gray" :label="tag" />
-            </div>
-          </section>
 
           <!-- Screenshots -->
           <section v-if="app.media?.screenshots?.length" aria-labelledby="screenshots-heading">
@@ -199,10 +167,18 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
             <dl class="divide-y divide-outline-gray-1 text-sm">
               <div class="flex items-start gap-3 px-4 py-3">
                 <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Categories</dt>
-                <dd class="flex gap-1.5 flex-wrap">
-                  <RouterLink v-for="cat in app.categories" :key="cat" :to="`/categories?cat=${encodeURIComponent(cat)}`">
-                    <Badge theme="gray" :label="cat" />
+                <dd class="flex gap-x-1.5 gap-y-1 flex-wrap pt-0.5">
+                  <RouterLink v-for="(cat, index) in app.categories" :key="cat" :to="`/categories?cat=${encodeURIComponent(cat)}`" class="text-ink-gray-7 hover:text-ink-gray-9 hover:underline transition-colors">
+                    {{ cat }}<span v-if="index !== app.categories.length - 1" class="text-ink-gray-4 no-underline">,</span>
                   </RouterLink>
+                </dd>
+              </div>
+              <div v-if="app.tags?.length" class="flex items-start gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Tags</dt>
+                <dd class="flex gap-x-1.5 gap-y-1 flex-wrap pt-0.5">
+                  <span v-for="(tag, index) in app.tags" :key="tag" class="text-ink-gray-7">
+                    {{ tag }}<span v-if="index !== app.tags.length - 1" class="text-ink-gray-4">,</span>
+                  </span>
                 </dd>
               </div>
               <div class="flex items-center gap-3 px-4 py-3">
@@ -211,7 +187,23 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               </div>
               <div class="flex items-center gap-3 px-4 py-3">
                 <dt class="text-ink-gray-4 w-24 shrink-0">App name</dt>
-                <dd class="font-mono text-xs text-ink-gray-7 bg-surface-gray-1 px-2 py-1 rounded-md border border-outline-gray-1">{{ app.install.app_name }}</dd>
+                <dd class="font-mono text-ink-gray-8 pt-0.5">{{ app.install.app_name }}</dd>
+              </div>
+              <div v-if="app.frappe_versions?.length" class="flex items-start gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Frappe</dt>
+                <dd class="flex gap-x-1.5 gap-y-1 flex-wrap pt-0.5">
+                  <span v-for="(v, index) in app.frappe_versions" :key="v" class="text-ink-gray-7">
+                    v{{ v }}<span v-if="index !== app.frappe_versions.length - 1" class="text-ink-gray-4">,</span>
+                  </span>
+                </dd>
+              </div>
+              <div v-if="app.required_apps?.length" class="flex items-start gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Requires</dt>
+                <dd class="flex gap-x-1.5 gap-y-1 flex-wrap pt-0.5">
+                  <span v-for="(dep, index) in app.required_apps" :key="dep" class="text-ink-gray-7 font-mono">
+                    {{ dep }}<span v-if="index !== app.required_apps.length - 1" class="text-ink-gray-4 font-sans">,</span>
+                  </span>
+                </dd>
               </div>
               <div class="flex items-center gap-3 px-4 py-3">
                 <dt class="text-ink-gray-4 w-24 shrink-0">Status</dt>
