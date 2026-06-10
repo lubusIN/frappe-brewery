@@ -115,19 +115,29 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               <FeatherIcon name="terminal" class="w-4 h-4 text-ink-gray-4" />
               Installation
             </h2>
-            <div class="rounded-lg border border-outline-gray-2 overflow-hidden">
-              <div class="flex items-center justify-end gap-3 px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  :theme="copied ? 'green' : 'gray'"
-                  :icon-left="copied ? 'check' : 'copy'"
+            <div class="rounded-lg overflow-hidden bg-surface-white border border-outline-gray-2 shadow-sm">
+              <div class="flex items-center justify-between px-4 py-2 bg-surface-gray-1 border-b border-outline-gray-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+                  <span class="ml-2 text-xs font-mono text-ink-gray-4 tracking-wide">bash</span>
+                </div>
+                <button
+                  class="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ink-gray-3"
+                  :class="copied ? 'text-green-600 bg-green-50' : 'text-ink-gray-5 hover:text-ink-gray-7 hover:bg-surface-gray-2'"
                   @click="copyCommand"
                 >
-                  {{ copied ? 'Copied!' : 'Copy' }}
-                </Button>
+                  <FeatherIcon :name="copied ? 'check' : 'copy'" class="w-3.5 h-3.5" />
+                  {{ copied ? 'Copied' : 'Copy' }}
+                </button>
               </div>
-              <div class="px-4 py-4 font-mono text-sm text-ink-gray-7 bg-surface-white overflow-x-auto whitespace-pre">{{ app.install_commands.join('\n') }}</div>
+              <div class="px-5 py-4 font-mono text-sm overflow-x-auto space-y-1">
+                <div v-for="(cmd, i) in app.install_commands" :key="i" class="flex items-start">
+                  <span class="text-ink-gray-4 select-none mr-3 font-semibold opacity-80">$</span>
+                  <span class="text-ink-gray-8 whitespace-nowrap">{{ cmd }}</span>
+                </div>
+              </div>
             </div>
           </section>
 
