@@ -18,17 +18,17 @@ const overviewCards = [
 const usageExamples = [
   {
     title: 'Fetch all apps (JavaScript)',
-    code: `fetch('https://brewery.frappe.io/index/apps.json')
+    code: `fetch('https://frappe-brewery.pages.dev/index/apps.json')
   .then(r => r.json())
   .then(data => console.log(data.apps))`,
   },
   {
     title: 'Get install commands (curl + jq)',
-    code: `curl https://brewery.frappe.io/apps/erpnext.json | jq '.install_commands'`,
+    code: `curl https://frappe-brewery.pages.dev/apps/erpnext.json | jq '.install_commands'`,
   },
   {
     title: 'Filter CRM apps via Pages Function',
-    code: `fetch('https://brewery.frappe.io/api/apps?category=CRM&frappe_version=15')`,
+    code: `fetch('https://frappe-brewery.pages.dev/api/apps?category=CRM&frappe_version=15')`,
   },
 ]
 
@@ -112,15 +112,15 @@ const endpoints = [
     <section class="mb-12" aria-labelledby="base-url-heading">
       <h2 id="base-url-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Base URL</h2>
       <div class="flex items-center gap-3 p-4 rounded-lg border border-outline-gray-2 bg-surface-gray-1">
-        <code class="flex-1 font-mono text-sm text-ink-gray-7">https://brewery.frappe.io</code>
+        <code class="flex-1 font-mono text-sm text-ink-gray-7">https://frappe-brewery.pages.dev</code>
         <Button
-          :variant="copied === 'https://brewery.frappe.io' ? 'subtle' : 'outline'"
-          :theme="copied === 'https://brewery.frappe.io' ? 'green' : 'gray'"
-          @click="copy('https://brewery.frappe.io')"
+          :variant="copied === 'https://frappe-brewery.pages.dev' ? 'subtle' : 'outline'"
+          :theme="copied === 'https://frappe-brewery.pages.dev' ? 'green' : 'gray'"
+          @click="copy('https://frappe-brewery.pages.dev')"
           aria-label="Copy base URL"
-          :icon-left="copied === 'https://brewery.frappe.io' ? 'check' : 'copy'"
+          :icon-left="copied === 'https://frappe-brewery.pages.dev' ? 'check' : 'copy'"
         >
-          {{ copied === 'https://brewery.frappe.io' ? 'Copied' : 'Copy' }}
+          {{ copied === 'https://frappe-brewery.pages.dev' ? 'Copied' : 'Copy' }}
         </Button>
       </div>
     </section>
@@ -178,7 +178,7 @@ const endpoints = [
           <li class="flex gap-3 items-start">
             <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5 mt-0.5">1</span>
             <div class="leading-relaxed">
-              Fork <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">frappe/frappe-brewery</code> on GitHub
+              Fork <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">lubusIN/frappe-brewery</code> on GitHub
             </div>
           </li>
           <li class="flex gap-3 items-start">

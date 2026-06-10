@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://brewery.frappe.io/scripts/app.schema.json",
+  "$id": "https://frappe-brewery.pages.dev/scripts/app.schema.json",
   "title": "Frappe App",
   "description": "Schema for a Frappe Brewery entry",
   "type": "object",

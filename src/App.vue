@@ -163,7 +163,7 @@ const onSearchSelect = (item: any) => {
 
             <!-- GitHub -->
             <a 
-              href="https://github.com/frappe/frappe-brewery"
+              href="https://github.com/lubusIN/frappe-brewery"
               target="_blank"
               rel="noopener"
               class="flex items-center text-ink-gray-9 hover:opacity-75 transition-opacity px-1"
@@ -241,7 +241,7 @@ const onSearchSelect = (item: any) => {
           </div>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
             <RouterLink v-for="link in navLinks" :key="link.to" :to="link.to" class="text-sm sm:text-xs font-medium text-ink-gray-6 hover:text-ink-gray-9 transition-colors">{{ link.label }}</RouterLink>
-            <a href="https://github.com/frappe/frappe-brewery" target="_blank" rel="noopener" class="text-sm sm:text-xs font-medium text-ink-gray-6 hover:text-ink-gray-9 transition-colors">GitHub</a>
+            <a href="https://github.com/lubusIN/frappe-brewery" target="_blank" rel="noopener" class="text-sm sm:text-xs font-medium text-ink-gray-6 hover:text-ink-gray-9 transition-colors">GitHub</a>
           </div>
         </div>
       </div>

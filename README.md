@@ -15,19 +15,19 @@ The registry exposes a static JSON API via Cloudflare Pages:
 
 ```bash
 # All apps
-GET https://brewery.frappe.io/index/apps.json
+GET https://frappe-brewery.pages.dev/index/apps.json
 
 # Apps compatible with Frappe 15
-GET https://brewery.frappe.io/index/frappe-15.json
+GET https://frappe-brewery.pages.dev/index/frappe-15.json
 
 # App by slug
-GET https://brewery.frappe.io/apps/erpnext.json
+GET https://frappe-brewery.pages.dev/apps/erpnext.json
 
 # Categories
-GET https://brewery.frappe.io/index/categories.json
+GET https://frappe-brewery.pages.dev/index/categories.json
 
 # Stats
-GET https://brewery.frappe.io/index/stats.json
+GET https://frappe-brewery.pages.dev/index/stats.json
 ```
 
 Dynamic API endpoints (via Cloudflare Pages Functions):
@@ -93,4 +93,4 @@ npm run dev
 
 ## License
 
-Local bench is open-sourced licensed under the [MIT License](LICENSE).
+Frappe Brewery is open-sourced licensed under the [MIT License](LICENSE).
