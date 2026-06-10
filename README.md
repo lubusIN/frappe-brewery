@@ -1,6 +1,8 @@
 # Frappe Brewery
 
-A community app registery for the Frappe ecosystem.
+A community app registry for the Frappe ecosystem.
+
+<img src=".github/assets/banner.png" />
 
 - **Open data** — all app entries are plain JSON, versioned in Git
 - **GitHub-based submissions** — submit apps via Pull Request
@@ -81,6 +83,14 @@ npm run brewery:extract https://github.com/your-org/your-app
 npm run dev
 ```
 
+## Meet Your Artisans
+
+[LUBUS](https://lubus.in/?utm_source=github&utm_medium=open-source&utm_campaign=frappe-brewery) is a web design agency based in Mumbai.
+
+<a href="https://cal.com/lubus">
+<img src="https://raw.githubusercontent.com/lubusIN/.github/refs/heads/main/profile/banner.png" />
+</a>
+
 ## License
 
-MIT
+Local bench is open-sourced licensed under the [MIT License](LICENSE).
