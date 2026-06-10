@@ -1,7 +1,7 @@
 // API base, reads from the same Cloudflare Pages deployment
 // In dev, Vite proxies /index and /apps to the local server
 
-const BASE = import.meta.env.VITE_REGISTRY_BASE ?? ''
+const BASE = import.meta.env.VITE_BREWERY_BASE ?? ''
 
 export async function fetchApps() {
   const res = await fetch(`${BASE}/index/apps.json`)

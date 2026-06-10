@@ -31,10 +31,10 @@ jobs:
         run: npm ci
 
       - name: Validate all apps
-        run: npm run registry:validate
+        run: npm run brewery:validate
 
       - name: Generate index
-        run: npm run registry:build
+        run: npm run brewery:build
 
       - name: Commit generated index
         uses: stefanzweifel/git-auto-commit-action@v5

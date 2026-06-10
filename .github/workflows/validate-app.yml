@@ -30,4 +30,4 @@ jobs:
         run: npm ci
 
       - name: Validate app JSON files
-        run: npm run registry:validate
+        run: npm run brewery:validate

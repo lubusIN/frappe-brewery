@@ -99,7 +99,7 @@ const onSearchSelect = (item: any) => {
         <div class="flex items-center h-[52px] gap-6">
 
           <!-- Logo -->
-          <RouterLink to="/" class="flex items-center gap-2 shrink-0" aria-label="Frappe App Registry">
+          <RouterLink to="/" class="flex items-center gap-2 shrink-0" aria-label="Frappe Brewery">
             <FeatherIcon name="codesandbox" class="w-5 h-5 text-ink-gray-9" />
             <span class="text-base font-semibold text-ink-gray-9 tracking-tight">Frappe Brewery</span>
           </RouterLink>
@@ -163,7 +163,7 @@ const onSearchSelect = (item: any) => {
 
             <!-- GitHub -->
             <a 
-              href="https://github.com/frappe/frappe-app-registry"
+              href="https://github.com/frappe/frappe-brewery"
               target="_blank"
               rel="noopener"
               class="flex items-center text-ink-gray-9 hover:opacity-75 transition-opacity px-1"
@@ -241,7 +241,7 @@ const onSearchSelect = (item: any) => {
           </div>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
             <RouterLink v-for="link in navLinks" :key="link.to" :to="link.to" class="text-sm sm:text-xs font-medium text-ink-gray-6 hover:text-ink-gray-9 transition-colors">{{ link.label }}</RouterLink>
-            <a href="https://github.com/frappe/frappe-app-registry" target="_blank" rel="noopener" class="text-sm sm:text-xs font-medium text-ink-gray-6 hover:text-ink-gray-9 transition-colors">GitHub</a>
+            <a href="https://github.com/frappe/frappe-brewery" target="_blank" rel="noopener" class="text-sm sm:text-xs font-medium text-ink-gray-6 hover:text-ink-gray-9 transition-colors">GitHub</a>
           </div>
         </div>
       </div>

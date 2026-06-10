@@ -45,7 +45,7 @@ onMounted(async () => {
             Frappe Brewery
           </h1>
           <p class="mt-3 text-base text-ink-gray-5 leading-relaxed max-w-xl">
-            Discover, share, and install apps from a community-maintained registry with open data, GitHub-based submissions, and APIs for Frappe Local, Bench, and beyond.
+            Discover, share, and install apps from a community brewery with open data, GitHub-based submissions, and APIs for Frappe Local, Bench, and beyond.
           </p>
           <div class="flex flex-wrap justify-center gap-3 mt-6">
             <Button
@@ -74,7 +74,7 @@ onMounted(async () => {
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Registry</p>
+          <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Brewery</p>
           <h2 class="text-xl font-semibold text-ink-gray-9">Featured Apps</h2>
         </div>
         <Button :route="{ path: '/apps' }" variant="ghost" theme="gray" icon-right="arrow-right">
@@ -131,7 +131,7 @@ onMounted(async () => {
             <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Static JSON API</p>
             <h2 class="text-2xl font-bold text-ink-gray-9 leading-snug">Ready for your tools</h2>
             <p class="mt-3 text-ink-gray-5 leading-relaxed">
-              Frappe Local, hosting platforms, and community tools can consume the registry directly. No auth, no rate limits, no database.
+              Frappe Local, hosting platforms, and community tools can consume the brewery directly. No auth, no rate limits, no database.
             </p>
             <Button :route="{ path: '/docs' }" variant="outline" theme="gray" class="mt-6" icon-left="book">
               API Docs

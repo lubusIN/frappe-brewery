@@ -1,4 +1,4 @@
-# Contributing to Frappe App Registry
+# Contributing to Frappe Brewery
 
 Thank you for helping grow the Frappe ecosystem! This guide explains how to submit, update, and maintain app entries in the registry.
 
@@ -25,7 +25,7 @@ Thank you for helping grow the Frappe ecosystem! This guide explains how to subm
 4. **Run validation locally**:
    ```bash
    npm install
-   npm run registry:validate
+   npm run brewery:validate
    ```
 5. **Open a Pull Request** — the PR template will guide you through the checklist
 

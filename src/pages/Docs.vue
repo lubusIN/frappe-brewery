@@ -18,17 +18,17 @@ const overviewCards = [
 const usageExamples = [
   {
     title: 'Fetch all apps (JavaScript)',
-    code: `fetch('https://registry.frappe.io/index/apps.json')
+    code: `fetch('https://brewery.frappe.io/index/apps.json')
   .then(r => r.json())
   .then(data => console.log(data.apps))`,
   },
   {
     title: 'Get install commands (curl + jq)',
-    code: `curl https://registry.frappe.io/apps/erpnext.json | jq '.install_commands'`,
+    code: `curl https://brewery.frappe.io/apps/erpnext.json | jq '.install_commands'`,
   },
   {
     title: 'Filter CRM apps via Pages Function',
-    code: `fetch('https://registry.frappe.io/api/apps?category=CRM&frappe_version=15')`,
+    code: `fetch('https://brewery.frappe.io/api/apps?category=CRM&frappe_version=15')`,
   },
 ]
 
@@ -59,7 +59,7 @@ const endpoints = [
   },
   {
     method: 'GET', path: '/index/stats.json',
-    desc: 'Registry stats, totals by version and category',
+    desc: 'Brewery stats, totals by version and category',
     example: `{
   "total_apps": 5,
   "total_categories": 6,
@@ -92,7 +92,7 @@ const endpoints = [
       <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-2">Developer Docs</p>
       <h1 class="text-3xl font-bold text-ink-gray-9">API Reference</h1>
       <p class="mt-3 text-base text-ink-gray-5 max-w-xl leading-relaxed">
-        The registry exposes a static JSON API via Cloudflare Pages. No auth, no rate limits, no database.
+        The brewery exposes a static JSON API via Cloudflare Pages. No auth, no rate limits, no database.
       </p>
     </div>
 
@@ -112,15 +112,15 @@ const endpoints = [
     <section class="mb-12" aria-labelledby="base-url-heading">
       <h2 id="base-url-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Base URL</h2>
       <div class="flex items-center gap-3 p-4 rounded-lg border border-outline-gray-2 bg-surface-gray-1">
-        <code class="flex-1 font-mono text-sm text-ink-gray-7">https://registry.frappe.io</code>
+        <code class="flex-1 font-mono text-sm text-ink-gray-7">https://brewery.frappe.io</code>
         <Button
-          :variant="copied === 'https://registry.frappe.io' ? 'subtle' : 'outline'"
-          :theme="copied === 'https://registry.frappe.io' ? 'green' : 'gray'"
-          @click="copy('https://registry.frappe.io')"
+          :variant="copied === 'https://brewery.frappe.io' ? 'subtle' : 'outline'"
+          :theme="copied === 'https://brewery.frappe.io' ? 'green' : 'gray'"
+          @click="copy('https://brewery.frappe.io')"
           aria-label="Copy base URL"
-          :icon-left="copied === 'https://registry.frappe.io' ? 'check' : 'copy'"
+          :icon-left="copied === 'https://brewery.frappe.io' ? 'check' : 'copy'"
         >
-          {{ copied === 'https://registry.frappe.io' ? 'Copied' : 'Copy' }}
+          {{ copied === 'https://brewery.frappe.io' ? 'Copied' : 'Copy' }}
         </Button>
       </div>
     </section>
@@ -173,12 +173,12 @@ const endpoints = [
     <section aria-labelledby="selfhost-heading">
       <h2 id="selfhost-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Self-hosting</h2>
       <div class="rounded-lg border border-outline-gray-1 p-6 bg-surface-white">
-        <p class="text-sm text-ink-gray-5 leading-relaxed mb-4">The registry is fully open source. Fork it, add your own apps, and deploy your instance to Cloudflare Pages.</p>
+        <p class="text-sm text-ink-gray-5 leading-relaxed mb-4">The brewery is fully open source. Fork it, add your own apps, and deploy your instance to Cloudflare Pages.</p>
         <ol class="space-y-2 text-sm text-ink-gray-6">
           <li class="flex gap-3 items-start">
             <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5 mt-0.5">1</span>
             <div class="leading-relaxed">
-              Fork <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">frappe/frappe-app-registry</code> on GitHub
+              Fork <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">frappe/frappe-brewery</code> on GitHub
             </div>
           </li>
           <li class="flex gap-3 items-start">

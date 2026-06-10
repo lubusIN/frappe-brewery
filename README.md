@@ -1,13 +1,11 @@
-# Frappe App Registry
+# Frappe Brewery
 
-A community-maintained app index for the Frappe ecosystem.
+A community app registery for the Frappe ecosystem.
 
 - **Open data** — all app entries are plain JSON, versioned in Git
 - **GitHub-based submissions** — submit apps via Pull Request
 - **Static JSON API** — no database, consumed directly by tools
 - **Built for** Frappe Local, hosting platforms, and community tooling
-
----
 
 ## Using the API
 
@@ -15,19 +13,19 @@ The registry exposes a static JSON API via Cloudflare Pages:
 
 ```bash
 # All apps
-GET https://registry.frappe.io/index/apps.json
+GET https://brewery.frappe.io/index/apps.json
 
 # Apps compatible with Frappe 15
-GET https://registry.frappe.io/index/frappe-15.json
+GET https://brewery.frappe.io/index/frappe-15.json
 
 # App by slug
-GET https://registry.frappe.io/apps/erpnext.json
+GET https://brewery.frappe.io/apps/erpnext.json
 
 # Categories
-GET https://registry.frappe.io/index/categories.json
+GET https://brewery.frappe.io/index/categories.json
 
 # Stats
-GET https://registry.frappe.io/index/stats.json
+GET https://brewery.frappe.io/index/stats.json
 ```
 
 Dynamic API endpoints (via Cloudflare Pages Functions):
@@ -40,8 +38,6 @@ GET /api/apps/:slug
 GET /api/categories
 ```
 
----
-
 ## Submitting an App
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
@@ -51,15 +47,13 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
 1. Fork this repository
 2. Copy `apps/_example-app.json` → `apps/your-app-slug.json`
 3. Fill in all required fields
-4. Run `npm run registry:validate` locally
+4. Run `npm run brewery:validate` locally
 5. Open a Pull Request
-
----
 
 ## Repository Structure
 
 ```
-frappe-app-registry/
+frappe-brewery/
 ├── apps/               # Individual app JSON files (one per app)
 ├── index/              # Generated index files (auto-committed by CI)
 ├── scripts/            # TypeScript scripts and JSON schema
@@ -68,8 +62,6 @@ frappe-app-registry/
 └── .github/            # Workflows and PR template
 ```
 
----
-
 ## Local Development
 
 ```bash
@@ -77,19 +69,17 @@ frappe-app-registry/
 npm install
 
 # Validate all app files
-npm run registry:validate
+npm run brewery:validate
 
 # Generate index files
-npm run registry:build
+npm run brewery:build
 
 # Extract app metadata from a GitHub repo URL
-npm run registry:extract https://github.com/your-org/your-app
+npm run brewery:extract https://github.com/your-org/your-app
 
 # Start the website locally
 npm run dev
 ```
-
----
 
 ## License
 

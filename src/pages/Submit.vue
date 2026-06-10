@@ -4,8 +4,8 @@ import { FeatherIcon, Button } from 'frappe-ui'
 const steps = [
   {
     title: 'Fork the repository',
-    desc: 'Fork frappe/frappe-app-registry on GitHub and clone it locally.',
-    code: 'git clone https://github.com/your-username/frappe-app-registry',
+    desc: 'Fork frappe/frappe-brewery on GitHub and clone it locally.',
+    code: 'git clone https://github.com/your-username/frappe-brewery',
     icon: 'git-branch',
   },
   {
@@ -17,7 +17,7 @@ const steps = [
   {
     title: 'Validate locally',
     desc: 'Run the validator to catch any schema errors before submitting.',
-    code: 'npm install && npm run registry:validate',
+    code: 'npm install && npm run brewery:validate',
     icon: 'check-square',
   },
   {
@@ -79,11 +79,11 @@ const schemaExample = `{
       <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-2">Open Source</p>
       <h1 class="text-3xl font-bold text-ink-gray-9">Submit Your App</h1>
       <p class="mt-3 text-base text-ink-gray-5 max-w-xl leading-relaxed">
-        The registry is GitHub-based. Submit your app by opening a Pull Request with a single JSON file.
+        The brewery is GitHub-based. Submit your app by opening a Pull Request with a single JSON file.
       </p>
       <Button
         id="open-pr-btn"
-        link="https://github.com/frappe/frappe-app-registry/compare"
+        link="https://github.com/frappe/frappe-brewery/compare"
         variant="solid"
         theme="gray"
         class="mt-5"
@@ -117,7 +117,7 @@ const schemaExample = `{
       <h2 id="schema-heading" class="text-lg font-semibold text-ink-gray-8 mb-2">Required JSON structure</h2>
       <p class="text-sm text-ink-gray-5 mb-4">
         Create <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">apps/your-app-slug.json</code> with this structure. Copy
-        <a href="https://github.com/frappe/frappe-app-registry/blob/main/apps/_example-app.json" target="_blank" rel="noopener" class="text-ink-blue-2 hover:underline">apps/_example-app.json</a> as a starting point.
+        <a href="https://github.com/frappe/frappe-brewery/blob/main/apps/_example-app.json" target="_blank" rel="noopener" class="text-ink-blue-2 hover:underline">apps/_example-app.json</a> as a starting point.
       </p>
       <div class="rounded-lg border border-outline-gray-2 overflow-hidden">
         <div class="flex items-center gap-2 px-4 py-2.5 bg-surface-gray-1 border-b border-outline-gray-1">

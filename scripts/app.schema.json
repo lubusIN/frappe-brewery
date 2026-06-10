@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://registry.frappe.io/scripts/app.schema.json",
+  "$id": "https://brewery.frappe.io/scripts/app.schema.json",
   "title": "Frappe App",
-  "description": "Schema for a Frappe app registry entry",
+  "description": "Schema for a Frappe Brewery entry",
   "type": "object",
   "required": [
     "slug",

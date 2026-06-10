@@ -1,17 +1,17 @@
 {
-  "name": "frappe-app-registry",
+  "name": "frappe-brewery",
   "version": "0.1.0",
-  "description": "Community-maintained app index for the Frappe ecosystem",
+  "description": "Community app registry for the Frappe ecosystem",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run registry:build && vite build && cp -r index dist/index && cp -r apps dist/apps",
+    "build": "npm run brewery:build && vite build && cp -r index dist/index && cp -r apps dist/apps",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
-    "registry:build": "tsx scripts/generate-index.ts",
-    "registry:extract": "tsx scripts/extract.ts",
-    "registry:validate": "tsx scripts/validate.ts"
+    "brewery:build": "tsx scripts/generate-index.ts",
+    "brewery:extract": "tsx scripts/extract.ts",
+    "brewery:validate": "tsx scripts/validate.ts"
   },
   "engines": {
     "node": ">=20"
