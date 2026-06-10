@@ -1,10 +1,5 @@
 // Shared types matching app.schema.json
 
-export interface AppInstall {
-  method: 'bench' | 'pip' | 'manual'
-  command: string
-  app_name: string
-}
 
 export interface AppLinks {
   docs?: string
@@ -33,10 +28,12 @@ export interface App {
   repository: string
   license: string
   frappe_versions: string[]
+  min_frappe_version: string
+  version_matrix: Record<string, string>
   required_apps: string[]
   categories: string[]
   tags?: string[]
-  install: AppInstall
+  install_commands: string[]
   links?: AppLinks
   media?: AppMedia
   meta?: AppMeta

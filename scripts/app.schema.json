@@ -12,9 +12,11 @@
     "repository",
     "license",
     "frappe_versions",
+    "min_frappe_version",
+    "version_matrix",
     "required_apps",
     "categories",
-    "install",
+    "install_commands",
     "meta"
   ],
   "additionalProperties": false,
@@ -62,6 +64,23 @@
       "minItems": 1,
       "uniqueItems": true
     },
+    "min_frappe_version": {
+      "type": "string",
+      "description": "Explicit minimum Frappe version required (e.g. '14.0.0')",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+.*$"
+    },
+    "version_matrix": {
+      "type": "object",
+      "description": "Matrix mapping supported Frappe versions to specific installation branches",
+      "patternProperties": {
+        "^(14|15|16)$": {
+          "type": "string",
+          "description": "The branch name to install for this Frappe version"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
     "required_apps": {
       "type": "array",
       "description": "Other Frappe apps required by this app (must include 'frappe')",
@@ -108,28 +127,14 @@
       "uniqueItems": true,
       "default": []
     },
-    "install": {
-      "type": "object",
-      "description": "Installation instructions",
-      "required": ["method", "command", "app_name"],
-      "additionalProperties": false,
-      "properties": {
-        "method": {
-          "type": "string",
-          "enum": ["bench", "pip", "manual"],
-          "description": "Installation method"
-        },
-        "command": {
-          "type": "string",
-          "description": "Full installation command",
-          "minLength": 1
-        },
-        "app_name": {
-          "type": "string",
-          "description": "App name as used in bench/pip (typically matches 'name')",
-          "pattern": "^[a-z][a-z0-9_]*$"
-        }
-      }
+    "install_commands": {
+      "type": "array",
+      "description": "List of bench installation commands",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
     },
     "links": {
       "type": "object",

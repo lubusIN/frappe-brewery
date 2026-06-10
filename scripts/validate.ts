@@ -91,8 +91,9 @@ for (const file of files) {
   const slug = app.slug as string;
   const repository = app.repository as string;
   const required_apps = app.required_apps as string[];
+  const frappe_versions = app.frappe_versions as string[];
+  const version_matrix = app.version_matrix as Record<string, string>;
   const categories = (app.categories as string[]) || [];
-  const install = app.install as { app_name?: string };
   const media = app.media as { screenshots?: string[] } | undefined;
   const links = app.links as { docs?: string } | undefined;
 
@@ -117,15 +118,19 @@ for (const file of files) {
     fail(`required_apps must include "frappe"`);
   }
 
-  // install.app_name is required
-  if (!install?.app_name) {
-    fail(`install.app_name is required`);
-  }
-
   // categories must be from the allowed list
   for (const category of categories) {
     if (!allowedCategories.includes(category as (typeof allowedCategories)[number])) {
       fail(`unknown category "${category}" — allowed: ${allowedCategories.join(", ")}`);
+    }
+  }
+
+  // version_matrix keys must exactly match frappe_versions
+  if (version_matrix && frappe_versions) {
+    const matrix_keys = Object.keys(version_matrix).sort();
+    const sorted_versions = [...frappe_versions].sort();
+    if (matrix_keys.join(",") !== sorted_versions.join(",")) {
+      fail(`version_matrix keys (${matrix_keys.join(", ")}) do not match frappe_versions (${sorted_versions.join(", ")})`);
     }
   }
 

@@ -5,15 +5,29 @@
   "description": "A collaborative wiki and knowledge base app for Frappe, with rich text editing, versioning, and hierarchical organization of content.",
   "repository": "https://github.com/frappe/wiki",
   "license": "AGPL-3.0",
-  "frappe_versions": ["14", "15", "16"],
-  "required_apps": ["frappe"],
-  "categories": ["Utilities"],
-  "tags": ["wiki", "docs", "knowledge-base", "collaboration"],
-  "install": {
-    "method": "bench",
-    "command": "bench get-app wiki",
-    "app_name": "wiki"
+  "frappe_versions": [
+    "14",
+    "15",
+    "16"
+  ],
+  "min_frappe_version": "14.0.0",
+  "version_matrix": {
+    "14": "version-14",
+    "15": "version-15",
+    "16": "develop"
   },
+  "required_apps": [
+    "frappe"
+  ],
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [
+    "wiki",
+    "docs",
+    "knowledge-base",
+    "collaboration"
+  ],
   "links": {
     "docs": "https://github.com/frappe/wiki#readme",
     "website": "https://frappe.io"
@@ -29,5 +43,11 @@
     "verified": true,
     "status": "active",
     "added_at": "2026-06-09"
-  }
+  },
+  "install_commands": [
+    "bench get-app https://github.com/frappe/wiki",
+    "bench --site [site-name] install-app wiki",
+    "bench --site [site-name] migrate",
+    "bench restart"
+  ]
 }

@@ -5,15 +5,31 @@
   "description": "This is an example app to demonstrate the registry JSON format. Do not submit this file — copy it, rename it, and fill in your own details.",
   "repository": "https://github.com/your-org/your-app",
   "license": "MIT",
-  "frappe_versions": ["15", "16"],
-  "required_apps": ["frappe"],
-  "categories": ["Utilities"],
-  "tags": ["example", "template"],
-  "install": {
-    "method": "bench",
-    "command": "bench get-app https://github.com/your-org/your-app",
-    "app_name": "example_app"
+  "frappe_versions": [
+    "15",
+    "16"
+  ],
+  "min_frappe_version": "15.0.0",
+  "version_matrix": {
+    "15": "version-15",
+    "16": "version-16"
   },
+  "required_apps": [
+    "frappe"
+  ],
+  "categories": [
+    "Utilities"
+  ],
+  "tags": [
+    "example",
+    "template"
+  ],
+  "install_commands": [
+    "bench get-app https://github.com/your-org/your-app",
+    "bench --site [site-name] install-app example_app",
+    "bench --site [site-name] migrate",
+    "bench restart"
+  ],
   "links": {
     "docs": "https://github.com/your-org/your-app#readme",
     "demo": "https://demo.your-app.com",

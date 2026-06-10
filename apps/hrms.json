@@ -5,15 +5,32 @@
   "description": "Modern HR and payroll management system for Frappe, with leave management, expense claims, shift scheduling, and full payroll processing.",
   "repository": "https://github.com/frappe/hrms",
   "license": "GPL-3.0",
-  "frappe_versions": ["14", "15", "16"],
-  "required_apps": ["frappe", "erpnext"],
-  "categories": ["HR"],
-  "tags": ["hr", "payroll", "leave", "attendance", "expense", "shift"],
-  "install": {
-    "method": "bench",
-    "command": "bench get-app hrms",
-    "app_name": "hrms"
+  "frappe_versions": [
+    "14",
+    "15",
+    "16"
+  ],
+  "min_frappe_version": "14.0.0",
+  "version_matrix": {
+    "14": "version-14",
+    "15": "version-15",
+    "16": "develop"
   },
+  "required_apps": [
+    "frappe",
+    "erpnext"
+  ],
+  "categories": [
+    "HR"
+  ],
+  "tags": [
+    "hr",
+    "payroll",
+    "leave",
+    "attendance",
+    "expense",
+    "shift"
+  ],
   "links": {
     "docs": "https://docs.frappe.io/hrms",
     "website": "https://frappe.io/hr"
@@ -29,5 +46,11 @@
     "verified": true,
     "status": "active",
     "added_at": "2026-06-09"
-  }
+  },
+  "install_commands": [
+    "bench get-app https://github.com/frappe/hrms",
+    "bench --site [site-name] install-app hrms",
+    "bench --site [site-name] migrate",
+    "bench restart"
+  ]
 }

@@ -38,9 +38,9 @@ const requiredFields = [
   { name: 'frappe_versions', type: 'string[]', desc: 'Supported versions: "14", "15", "16"' },
   { name: 'required_apps', type: 'string[]', desc: 'Must include "frappe"; add "erpnext" if needed' },
   { name: 'categories', type: 'string[]', desc: 'From allowed list (CRM, HR, Accounting…)' },
-  { name: 'install.method', type: 'string', desc: '"bench", "pip", or "manual"' },
-  { name: 'install.command', type: 'string', desc: 'Full installation command' },
-  { name: 'install.app_name', type: 'string', desc: 'App name used in install command' },
+  { name: 'install_commands', type: 'string[]', desc: 'List of bench installation commands' },
+  { name: 'min_frappe_version', type: 'string', desc: 'Minimum Frappe version required (e.g., "14.0.0")' },
+  { name: 'version_matrix', type: 'object', desc: 'Maps Frappe versions to specific installation branches' },
 ]
 
 const schemaExample = `{
@@ -51,13 +51,19 @@ const schemaExample = `{
   "repository": "https://github.com/your-org/my-app",
   "license": "MIT",
   "frappe_versions": ["15", "16"],
+  "min_frappe_version": "15.0.0",
+  "version_matrix": {
+    "15": "version-15",
+    "16": "version-16"
+  },
   "required_apps": ["frappe"],
   "categories": ["Utilities"],
-  "install": {
-    "method": "bench",
-    "command": "bench get-app my_app",
-    "app_name": "my_app"
-  },
+  "install_commands": [
+    "bench get-app https://github.com/your-org/my-app",
+    "bench --site [site-name] install-app my_app",
+    "bench --site [site-name] migrate",
+    "bench restart"
+  ],
   "meta": {
     "source": "manual",
     "verified": false,

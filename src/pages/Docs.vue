@@ -23,8 +23,8 @@ const usageExamples = [
   .then(data => console.log(data.apps))`,
   },
   {
-    title: 'Get install command (curl + jq)',
-    code: `curl https://registry.frappe.io/apps/erpnext.json | jq '.install.command'`,
+    title: 'Get install commands (curl + jq)',
+    code: `curl https://registry.frappe.io/apps/erpnext.json | jq '.install_commands'`,
   },
   {
     title: 'Filter CRM apps via Pages Function',

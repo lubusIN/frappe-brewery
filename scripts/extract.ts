@@ -41,6 +41,10 @@ interface GitHubRelease {
   published_at: string;
 }
 
+interface GitHubBranch {
+  name: string;
+}
+
 // ──────────────────────────────────────────────
 // Helpers
 // ──────────────────────────────────────────────
@@ -141,6 +145,29 @@ function detectLicense(spdxId: string | undefined): string {
   return SCHEMA_LICENSES.includes(normalized) ? normalized : "other";
 }
 
+function detectVersionMatrix(frappeVersions: string[], branchNames: string[], defaultBranch: string): Record<string, string> {
+  const matrix: Record<string, string> = {};
+  for (const v of frappeVersions) {
+    if (branchNames.includes(`version-${v}`)) {
+      matrix[v] = `version-${v}`;
+    } else if (branchNames.includes(`v${v}`)) {
+      matrix[v] = `v${v}`;
+    } else if (v === "16" && branchNames.includes("develop")) {
+       // Common Frappe convention: latest unreleased version might be develop
+      matrix[v] = "develop";
+    } else {
+      matrix[v] = defaultBranch;
+    }
+  }
+  return matrix;
+}
+
+function detectMinFrappeVersion(frappeVersions: string[]): string {
+  if (frappeVersions.length === 0) return "14.0.0";
+  const minV = frappeVersions.map(v => parseInt(v)).sort((a, b) => a - b)[0];
+  return `${minV}.0.0`;
+}
+
 function topicsToCategories(topics: string[]): string[] {
   const map: Record<string, string> = {
     crm: "CRM",
@@ -231,12 +258,16 @@ async function main() {
   )) as GitHubRelease[] | null;
   const latestRelease = releases?.[0] ?? null;
 
+  // Fetch branches
+  const branches = (await githubFetch(
+    `/repos/${owner}/${repo}/branches?per_page=100`
+  )) as GitHubBranch[] | null;
+  const branchNames = branches?.map(b => b.name) || [];
+
   // Try to fetch hooks.py, pyproject.toml, setup.py
   const hooksContent = await fetchFileContent(owner, repo, `${repo.replace(/-/g, "_")}/hooks.py`)
     ?? await fetchFileContent(owner, repo, `hooks.py`)
     ?? "";
-
-  const pyprojectContent = await fetchFileContent(owner, repo, "pyproject.toml") ?? "";
 
   // Derive fields
   const appName = repo.replace(/-/g, "_");
@@ -246,6 +277,8 @@ async function main() {
   const description = repoData.description ?? `A Frappe app from ${owner}/${repo}`;
   const license = detectLicense(repoData.license?.spdx_id);
   const frappeVersions = detectFrappeVersions(repoData.topics);
+  const minFrappeVersion = detectMinFrappeVersion(frappeVersions);
+  const versionMatrix = detectVersionMatrix(frappeVersions, branchNames, repoData.default_branch);
   const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
   const categories = topicsToCategories(repoData.topics);
   const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t));
@@ -269,14 +302,17 @@ async function main() {
     repository: `https://github.com/${owner}/${repo}`,
     license,
     frappe_versions: frappeVersions,
+    min_frappe_version: minFrappeVersion,
+    version_matrix: versionMatrix,
     required_apps: requiredApps,
     categories,
     tags,
-    install: {
-      method: "bench",
-      command: `bench get-app ${repoUrl}`,
-      app_name: appName,
-    },
+    install_commands: [
+      `bench get-app ${repoUrl}`,
+      `bench --site [site-name] install-app ${appName}`,
+      `bench --site [site-name] migrate`,
+      `bench restart`
+    ],
     links: {
       ...(repoData.homepage ? { website: repoData.homepage } : {}),
     },

@@ -5,15 +5,35 @@
   "description": "Free and open source ERP system built on Frappe Framework, covering accounting, inventory, manufacturing, CRM, HR, and more.",
   "repository": "https://github.com/frappe/erpnext",
   "license": "GPL-3.0",
-  "frappe_versions": ["14", "15", "16"],
-  "required_apps": ["frappe"],
-  "categories": ["Accounting", "Manufacturing", "HR", "CRM"],
-  "tags": ["erp", "accounting", "inventory", "manufacturing", "crm", "hr", "payroll"],
-  "install": {
-    "method": "bench",
-    "command": "bench get-app erpnext",
-    "app_name": "erpnext"
+  "frappe_versions": [
+    "14",
+    "15",
+    "16"
+  ],
+  "min_frappe_version": "14.0.0",
+  "version_matrix": {
+    "14": "version-14",
+    "15": "version-15",
+    "16": "develop"
   },
+  "required_apps": [
+    "frappe"
+  ],
+  "categories": [
+    "Accounting",
+    "Manufacturing",
+    "HR",
+    "CRM"
+  ],
+  "tags": [
+    "erp",
+    "accounting",
+    "inventory",
+    "manufacturing",
+    "crm",
+    "hr",
+    "payroll"
+  ],
   "links": {
     "docs": "https://docs.erpnext.com",
     "demo": "https://demo.erpnext.com",
@@ -30,5 +50,11 @@
     "verified": true,
     "status": "active",
     "added_at": "2026-06-09"
-  }
+  },
+  "install_commands": [
+    "bench get-app https://github.com/frappe/erpnext",
+    "bench --site [site-name] install-app erpnext",
+    "bench --site [site-name] migrate",
+    "bench restart"
+  ]
 }

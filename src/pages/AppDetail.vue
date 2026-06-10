@@ -37,7 +37,7 @@ async function loadApp(slug: string) {
 
 async function copyCommand() {
   if (!app.value) return
-  await navigator.clipboard.writeText(app.value.install.command)
+  await navigator.clipboard.writeText(app.value.install_commands.join('\n'))
   copied.value = true
   setTimeout(() => { copied.value = false }, 2000)
 }
@@ -116,11 +116,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               Installation
             </h2>
             <div class="rounded-lg border border-outline-gray-2 overflow-hidden">
-              <div class="flex items-center justify-between gap-3 px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-semibold text-ink-gray-4 uppercase tracking-widest">Method</span>
-                  <Badge theme="gray" :label="app.install.method" />
-                </div>
+              <div class="flex items-center justify-end gap-3 px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
                 <Button
                   variant="outline"
                   size="sm"
@@ -131,9 +127,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
                   {{ copied ? 'Copied!' : 'Copy' }}
                 </Button>
               </div>
-              <div class="px-4 py-4 font-mono text-sm text-ink-gray-7 bg-surface-white overflow-x-auto">
-                {{ app.install.command }}
-              </div>
+              <div class="px-4 py-4 font-mono text-sm text-ink-gray-7 bg-surface-white overflow-x-auto whitespace-pre">{{ app.install_commands.join('\n') }}</div>
             </div>
           </section>
 
@@ -185,9 +179,9 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
                 <dt class="text-ink-gray-4 w-24 shrink-0">License</dt>
                 <dd class="text-ink-gray-7 font-medium">{{ app.license }}</dd>
               </div>
-              <div class="flex items-center gap-3 px-4 py-3">
-                <dt class="text-ink-gray-4 w-24 shrink-0">App name</dt>
-                <dd class="font-mono text-ink-gray-8 pt-0.5">{{ app.install.app_name }}</dd>
+              <div v-if="app.min_frappe_version" class="flex items-center gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0">Min version</dt>
+                <dd class="font-mono text-ink-gray-8 pt-0.5">{{ app.min_frappe_version }}</dd>
               </div>
               <div v-if="app.frappe_versions?.length" class="flex items-start gap-3 px-4 py-3">
                 <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Frappe</dt>
