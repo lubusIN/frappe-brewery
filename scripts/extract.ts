@@ -313,7 +313,7 @@ async function main() {
       categories,
       tags,
       install_commands: [
-        `bench get-app ${repoUrl}`,
+        `bench get-app ${owner === "frappe" ? repo : repoUrl}`,
         `bench --site [site-name] install-app ${appName}`,
         `bench --site [site-name] migrate`,
         `bench restart`

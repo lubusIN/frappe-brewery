@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { FeatherIcon, Badge, Button } from 'frappe-ui'
 import { fetchApp } from '../api'
@@ -35,9 +35,20 @@ async function loadApp(slug: string) {
   }
 }
 
+const displayCommands = computed(() => {
+  if (!app.value?.install_commands) return []
+  return app.value.install_commands.map(cmd => {
+    const match = cmd.match(/^bench get-app https:\/\/github\.com\/frappe\/([^/]+?)(?:\.git)?\/?$/)
+    if (match) {
+      return `bench get-app ${match[1]}`
+    }
+    return cmd
+  })
+})
+
 async function copyCommand() {
-  if (!app.value) return
-  await navigator.clipboard.writeText(app.value.install_commands.join('\n'))
+  if (!displayCommands.value.length) return
+  await navigator.clipboard.writeText(displayCommands.value.join('\n'))
   copied.value = true
   setTimeout(() => { copied.value = false }, 2000)
 }
@@ -133,7 +144,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
                 </button>
               </div>
               <div class="px-5 py-4 font-mono text-sm overflow-x-auto space-y-1">
-                <div v-for="(cmd, i) in app.install_commands" :key="i" class="flex items-start">
+                <div v-for="(cmd, i) in displayCommands" :key="i" class="flex items-start">
                   <span class="text-ink-gray-4 select-none mr-3 font-semibold opacity-80">$</span>
                   <span class="text-ink-gray-8 whitespace-nowrap">{{ cmd }}</span>
                 </div>
