@@ -79,23 +79,40 @@ const schemaExample = `{
       <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-2">Open Source</p>
       <h1 class="text-3xl font-bold text-ink-gray-9">Submit Your App</h1>
       <p class="mt-3 text-base text-ink-gray-5 max-w-xl leading-relaxed">
-        The brewery is GitHub-based. Submit your app by opening a Pull Request with a single JSON file.
+        The easiest way to submit your app is by opening an Issue. Our automated bot will extract your details and create a PR for you! Alternatively, you can open a Pull Request manually.
       </p>
-      <Button
-        id="open-pr-btn"
-        link="https://github.com/lubusIN/frappe-brewery/compare"
-        variant="solid"
-        theme="gray"
-        class="mt-5"
-        icon-left="github"
-      >
-        Open Pull Request on GitHub
-      </Button>
+      <div class="flex gap-3 mt-5">
+        <Button
+          id="open-issue-btn"
+          link="https://github.com/lubusIN/frappe-brewery/issues/new?template=submit-app.yml"
+          variant="solid"
+          theme="gray"
+          icon-left="github"
+        >
+          Submit via Issue (Fastest)
+        </Button>
+        <Button
+          id="open-pr-btn"
+          link="https://github.com/lubusIN/frappe-brewery/compare"
+          variant="subtle"
+          theme="gray"
+        >
+          Submit via PR
+        </Button>
+      </div>
     </div>
 
-    <!-- Steps -->
+    <!-- Option 1: Issue -->
+    <section class="mb-12" aria-labelledby="issue-heading">
+      <h2 id="issue-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Option 1: Automated Issue (Recommended)</h2>
+      <p class="text-sm text-ink-gray-6 leading-relaxed mb-4">
+        Simply click the <strong>Submit via Issue</strong> button above and fill out the short form with your repository URL. Our automated pipeline will clone your repository, extract your app's supported versions, license, and installation branches, and instantly generate a Pull Request on your behalf!
+      </p>
+    </section>
+
+    <!-- Option 2: PR -->
     <section class="mb-12" aria-labelledby="steps-heading">
-      <h2 id="steps-heading" class="text-lg font-semibold text-ink-gray-8 mb-6">How to submit</h2>
+      <h2 id="steps-heading" class="text-lg font-semibold text-ink-gray-8 mb-6">Option 2: Manual Pull Request</h2>
       <div class="flex flex-col">
         <div v-for="(step, i) in steps" :key="i" class="flex gap-4 py-6 border-b border-outline-gray-1 last:border-b-0">
           <div class="w-7 h-7 rounded-full bg-surface-gray-2 flex items-center justify-center shrink-0 mt-0.5">
