@@ -46,7 +46,7 @@ interface GitHubRelease {
 // ──────────────────────────────────────────────
 // Helpers
 // ──────────────────────────────────────────────
-function parseRepoUrl(url: string): { owner: string; repo: string } {
+export function parseRepoUrl(url: string): { owner: string; repo: string } {
   const match = url.match(
     /^https?:\/\/github\.com\/([^/]+)\/([^/]+?)\/?$/
   );
@@ -58,11 +58,11 @@ function parseRepoUrl(url: string): { owner: string; repo: string } {
   return { owner: match[1], repo };
 }
 
-function toSlug(str: string): string {
+export function toSlug(str: string): string {
   return str.toLowerCase().replace(/_/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
-async function githubFetch(endpoint: string): Promise<unknown> {
+export async function githubFetch(endpoint: string): Promise<unknown> {
   const token = process.env.GITHUB_TOKEN;
   const headers: HeadersInit = {
     Accept: "application/vnd.github+json",
@@ -238,11 +238,9 @@ function detectIconUrl(owner: string, repo: string, defaultBranch: string, appNa
 // ──────────────────────────────────────────────
 // Main
 // ──────────────────────────────────────────────
-async function main() {
-  const repoUrl = process.argv[2];
+export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
   if (!repoUrl) {
-    console.error("Usage: npm run brewery:extract https://github.com/owner/repo");
-    process.exit(1);
+    throw new Error("Repository URL is required");
   }
 
   console.log(`\n🔍 Extracting metadata from ${repoUrl}…\n`);
@@ -252,8 +250,7 @@ async function main() {
   // Fetch repo info
   const repoData = (await githubFetch(`/repos/${owner}/${repo}`)) as GitHubRepo | null;
   if (!repoData) {
-    console.error(`❌ Repository not found: ${repoUrl}`);
-    process.exit(1);
+    throw new Error(`Repository not found: ${repoUrl}`);
   }
 
   const defaultBranch = repoData.default_branch;
@@ -265,8 +262,7 @@ async function main() {
     execSync(`git clone --depth 1 https://github.com/${owner}/${repo}.git ${tmpDir}`, { stdio: "ignore" });
   } catch (err) {
     fs.rmSync(tmpDir, { recursive: true, force: true });
-    console.error(`❌ Failed to clone repository`);
-    process.exit(1);
+    throw new Error(`Failed to clone repository`);
   }
 
   try {
@@ -306,10 +302,10 @@ async function main() {
 
     const outputPath = path.join(APPS_DIR, `${slug}.json`);
 
-    if (fs.existsSync(outputPath)) {
+    if (writeToFile && fs.existsSync(outputPath)) {
       console.warn(`⚠️  ${slug}.json already exists — NOT overwriting.`);
       console.warn(`   Edit manually or delete ${outputPath} first.`);
-      process.exit(0);
+      return app;
     }
 
     const today = new Date().toISOString().slice(0, 10);
@@ -348,29 +344,45 @@ async function main() {
       },
     };
 
-    fs.writeFileSync(outputPath, `${JSON.stringify(app, null, 2)}\n`);
+    if (writeToFile) {
+      fs.writeFileSync(outputPath, `${JSON.stringify(app, null, 2)}\n`);
 
-    console.log(`✅ Written: apps/${slug}.json`);
-    console.log(`\n📝 Please review and fill in:`);
-    console.log(`   • description (currently auto-extracted)`);
-    console.log(`   • frappe_versions (if topics didn't include them)`);
-    console.log(`   • categories (may need adjustment)`);
-    console.log(`   • media.icon and media.screenshots`);
-    console.log(`   • links.docs`);
-    console.log(`\nThen run: npm run brewery:validate`);
+      console.log(`✅ Written: apps/${slug}.json`);
+      console.log(`\n📝 Please review and fill in:`);
+      console.log(`   • description (currently auto-extracted)`);
+      console.log(`   • frappe_versions (if topics didn't include them)`);
+      console.log(`   • categories (may need adjustment)`);
+      console.log(`   • media.icon and media.screenshots`);
+      console.log(`   • links.docs`);
+      console.log(`\nThen run: npm run brewery:validate`);
 
-    if (latestRelease) {
-      console.log(`\n📦 Latest release: ${latestRelease.tag_name} (${latestRelease.published_at.slice(0, 10)})`);
+      if (latestRelease) {
+        console.log(`\n📦 Latest release: ${latestRelease.tag_name} (${latestRelease.published_at.slice(0, 10)})`);
+      }
     }
 
+    return app;
   } finally {
     // Clean up temporary directory
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 }
 
-main().catch(err => {
-  console.error("❌", err.message);
-  process.exit(1);
-});
+import { fileURLToPath } from 'url';
+
+export async function main() {
+  const repoUrl = process.argv[2];
+  if (!repoUrl) {
+    console.error("Usage: npm run brewery:extract https://github.com/owner/repo");
+    process.exit(1);
+  }
+  await extractApp(repoUrl, true);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch(err => {
+    console.error("❌", err.message);
+    process.exit(1);
+  });
+}
 

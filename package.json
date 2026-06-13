@@ -11,7 +11,8 @@
     "typecheck": "vue-tsc --noEmit",
     "brewery:build": "tsx scripts/generate-index.ts",
     "brewery:extract": "tsx scripts/extract.ts",
-    "brewery:validate": "tsx scripts/validate.ts"
+    "brewery:validate": "tsx scripts/validate.ts",
+    "brewery:sync": "tsx scripts/sync-issue-categories.ts"
   },
   "engines": {
     "node": ">=20"

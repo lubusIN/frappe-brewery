@@ -1,0 +1,67 @@
+name: Submit Frappe App
+description: Submit your Frappe App to the registry
+title: "App: [Your App Name]"
+labels: ["[app]submission"]
+body:
+  - type: markdown
+    attributes:
+      value: "### Welcome to Frappe Brewery!\nSubmit your app by providing the public GitHub repository URL. We will automatically extract metadata like supported versions, install branches, license, and descriptions directly from your repository! Please provide the extra fields below that we cannot automatically extract."
+  
+  - type: input
+    id: repository
+    attributes:
+      label: GitHub Repository URL
+      description: "Must be a public GitHub repository (e.g. https://github.com/frappe/erpnext)"
+      placeholder: "https://github.com/your-org/your-repo"
+    validations:
+      required: true
+  
+  - type: dropdown
+    id: categories
+    attributes:
+      label: Categories
+      description: "Select the categories that best describe your app."
+      multiple: true
+      options:
+        - Accounting
+        - AI
+        - Analytics
+        - Automation
+        - Business
+        - Collaboration
+        - Communication
+        - Compliance
+        - CRM Integration
+        - Customer Relations
+        - Developer
+        - E-Commerce
+        - Extension
+        - Featured
+        - Files
+        - Healthcare
+        - Human Resources
+        - Integrations
+        - Localization
+        - Marketing
+        - Mobile
+        - Non-Profit
+        - Payments
+        - Productivity
+        - Retail
+        - Storage
+        - Support
+        - Themes
+        - Utilities
+        - Utility
+        - Website
+    validations:
+      required: true
+      
+  - type: input
+    id: screenshot
+    attributes:
+      label: Main Screenshot URL
+      description: "Provide a direct URL to a screenshot of your app (e.g., https://example.com/screenshot.png). You can also just drag and drop an image into an empty GitHub issue to upload it, and paste the generated URL here."
+      placeholder: "https://..."
+    validations:
+      required: true

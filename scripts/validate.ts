@@ -37,7 +37,7 @@ async function checkUrlAccessible(url: string): Promise<boolean> {
 
 import { execSync } from "node:child_process";
 
-async function checkValidFrappeApp(repoUrl: string, appName: string): Promise<boolean> {
+export async function checkValidFrappeApp(repoUrl: string, appName: string): Promise<boolean> {
   const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/?$/);
   if (!match) return false;
   const owner = match[1];

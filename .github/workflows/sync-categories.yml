@@ -1,0 +1,38 @@
+name: Sync Issue Categories
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/app.schema.json"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync Categories to Issue Template
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Sync Script
+        run: npm run brewery:sync
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: auto-sync issue categories from schema [skip ci]"
+          file_pattern: ".github/ISSUE_TEMPLATE/submit-app.yml"
