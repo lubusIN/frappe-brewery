@@ -2,21 +2,40 @@
 import schema from '../scripts/app.schema.json'
 
 export const CATEGORY_ICONS: Record<string, string> = {
-  'CRM': 'users',
-  'HR': 'briefcase',
   'Accounting': 'bar-chart-2',
-  'Manufacturing': 'settings',
-  'POS': 'shopping-bag',
-  'Healthcare': 'activity',
-  'Education': 'book-open',
-  'Integration': 'link',
-  'Payments': 'credit-card',
-  'Reports': 'trending-up',
-  'Developer Tools': 'code',
   'AI': 'cpu',
+  'Analytics': 'trending-up',
+  'Automation': 'command',
+  'Business': 'briefcase',
+  'Collaboration': 'users',
+  'Communication': 'message-circle',
+  'Compliance': 'shield',
+  'CRM Integration': 'link',
+  'Customer Relations': 'heart',
+  'Developer': 'code',
+  'E-Commerce': 'shopping-cart',
+  'Extension': 'plus-square',
+  'Featured': 'star',
+  'Files': 'file-text',
+  'Free': 'gift',
+  'Healthcare': 'activity',
+  'Human Resources': 'users',
+  'Integrations': 'link',
+  'Localization': 'globe',
+  'Marketing': 'speaker',
+  'Mobile': 'smartphone',
+  'Non-Profit': 'heart',
+  'Payments': 'credit-card',
+  'Productivity': 'check-square',
+  'Retail': 'shopping-bag',
+  'Storage': 'hard-drive',
+  'Support': 'life-buoy',
+  'Themes': 'layout',
   'Utilities': 'zap',
+  'Utility': 'zap',
+  'Website': 'globe',
 }
 
-export const CATEGORIES = Object.keys(CATEGORY_ICONS)
+export const CATEGORIES = schema.properties.categories.items.enum as string[]
 export const FRAPPE_VERSIONS = schema.properties.frappe_versions.items.enum as string[]
 export const LICENSES = schema.properties.license.enum as string[]

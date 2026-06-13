@@ -11,8 +11,8 @@ const featuredApps = ref<AppSummary[]>([])
 const loading = ref(true)
 
 const categories = [
-  'CRM', 'HR', 'Accounting', 'Manufacturing',
-  'Reports', 'AI', 'Integration', 'Developer Tools',
+  'Accounting', 'Human Resources', 'Retail', 'Business',
+  'Healthcare', 'Developer', 'Integrations', 'Analytics',
 ].map(name => ({ name, icon: CATEGORY_ICONS[name] || 'box' }))
 
 const apiEndpoints = [
@@ -103,9 +103,14 @@ onMounted(async () => {
 
     <!-- ── Categories ── -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-      <div class="mb-6">
-        <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Browse by</p>
-        <h2 class="text-xl font-semibold text-ink-gray-9">Categories</h2>
+      <div class="mb-6 flex items-end justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Brewery</p>
+          <h2 class="text-xl font-semibold text-ink-gray-9">Featured Categories</h2>
+        </div>
+        <Button :route="{ path: '/categories' }" variant="ghost" theme="gray" icon-right="arrow-right">
+          View all
+        </Button>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
         <RouterLink

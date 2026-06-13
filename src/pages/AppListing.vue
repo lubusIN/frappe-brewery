@@ -17,6 +17,7 @@ const error = ref('')
 const searchQuery = ref((route.query.q as string) || '')
 const selectedVersion = ref((route.query.version as string) || '')
 const selectedCategory = ref((route.query.category as string) || '')
+
 const selectedLicense = ref((route.query.license as string) || '')
 const showVerifiedOnly = ref(route.query.verified === 'true')
 
@@ -26,10 +27,28 @@ const versionOptions = [
   ...FRAPPE_VERSIONS.map(v => ({ label: `Frappe ${v}`, value: v }))
 ]
 
-const categoryOptions = [
-  { label: 'All categories', value: '' },
-  ...CATEGORIES.map(c => ({ label: c, value: c }))
-]
+const categoryOptions = computed(() => {
+  const categoryCounts = new Map<string, number>()
+  for (const app of allApps.value) {
+    if (app.categories) {
+      for (const cat of app.categories) {
+        categoryCounts.set(cat, (categoryCounts.get(cat) || 0) + 1)
+      }
+    }
+  }
+  const sortedActive = CATEGORIES.filter(c => categoryCounts.has(c))
+  return [
+    { label: 'All categories', value: '', description: String(allApps.value.length) },
+    ...sortedActive.map(c => ({ label: c, value: c, description: String(categoryCounts.get(c)) }))
+  ]
+})
+
+const categoryModel = computed({
+  get: () => categoryOptions.value?.find(o => o.value === selectedCategory.value) || categoryOptions.value?.[0],
+  set: (val: any) => {
+    selectedCategory.value = val?.value || ''
+  }
+})
 
 const licenseOptions = [
   { label: 'All licenses', value: '' },
@@ -105,9 +124,10 @@ onMounted(async () => {
     <div class="flex flex-col md:flex-row gap-3 mb-4 w-full">
       <div class="grid grid-cols-2 md:flex items-center gap-3 w-full md:w-auto shrink-0">
         <FormControl
-          type="select"
+          type="autocomplete"
           :options="categoryOptions"
-          v-model="selectedCategory"
+          v-model="categoryModel"
+          placeholder="All categories"
           class="w-full md:w-auto [&_button]:w-full [&_select]:w-full"
         />
         <FormControl

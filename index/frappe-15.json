@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-09T18:49:44.503Z",
+  "generated_at": "2026-06-13T13:52:32.469Z",
   "frappe_version": "15",
   "count": 5,
   "apps": [
@@ -20,9 +20,9 @@
       ],
       "categories": [
         "Accounting",
-        "Manufacturing",
-        "HR",
-        "CRM"
+        "Business",
+        "Human Resources",
+        "Customer Relations"
       ],
       "tags": [
         "erp",
@@ -54,7 +54,7 @@
       ],
       "categories": [
         "Utilities",
-        "CRM"
+        "Customer Relations"
       ],
       "tags": [
         "helpdesk",
@@ -84,7 +84,7 @@
         "erpnext"
       ],
       "categories": [
-        "HR"
+        "Human Resources"
       ],
       "tags": [
         "hr",
@@ -114,7 +114,7 @@
         "frappe"
       ],
       "categories": [
-        "Reports"
+        "Analytics"
       ],
       "tags": [
         "analytics",

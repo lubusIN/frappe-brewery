@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-09T18:49:44.503Z",
+  "generated_at": "2026-06-13T13:52:32.469Z",
   "categories": [
     {
       "name": "Accounting",
@@ -22,9 +22,9 @@
           ],
           "categories": [
             "Accounting",
-            "Manufacturing",
-            "HR",
-            "CRM"
+            "Business",
+            "Human Resources",
+            "Customer Relations"
           ],
           "tags": [
             "erp",
@@ -42,7 +42,83 @@
       ]
     },
     {
-      "name": "CRM",
+      "name": "Analytics",
+      "count": 1,
+      "apps": [
+        {
+          "slug": "insights",
+          "name": "insights",
+          "title": "Frappe Insights",
+          "description": "Open source business intelligence and data analytics tool for Frappe, with a drag-and-drop query builder, charts, and dashboards.",
+          "repository": "https://github.com/frappe/insights",
+          "license": "AGPL-3.0",
+          "frappe_versions": [
+            "14",
+            "15",
+            "16"
+          ],
+          "required_apps": [
+            "frappe"
+          ],
+          "categories": [
+            "Analytics"
+          ],
+          "tags": [
+            "analytics",
+            "bi",
+            "charts",
+            "dashboard",
+            "data",
+            "reports"
+          ],
+          "verified": true,
+          "status": "active",
+          "icon": "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/frontend/public/favicon.png"
+        }
+      ]
+    },
+    {
+      "name": "Business",
+      "count": 1,
+      "apps": [
+        {
+          "slug": "erpnext",
+          "name": "erpnext",
+          "title": "ERPNext",
+          "description": "Free and open source ERP system built on Frappe Framework, covering accounting, inventory, manufacturing, CRM, HR, and more.",
+          "repository": "https://github.com/frappe/erpnext",
+          "license": "GPL-3.0",
+          "frappe_versions": [
+            "14",
+            "15",
+            "16"
+          ],
+          "required_apps": [
+            "frappe"
+          ],
+          "categories": [
+            "Accounting",
+            "Business",
+            "Human Resources",
+            "Customer Relations"
+          ],
+          "tags": [
+            "erp",
+            "accounting",
+            "inventory",
+            "manufacturing",
+            "crm",
+            "hr",
+            "payroll"
+          ],
+          "verified": true,
+          "status": "active",
+          "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png"
+        }
+      ]
+    },
+    {
+      "name": "Customer Relations",
       "count": 2,
       "apps": [
         {
@@ -62,9 +138,9 @@
           ],
           "categories": [
             "Accounting",
-            "Manufacturing",
-            "HR",
-            "CRM"
+            "Business",
+            "Human Resources",
+            "Customer Relations"
           ],
           "tags": [
             "erp",
@@ -96,7 +172,7 @@
           ],
           "categories": [
             "Utilities",
-            "CRM"
+            "Customer Relations"
           ],
           "tags": [
             "helpdesk",
@@ -112,7 +188,7 @@
       ]
     },
     {
-      "name": "HR",
+      "name": "Human Resources",
       "count": 2,
       "apps": [
         {
@@ -132,9 +208,9 @@
           ],
           "categories": [
             "Accounting",
-            "Manufacturing",
-            "HR",
-            "CRM"
+            "Business",
+            "Human Resources",
+            "Customer Relations"
           ],
           "tags": [
             "erp",
@@ -166,7 +242,7 @@
             "erpnext"
           ],
           "categories": [
-            "HR"
+            "Human Resources"
           ],
           "tags": [
             "hr",
@@ -179,82 +255,6 @@
           "verified": true,
           "status": "active",
           "icon": "https://raw.githubusercontent.com/frappe/hrms/develop/hrms/public/images/frappe-hr-logo.svg"
-        }
-      ]
-    },
-    {
-      "name": "Manufacturing",
-      "count": 1,
-      "apps": [
-        {
-          "slug": "erpnext",
-          "name": "erpnext",
-          "title": "ERPNext",
-          "description": "Free and open source ERP system built on Frappe Framework, covering accounting, inventory, manufacturing, CRM, HR, and more.",
-          "repository": "https://github.com/frappe/erpnext",
-          "license": "GPL-3.0",
-          "frappe_versions": [
-            "14",
-            "15",
-            "16"
-          ],
-          "required_apps": [
-            "frappe"
-          ],
-          "categories": [
-            "Accounting",
-            "Manufacturing",
-            "HR",
-            "CRM"
-          ],
-          "tags": [
-            "erp",
-            "accounting",
-            "inventory",
-            "manufacturing",
-            "crm",
-            "hr",
-            "payroll"
-          ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png"
-        }
-      ]
-    },
-    {
-      "name": "Reports",
-      "count": 1,
-      "apps": [
-        {
-          "slug": "insights",
-          "name": "insights",
-          "title": "Frappe Insights",
-          "description": "Open source business intelligence and data analytics tool for Frappe, with a drag-and-drop query builder, charts, and dashboards.",
-          "repository": "https://github.com/frappe/insights",
-          "license": "AGPL-3.0",
-          "frappe_versions": [
-            "14",
-            "15",
-            "16"
-          ],
-          "required_apps": [
-            "frappe"
-          ],
-          "categories": [
-            "Reports"
-          ],
-          "tags": [
-            "analytics",
-            "bi",
-            "charts",
-            "dashboard",
-            "data",
-            "reports"
-          ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/frontend/public/favicon.png"
         }
       ]
     },
@@ -279,7 +279,7 @@
           ],
           "categories": [
             "Utilities",
-            "CRM"
+            "Customer Relations"
           ],
           "tags": [
             "helpdesk",
