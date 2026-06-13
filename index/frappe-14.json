@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-13T14:29:20.730Z",
+  "generated_at": "2026-06-13T14:56:09.552Z",
   "frappe_version": "14",
   "count": 5,
   "apps": [
@@ -19,7 +19,7 @@
       "install_branches": {
         "14": "version-14",
         "15": "version-15",
-        "16": "develop"
+        "16": "version-16"
       },
       "required_apps": [
         "frappe"
@@ -78,7 +78,7 @@
       ],
       "install_branches": {
         "14": "version-14",
-        "15": "version-15",
+        "15": "develop",
         "16": "develop"
       },
       "required_apps": [
@@ -135,7 +135,7 @@
       "install_branches": {
         "14": "version-14",
         "15": "version-15",
-        "16": "develop"
+        "16": "version-16"
       },
       "required_apps": [
         "frappe",
@@ -189,8 +189,8 @@
         "16"
       ],
       "install_branches": {
-        "14": "version-14",
-        "15": "version-15",
+        "14": "develop",
+        "15": "develop",
         "16": "develop"
       },
       "required_apps": [
@@ -246,7 +246,7 @@
       ],
       "install_branches": {
         "14": "version-14",
-        "15": "version-15",
+        "15": "develop",
         "16": "develop"
       },
       "required_apps": [

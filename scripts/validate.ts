@@ -62,6 +62,11 @@ async function checkValidFrappeApp(repoUrl: string, appName: string): Promise<bo
 }
 
 async function checkBranchVersion(owner: string, repo: string, branch: string, appName: string, expectedMajor: string): Promise<boolean> {
+  // If the branch name explicitly declares its version (e.g., version-14, v15), we trust the maintainers
+  if (branch === `version-${expectedMajor}` || branch === `v${expectedMajor}`) {
+    return true;
+  }
+
   const initUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${appName}/__init__.py`;
   const pyprojectUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/pyproject.toml`;
   const setupUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/setup.py`;

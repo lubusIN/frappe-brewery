@@ -116,20 +116,18 @@ function extractRequiredApps(hooksContent: string): string[] {
 
 function detectFrappeVersions(topics: string[]): string[] {
   const versions: string[] = [];
-  const versionMap: Record<string, string> = {
-    "frappe-v14": "14",
-    "frappe-v15": "15",
-    "frappe-v16": "16",
-    "v14": "14",
-    "v15": "15",
-    "v16": "16",
-  };
+  
   for (const topic of topics) {
-    if (versionMap[topic]) {
-      versions.push(versionMap[topic]);
+    const match = topic.match(/^(?:frappe-v|v)(\d+)$/);
+    if (match) {
+      const v = match[1];
+      if (SCHEMA_FRAPPE_VERSIONS.includes(v) && !versions.includes(v)) {
+        versions.push(v);
+      }
     }
   }
-  // Default: all versions if none detected
+
+  // Default: all allowed versions if none detected from topics
   return versions.length > 0 ? versions : SCHEMA_FRAPPE_VERSIONS;
 }
 
@@ -140,21 +138,33 @@ function detectLicense(spdxId: string | undefined): string {
   return SCHEMA_LICENSES.includes(normalized) ? normalized : "other";
 }
 
-function detectVersionMatrix(frappeVersions: string[], branchNames: string[], defaultBranch: string): Record<string, string> {
-  const matrix: Record<string, string> = {};
-  for (const v of frappeVersions) {
-    if (branchNames.includes(`version-${v}`)) {
-      matrix[v] = `version-${v}`;
-    } else if (branchNames.includes(`v${v}`)) {
-      matrix[v] = `v${v}`;
-    } else if (v === "16" && branchNames.includes("develop")) {
-       // Common Frappe convention: latest unreleased version might be develop
-      matrix[v] = "develop";
-    } else {
-      matrix[v] = defaultBranch;
+function detectInstallBranches(frappeVersions: string[], branchNames: string[], defaultBranch: string): Record<string, string> {
+  const branches: Record<string, string> = {};
+  
+  // 1. Infer versions directly from explicit branch names (e.g., version-14, v15)
+  for (const branch of branchNames) {
+    const match = branch.match(/^(?:version-|v)(\d+)$/);
+    if (match) {
+      const v = match[1];
+      if (SCHEMA_FRAPPE_VERSIONS.includes(v)) {
+        branches[v] = branch;
+      }
     }
   }
-  return matrix;
+
+  // 2. Map remaining detected frappeVersions using fallbacks
+  for (const v of frappeVersions) {
+    if (!branches[v]) {
+      if (v === "16" && branchNames.includes("develop")) {
+        // Common Frappe convention: latest unreleased version might be develop
+        branches[v] = "develop";
+      } else {
+        branches[v] = defaultBranch;
+      }
+    }
+  }
+  
+  return branches;
 }
 
 function detectMinFrappeVersion(frappeVersions: string[]): string {
@@ -288,7 +298,7 @@ async function main() {
     const license = detectLicense(repoData.license?.spdx_id);
     const frappeVersions = detectFrappeVersions(repoData.topics);
     const minFrappeVersion = detectMinFrappeVersion(frappeVersions);
-    const versionMatrix = detectVersionMatrix(frappeVersions, branchNames, defaultBranch);
+    const installBranches = detectInstallBranches(frappeVersions, branchNames, defaultBranch);
     const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
     const categories = topicsToCategories(repoData.topics);
     const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t));
@@ -313,7 +323,7 @@ async function main() {
       license,
       frappe_versions: frappeVersions,
       min_frappe_version: minFrappeVersion,
-      install_branches: versionMatrix,
+      install_branches: installBranches,
       required_apps: requiredApps,
       categories,
       tags,

@@ -14,7 +14,7 @@
   "install_branches": {
     "14": "version-14",
     "15": "version-15",
-    "16": "develop"
+    "16": "version-16"
   },
   "required_apps": [
     "frappe"
