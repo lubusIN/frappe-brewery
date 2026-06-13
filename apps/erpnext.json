@@ -5,13 +5,13 @@
   "description": "Free and open source ERP system built on Frappe Framework, covering accounting, inventory, manufacturing, CRM, HR, and more.",
   "repository": "https://github.com/frappe/erpnext",
   "license": "GPL-3.0",
+  "min_frappe_version": "14.0.0",
   "frappe_versions": [
     "14",
     "15",
     "16"
   ],
-  "min_frappe_version": "14.0.0",
-  "version_matrix": {
+  "install_branches": {
     "14": "version-14",
     "15": "version-15",
     "16": "develop"
@@ -34,6 +34,12 @@
     "hr",
     "payroll"
   ],
+  "install_commands": [
+    "bench get-app https://github.com/frappe/erpnext",
+    "bench --site [site-name] install-app erpnext",
+    "bench --site [site-name] migrate",
+    "bench restart"
+  ],
   "links": {
     "docs": "https://docs.erpnext.com",
     "demo": "https://demo.erpnext.com",
@@ -50,11 +56,5 @@
     "verified": true,
     "status": "active",
     "added_at": "2026-06-09"
-  },
-  "install_commands": [
-    "bench get-app https://github.com/frappe/erpnext",
-    "bench --site [site-name] install-app erpnext",
-    "bench --site [site-name] migrate",
-    "bench restart"
-  ]
+  }
 }

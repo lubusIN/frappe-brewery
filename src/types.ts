@@ -29,7 +29,7 @@ export interface App {
   license: string
   frappe_versions: string[]
   min_frappe_version: string
-  version_matrix: Record<string, string>
+  install_branches: Record<string, string>
   required_apps: string[]
   categories: string[]
   tags?: string[]
@@ -39,32 +39,16 @@ export interface App {
   meta?: AppMeta
 }
 
-export interface AppSummary {
-  slug: string
-  name: string
-  title: string
-  description: string
-  repository: string
-  license: string
-  frappe_versions: string[]
-  required_apps: string[]
-  categories: string[]
-  tags: string[]
-  verified: boolean
-  status: string
-  icon: string | null
-}
-
 export interface IndexResponse {
   generated_at: string
   count: number
-  apps: AppSummary[]
+  apps: App[]
 }
 
 export interface CategoryEntry {
   name: string
   count: number
-  apps: AppSummary[]
+  apps: App[]
 }
 
 export interface CategoriesResponse {

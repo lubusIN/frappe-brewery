@@ -313,7 +313,7 @@ async function main() {
       license,
       frappe_versions: frappeVersions,
       min_frappe_version: minFrappeVersion,
-      version_matrix: versionMatrix,
+      install_branches: versionMatrix,
       required_apps: requiredApps,
       categories,
       tags,

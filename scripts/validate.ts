@@ -61,6 +61,43 @@ async function checkValidFrappeApp(repoUrl: string, appName: string): Promise<bo
   return false;
 }
 
+async function checkBranchVersion(owner: string, repo: string, branch: string, appName: string, expectedMajor: string): Promise<boolean> {
+  const initUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${appName}/__init__.py`;
+  const pyprojectUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/pyproject.toml`;
+  const setupUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/setup.py`;
+
+  try {
+    const res = await fetch(initUrl, { method: "GET" });
+    if (res.ok) {
+      const text = await res.text();
+      const match = text.match(/__version__\s*=\s*['"](\d+)\./);
+      if (match && match[1] === expectedMajor) return true;
+    }
+  } catch {}
+
+  try {
+    const res = await fetch(pyprojectUrl, { method: "GET" });
+    if (res.ok) {
+      const text = await res.text();
+      const versionMatch = text.match(/version\s*=\s*['"](\d+)\./);
+      if (versionMatch && versionMatch[1] === expectedMajor) return true;
+      const frappeMatch = text.match(/frappe[^'"]*['"]([^'"]+)['"]/);
+      if (frappeMatch && frappeMatch[1].includes(expectedMajor)) return true;
+    }
+  } catch {}
+
+  try {
+    const res = await fetch(setupUrl, { method: "GET" });
+    if (res.ok) {
+      const text = await res.text();
+      const versionMatch = text.match(/version\s*=\s*['"](\d+)\./);
+      if (versionMatch && versionMatch[1] === expectedMajor) return true;
+    }
+  } catch {}
+
+  return false;
+}
+
 // ──────────────────────────────────────────────
 // Setup AJV & Schema
 // ──────────────────────────────────────────────
@@ -129,7 +166,7 @@ for (const file of files) {
   const repository = app.repository as string;
   const required_apps = app.required_apps as string[];
   const frappe_versions = app.frappe_versions as string[];
-  const version_matrix = app.version_matrix as Record<string, string>;
+  const install_branches = app.install_branches as Record<string, string>;
   const categories = (app.categories as string[]) || [];
   const media = app.media as { icon?: string; screenshots?: string[] } | undefined;
   const links = app.links as { docs?: string } | undefined;
@@ -167,12 +204,12 @@ for (const file of files) {
     }
   }
 
-  // version_matrix keys must exactly match frappe_versions
-  if (version_matrix && frappe_versions) {
-    const matrix_keys = Object.keys(version_matrix).sort();
+  // install_branches keys must exactly match frappe_versions
+  if (install_branches && frappe_versions) {
+    const matrix_keys = Object.keys(install_branches).sort();
     const sorted_versions = [...frappe_versions].sort();
     if (matrix_keys.join(",") !== sorted_versions.join(",")) {
-      fail(`version_matrix keys (${matrix_keys.join(", ")}) do not match frappe_versions (${sorted_versions.join(", ")})`);
+      fail(`install_branches keys (${matrix_keys.join(", ")}) do not match frappe_versions (${sorted_versions.join(", ")})`);
     } else {
       try {
         const output = execSync(`git ls-remote --heads ${repository}`, { stdio: "pipe" }).toString();
@@ -182,9 +219,27 @@ for (const file of files) {
             .map(line => line.split("refs/heads/")[1].trim())
         );
 
-        for (const branch of Object.values(version_matrix)) {
+        const match = repository.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/?$/);
+        const owner = match ? match[1] : "";
+        let repoName = match ? match[2] : "";
+        if (repoName.endsWith('.git')) repoName = repoName.slice(0, -4);
+
+        for (const [version, branch] of Object.entries(install_branches)) {
           if (!remoteBranches.has(branch)) {
-            fail(`version_matrix branch "${branch}" does not exist in repository`);
+            fail(`install_branches branch "${branch}" does not exist in repository`);
+          } else if (owner && repoName) {
+            // Verify that the branch actually belongs to the stated Frappe version
+            const isCorrectVersion = await checkBranchVersion(owner, repoName, branch, name, version);
+            
+            if (!isCorrectVersion) {
+               // We allow 'develop' or 'master' branch to bypass strict matching if it's the latest version
+               // as it might be bumping to a new undocumented version
+               if (branch === 'develop' || branch === 'master' || branch === 'main') {
+                 warn(`branch "${branch}" (mapped to ${version}) could not be strictly verified, but allowing since it is a development branch`);
+               } else {
+                 fail(`install_branches branch "${branch}" exists, but its files (__init__.py, pyproject.toml, etc.) do NOT match Frappe major version ${version}`);
+               }
+            }
           }
         }
       } catch {

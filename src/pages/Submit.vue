@@ -40,7 +40,7 @@ const requiredFields = [
   { name: 'categories', type: 'string[]', desc: 'From allowed list (CRM, HR, Accounting…)' },
   { name: 'install_commands', type: 'string[]', desc: 'List of bench installation commands' },
   { name: 'min_frappe_version', type: 'string', desc: 'Minimum Frappe version required (e.g., "14.0.0")' },
-  { name: 'version_matrix', type: 'object', desc: 'Maps Frappe versions to specific installation branches' },
+  { name: 'install_branches', type: 'object', desc: 'Maps Frappe versions to specific installation branches' },
 ]
 
 const schemaExample = `{
@@ -52,7 +52,7 @@ const schemaExample = `{
   "license": "MIT",
   "frappe_versions": ["15", "16"],
   "min_frappe_version": "15.0.0",
-  "version_matrix": {
+  "install_branches": {
     "15": "version-15",
     "16": "version-16"
   },

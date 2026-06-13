@@ -35,7 +35,7 @@ function writeJson(filePath: string, data: Record<string, any>): void {
   console.log(`  → wrote ${path.relative(ROOT, filePath)}`);
 }
 
-function toSummary(app: App) {
+function formatApp(app: App): App {
   return {
     slug: app.slug,
     name: app.name,
@@ -43,14 +43,17 @@ function toSummary(app: App) {
     description: app.description,
     repository: app.repository,
     license: app.license,
+    min_frappe_version: app.min_frappe_version,
     frappe_versions: app.frappe_versions,
+    install_branches: app.install_branches,
     required_apps: app.required_apps,
     categories: app.categories,
-    tags: app.tags ?? [],
-    verified: app.meta?.verified ?? false,
-    status: app.meta?.status ?? "active",
-    icon: app.media?.icon || null,
-  };
+    tags: app.tags,
+    install_commands: app.install_commands,
+    links: app.links,
+    media: app.media,
+    meta: app.meta,
+  }
 }
 
 // ──────────────────────────────────────────────
@@ -73,7 +76,7 @@ const apps: App[] = files
   .sort((a, b) => a.title.localeCompare(b.title));
 
 const generatedAt = new Date().toISOString();
-const appSummaries = apps.map(toSummary);
+const appSummaries = apps.map(formatApp);
 
 console.log(`\n📦 Generating index for ${apps.length} app(s)…\n`);
 
@@ -96,7 +99,7 @@ for (const app of apps) {
     if (!categoryMap[category]) {
       categoryMap[category] = [];
     }
-    categoryMap[category].push(toSummary(app));
+    categoryMap[category].push(formatApp(app));
   }
 }
 
@@ -120,7 +123,7 @@ const frappeVersions = schema.properties.frappe_versions.items.enum as string[];
 for (const version of frappeVersions) {
   const compatibleApps = apps
     .filter((app) => app.frappe_versions.includes(version))
-    .map(toSummary);
+    .map(formatApp);
 
   writeJson(path.join(INDEX_DIR, `frappe-${version}.json`), {
     generated_at: generatedAt,

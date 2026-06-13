@@ -5,13 +5,13 @@
   "description": "Modern, open source customer support and ticketing system built on Frappe, with SLA management, canned responses, and an agent portal.",
   "repository": "https://github.com/frappe/helpdesk",
   "license": "AGPL-3.0",
+  "min_frappe_version": "14.0.0",
   "frappe_versions": [
     "14",
     "15",
     "16"
   ],
-  "min_frappe_version": "14.0.0",
-  "version_matrix": {
+  "install_branches": {
     "14": "version-14",
     "15": "version-15",
     "16": "develop"
@@ -30,6 +30,12 @@
     "sla",
     "customer-service"
   ],
+  "install_commands": [
+    "bench get-app https://github.com/frappe/helpdesk",
+    "bench --site [site-name] install-app helpdesk",
+    "bench --site [site-name] migrate",
+    "bench restart"
+  ],
   "links": {
     "docs": "https://docs.frappe.io/helpdesk",
     "demo": "https://helpdesk.frappe.io",
@@ -46,11 +52,5 @@
     "verified": true,
     "status": "active",
     "added_at": "2026-06-09"
-  },
-  "install_commands": [
-    "bench get-app https://github.com/frappe/helpdesk",
-    "bench --site [site-name] install-app helpdesk",
-    "bench --site [site-name] migrate",
-    "bench restart"
-  ]
+  }
 }

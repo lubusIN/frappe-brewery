@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-13T13:52:32.469Z",
+  "generated_at": "2026-06-13T14:29:20.730Z",
   "categories": [
     {
       "name": "Accounting",
@@ -12,11 +12,17 @@
           "description": "Free and open source ERP system built on Frappe Framework, covering accounting, inventory, manufacturing, CRM, HR, and more.",
           "repository": "https://github.com/frappe/erpnext",
           "license": "GPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe"
           ],
@@ -35,9 +41,29 @@
             "hr",
             "payroll"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/erpnext",
+            "bench --site [site-name] install-app erpnext",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://docs.erpnext.com",
+            "demo": "https://demo.erpnext.com",
+            "website": "https://erpnext.com"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png",
+            "screenshots": [
+              "https://github.com/frappe/erpnext/blob/develop/erpnext/public/images/v16/hero_image.png?raw=true"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         }
       ]
     },
@@ -52,11 +78,17 @@
           "description": "Open source business intelligence and data analytics tool for Frappe, with a drag-and-drop query builder, charts, and dashboards.",
           "repository": "https://github.com/frappe/insights",
           "license": "AGPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe"
           ],
@@ -71,9 +103,29 @@
             "data",
             "reports"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/frontend/public/favicon.png"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/insights",
+            "bench --site [site-name] install-app insights",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://docs.frappe.io/insights",
+            "demo": "https://insights.frappe.io",
+            "website": "https://frappe.io/insights"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/frontend/public/favicon.png",
+            "screenshots": [
+              "https://raw.githubusercontent.com/frappe/insights/refs/heads/develop/.github/hero-image.png"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         }
       ]
     },
@@ -88,11 +140,17 @@
           "description": "Free and open source ERP system built on Frappe Framework, covering accounting, inventory, manufacturing, CRM, HR, and more.",
           "repository": "https://github.com/frappe/erpnext",
           "license": "GPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe"
           ],
@@ -111,9 +169,29 @@
             "hr",
             "payroll"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/erpnext",
+            "bench --site [site-name] install-app erpnext",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://docs.erpnext.com",
+            "demo": "https://demo.erpnext.com",
+            "website": "https://erpnext.com"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png",
+            "screenshots": [
+              "https://github.com/frappe/erpnext/blob/develop/erpnext/public/images/v16/hero_image.png?raw=true"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         }
       ]
     },
@@ -128,11 +206,17 @@
           "description": "Free and open source ERP system built on Frappe Framework, covering accounting, inventory, manufacturing, CRM, HR, and more.",
           "repository": "https://github.com/frappe/erpnext",
           "license": "GPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe"
           ],
@@ -151,9 +235,29 @@
             "hr",
             "payroll"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/erpnext",
+            "bench --site [site-name] install-app erpnext",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://docs.erpnext.com",
+            "demo": "https://demo.erpnext.com",
+            "website": "https://erpnext.com"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png",
+            "screenshots": [
+              "https://github.com/frappe/erpnext/blob/develop/erpnext/public/images/v16/hero_image.png?raw=true"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         },
         {
           "slug": "helpdesk",
@@ -162,11 +266,17 @@
           "description": "Modern, open source customer support and ticketing system built on Frappe, with SLA management, canned responses, and an agent portal.",
           "repository": "https://github.com/frappe/helpdesk",
           "license": "AGPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe"
           ],
@@ -181,9 +291,29 @@
             "sla",
             "customer-service"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/desk/public/favicon.svg"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/helpdesk",
+            "bench --site [site-name] install-app helpdesk",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://docs.frappe.io/helpdesk",
+            "demo": "https://helpdesk.frappe.io",
+            "website": "https://frappe.io/helpdesk"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/desk/public/favicon.svg",
+            "screenshots": [
+              "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/.github/Hero2.png"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         }
       ]
     },
@@ -198,11 +328,17 @@
           "description": "Free and open source ERP system built on Frappe Framework, covering accounting, inventory, manufacturing, CRM, HR, and more.",
           "repository": "https://github.com/frappe/erpnext",
           "license": "GPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe"
           ],
@@ -221,9 +357,29 @@
             "hr",
             "payroll"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/erpnext",
+            "bench --site [site-name] install-app erpnext",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://docs.erpnext.com",
+            "demo": "https://demo.erpnext.com",
+            "website": "https://erpnext.com"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png",
+            "screenshots": [
+              "https://github.com/frappe/erpnext/blob/develop/erpnext/public/images/v16/hero_image.png?raw=true"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         },
         {
           "slug": "hrms",
@@ -232,11 +388,17 @@
           "description": "Modern HR and payroll management system for Frappe, with leave management, expense claims, shift scheduling, and full payroll processing.",
           "repository": "https://github.com/frappe/hrms",
           "license": "GPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe",
             "erpnext"
@@ -252,9 +414,28 @@
             "expense",
             "shift"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/hrms/develop/hrms/public/images/frappe-hr-logo.svg"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/hrms",
+            "bench --site [site-name] install-app hrms",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://docs.frappe.io/hrms",
+            "website": "https://frappe.io/hr"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/hrms/develop/hrms/public/images/frappe-hr-logo.svg",
+            "screenshots": [
+              "https://raw.githubusercontent.com/frappe/hrms/refs/heads/develop/.github/hrms-hero.png"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         }
       ]
     },
@@ -269,11 +450,17 @@
           "description": "Modern, open source customer support and ticketing system built on Frappe, with SLA management, canned responses, and an agent portal.",
           "repository": "https://github.com/frappe/helpdesk",
           "license": "AGPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe"
           ],
@@ -288,9 +475,29 @@
             "sla",
             "customer-service"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/desk/public/favicon.svg"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/helpdesk",
+            "bench --site [site-name] install-app helpdesk",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://docs.frappe.io/helpdesk",
+            "demo": "https://helpdesk.frappe.io",
+            "website": "https://frappe.io/helpdesk"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/desk/public/favicon.svg",
+            "screenshots": [
+              "https://raw.githubusercontent.com/frappe/helpdesk/refs/heads/develop/.github/Hero2.png"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         },
         {
           "slug": "wiki",
@@ -299,11 +506,17 @@
           "description": "A collaborative wiki and knowledge base app for Frappe, with rich text editing, versioning, and hierarchical organization of content.",
           "repository": "https://github.com/frappe/wiki",
           "license": "AGPL-3.0",
+          "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
             "15",
             "16"
           ],
+          "install_branches": {
+            "14": "version-14",
+            "15": "version-15",
+            "16": "develop"
+          },
           "required_apps": [
             "frappe"
           ],
@@ -316,9 +529,28 @@
             "knowledge-base",
             "collaboration"
           ],
-          "verified": true,
-          "status": "active",
-          "icon": "https://raw.githubusercontent.com/frappe/wiki/develop/frontend/src/assets/wiki-logo.png"
+          "install_commands": [
+            "bench get-app https://github.com/frappe/wiki",
+            "bench --site [site-name] install-app wiki",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {
+            "docs": "https://github.com/frappe/wiki#readme",
+            "website": "https://frappe.io"
+          },
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/wiki/develop/frontend/src/assets/wiki-logo.png",
+            "screenshots": [
+              "https://frappe.io/files/W1%20(1).webp"
+            ]
+          },
+          "meta": {
+            "source": "manual",
+            "verified": true,
+            "status": "active",
+            "added_at": "2026-06-09"
+          }
         }
       ]
     }

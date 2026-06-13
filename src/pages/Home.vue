@@ -5,9 +5,9 @@ import { FeatherIcon, Badge, Button } from 'frappe-ui'
 import { fetchStats, fetchApps } from '../api'
 import { CATEGORY_ICONS } from '../constants'
 import AppCard from '../components/AppCard.vue'
-import type { StatsResponse, AppSummary } from '../types'
+import type { StatsResponse, App } from '../types'
 
-const featuredApps = ref<AppSummary[]>([])
+const featuredApps = ref<App[]>([])
 const loading = ref(true)
 
 const categories = [

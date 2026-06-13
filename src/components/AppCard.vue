@@ -5,9 +5,9 @@
     :aria-label="`View ${app.title}`"
   >
     <div class="flex items-start justify-between gap-3">
-      <Avatar shape="square" size="2xl" :image="app.icon" :label="app.title" />
+      <Avatar shape="square" size="2xl" :image="app.media?.icon" :label="app.title" />
       <div class="flex gap-1.5 flex-wrap">
-        <Badge v-if="app.verified" theme="green" label="Verified">
+        <Badge v-if="app.meta?.verified" theme="green" label="Verified">
           <template #prefix><FeatherIcon name="check" class="w-3 h-3" /></template>
         </Badge>
         <slot name="badges" />
@@ -28,11 +28,8 @@
 
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { FeatherIcon, Badge, Avatar } from 'frappe-ui'
+import { FeatherIcon, Avatar, Badge } from 'frappe-ui'
+import type { App } from '../types'
 
-import type { AppSummary } from '../types'
-
-defineProps<{
-  app: AppSummary
-}>()
+defineProps<{ app: App }>()
 </script>

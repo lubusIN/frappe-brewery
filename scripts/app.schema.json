@@ -13,7 +13,7 @@
     "license",
     "frappe_versions",
     "min_frappe_version",
-    "version_matrix",
+    "install_branches",
     "required_apps",
     "categories",
     "install_commands",
@@ -69,7 +69,7 @@
       "description": "Explicit minimum Frappe version required (e.g. '14.0.0')",
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+.*$"
     },
-    "version_matrix": {
+    "install_branches": {
       "type": "object",
       "description": "Matrix mapping supported Frappe versions to specific installation branches",
       "patternProperties": {

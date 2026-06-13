@@ -5,12 +5,12 @@ import { FeatherIcon, FormControl, Button, Badge, Switch } from 'frappe-ui'
 import { fetchApps } from '../api'
 import AppCard from '../components/AppCard.vue'
 import { CATEGORIES, FRAPPE_VERSIONS, LICENSES } from '../constants'
-import type { AppSummary, IndexResponse } from '../types'
+import type { App, IndexResponse } from '../types'
 
 const route = useRoute()
 const router = useRouter()
 
-const allApps = ref<AppSummary[]>([])
+const allApps = ref<App[]>([])
 const loading = ref(true)
 const error = ref('')
 
@@ -73,7 +73,7 @@ const filteredApps = computed(() => {
   if (selectedVersion.value) apps = apps.filter(a => a.frappe_versions.includes(selectedVersion.value))
   if (selectedCategory.value) apps = apps.filter(a => a.categories.includes(selectedCategory.value))
   if (selectedLicense.value) apps = apps.filter(a => a.license === selectedLicense.value)
-  if (showVerifiedOnly.value) apps = apps.filter(a => a.verified)
+  if (showVerifiedOnly.value) apps = apps.filter(a => a.meta?.verified)
   return apps
 })
 
@@ -199,7 +199,7 @@ onMounted(async () => {
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <AppCard v-for="app in filteredApps" :key="app.slug" :app="app">
           <template #badges>
-            <Badge v-if="app.status !== 'active'" theme="gray" :label="app.status" />
+            <Badge v-if="app.meta?.status !== 'active'" theme="gray" :label="app.meta?.status || 'active'" />
           </template>
           <template #footer>
             <Badge v-for="cat in app.categories.slice(0, 2)" :key="cat" theme="gray" :label="cat" />
