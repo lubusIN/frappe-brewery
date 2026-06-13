@@ -121,20 +121,6 @@ export function validateAppAgainstSchema(app: any): { valid: boolean; errors: st
 }
 
 // ──────────────────────────────────────────────
-// Collect app files (CLI Entry)
-// ──────────────────────────────────────────────
-import { fileURLToPath } from 'url';
-
-export async function main() {
-  const files = fs
-  .readdirSync(APPS_DIR)
-  .filter((file) => file.endsWith(".json") && !file.startsWith("_"))
-  .sort();
-
-if (files.length === 0) {
-  console.warn("⚠️  No app JSON files found in apps/");
-  process.exit(0);
-}
 
 export async function validateSingleApp(app: any, expectedSlug?: string): Promise<{ errors: string[], warnings: string[] }> {
   const errors: string[] = [];
