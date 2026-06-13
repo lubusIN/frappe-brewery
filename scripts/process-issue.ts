@@ -73,7 +73,7 @@ async function main() {
   const descStr = (app.description || "").replace(/\n/g, " ");
 
   const mediaPreview = [];
-  if (app.media?.icon) mediaPreview.push(`**Icon:** <img src="${app.media.icon}" height="50" align="top"/>`);
+  if (app.media?.icon) mediaPreview.push(`**Icon:** <br><img src="${app.media.icon}" height="50" align="top"/>`);
   if (app.media?.screenshots?.[0]) mediaPreview.push(`**Screenshot:** <br><img src="${app.media.screenshots[0]}" width="500"/>`);
 
   const { errors, warnings } = await validateSingleApp(app);

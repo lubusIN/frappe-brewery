@@ -61,8 +61,43 @@ export async function checkValidFrappeApp(repoUrl: string, appName: string): Pro
   return false;
 }
 
+export function parseFrappeDependencyVersions(req: string): string[] {
+  const supported = new Set<string>();
+  const ALL_MAJORS = [14, 15, 16, 17];
+  
+  for (const major of ALL_MAJORS) {
+    let matches = true;
+    let hasConstraint = false;
+
+    for (const token of req.split(',')) {
+      const gte = token.match(/>=(1\d)/);
+      const gt = token.match(/>(1\d)/);
+      const lte = token.match(/<=(1\d)/);
+      const lt = token.match(/<(1\d)/);
+      const eq = token.match(/[=~]=(1\d)/);
+      
+      if (gte) { hasConstraint = true; if (major < parseInt(gte[1])) matches = false; }
+      else if (gt && !gte) { hasConstraint = true; if (major <= parseInt(gt[1])) matches = false; }
+      
+      if (lte) { hasConstraint = true; if (major > parseInt(lte[1])) matches = false; }
+      else if (lt && !lte) { hasConstraint = true; if (major >= parseInt(lt[1])) matches = false; }
+      
+      if (eq) { hasConstraint = true; if (major !== parseInt(eq[1])) matches = false; }
+    }
+    
+    if (matches && hasConstraint) supported.add(major.toString());
+  }
+  
+  if (supported.size === 0) {
+     for (const major of ALL_MAJORS) {
+        if (req.includes(major.toString())) supported.add(major.toString());
+     }
+  }
+
+  return Array.from(supported);
+}
+
 async function checkBranchVersion(owner: string, repo: string, branch: string, appName: string, expectedMajor: string): Promise<boolean> {
-  // If the branch name explicitly declares its version (e.g., version-14, v15), we trust the maintainers
   if (branch === `version-${expectedMajor}` || branch === `v${expectedMajor}`) {
     return true;
   }
@@ -87,7 +122,10 @@ async function checkBranchVersion(owner: string, repo: string, branch: string, a
       const versionMatch = text.match(/version\s*=\s*['"](\d+)\./);
       if (versionMatch && versionMatch[1] === expectedMajor) return true;
       const frappeMatch = text.match(/frappe[^'"]*['"]([^'"]+)['"]/);
-      if (frappeMatch && frappeMatch[1].includes(expectedMajor)) return true;
+      if (frappeMatch) {
+         const supported = parseFrappeDependencyVersions(frappeMatch[1]);
+         if (supported.includes(expectedMajor)) return true;
+      }
     }
   } catch {}
 

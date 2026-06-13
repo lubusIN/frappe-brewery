@@ -12,9 +12,10 @@
  */
 
 import fs from "node:fs";
-import path from "node:path";
 import os from "node:os";
+import path from "node:path";
 import { execSync } from "node:child_process";
+import { parseFrappeDependencyVersions } from "./validate.js";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
@@ -138,29 +139,83 @@ function detectLicense(spdxId: string | undefined): string {
   return SCHEMA_LICENSES.includes(normalized) ? normalized : "other";
 }
 
-function detectInstallBranches(frappeVersions: string[], branchNames: string[], defaultBranch: string): Record<string, string> {
+async function getSupportedFrappeVersionsForBranch(owner: string, repo: string, branch: string, appName: string): Promise<string[]> {
+  const versions = new Set<string>();
+  try {
+    const res = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/pyproject.toml`);
+    if (res.ok) {
+      const text = await res.text();
+      const frappeMatch = text.match(/frappe[^'"]*['"]([^'"]+)['"]/);
+      if (frappeMatch) {
+         const supported = parseFrappeDependencyVersions(frappeMatch[1]);
+         supported.forEach(v => versions.add(v));
+      }
+      const versionMatch = text.match(/version\s*=\s*['"](\d+)\./);
+      if (versionMatch) versions.add(versionMatch[1]);
+    }
+  } catch {}
+
+  if (versions.size === 0) {
+    try {
+      const res = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${appName}/__init__.py`);
+      if (res.ok) {
+        const text = await res.text();
+        const match = text.match(/__version__\s*=\s*['"](\d+)\./);
+        if (match) versions.add(match[1]);
+      }
+    } catch {}
+  }
+  return Array.from(versions);
+}
+
+async function detectInstallBranchesAsync(
+  owner: string,
+  repo: string,
+  appName: string,
+  frappeVersions: string[], 
+  branchNames: string[], 
+  defaultBranch: string
+): Promise<Record<string, string>> {
   const branches: Record<string, string> = {};
   
-  // 1. Infer versions directly from explicit branch names (e.g., version-14, v15)
+  // 1. Explicit branch names
   for (const branch of branchNames) {
     const match = branch.match(/^(?:version-|v)(\d+)$/);
     if (match) {
       const v = match[1];
       if (SCHEMA_FRAPPE_VERSIONS.includes(v)) {
         branches[v] = branch;
+        if (!frappeVersions.includes(v)) frappeVersions.push(v);
       }
     }
   }
 
-  // 2. Map remaining detected frappeVersions using fallbacks
-  for (const v of frappeVersions) {
-    if (!branches[v]) {
-      if (v === "16" && branchNames.includes("develop")) {
-        // Common Frappe convention: latest unreleased version might be develop
-        branches[v] = "develop";
-      } else {
-        branches[v] = defaultBranch;
-      }
+  // 2. Map remaining versions dynamically
+  let missingVersions = frappeVersions.filter(v => !branches[v]);
+  
+  if (missingVersions.length > 0) {
+    const candidates = new Set([defaultBranch]);
+    if (branchNames.includes("main")) candidates.add("main");
+    if (branchNames.includes("master")) candidates.add("master");
+    if (branchNames.includes("develop")) candidates.add("develop");
+    
+    for (const branch of candidates) {
+       const supported = await getSupportedFrappeVersionsForBranch(owner, repo, branch, appName);
+       for (const v of supported) {
+         if (missingVersions.includes(v) && !branches[v]) {
+           branches[v] = branch;
+         }
+       }
+    }
+  }
+
+  // 3. Fallback
+  missingVersions = frappeVersions.filter(v => !branches[v]);
+  for (const v of missingVersions) {
+    if (v === "16" && branchNames.includes("develop")) {
+      branches[v] = "develop";
+    } else {
+      branches[v] = defaultBranch;
     }
   }
   
@@ -294,7 +349,7 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
     const license = detectLicense(repoData.license?.spdx_id);
     const frappeVersions = detectFrappeVersions(repoData.topics);
     const minFrappeVersion = detectMinFrappeVersion(frappeVersions);
-    const installBranches = detectInstallBranches(frappeVersions, branchNames, defaultBranch);
+    const installBranches = await detectInstallBranchesAsync(owner, repo, appName, frappeVersions, branchNames, defaultBranch);
     const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
     const categories = topicsToCategories(repoData.topics);
     const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t));
