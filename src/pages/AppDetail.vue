@@ -120,6 +120,25 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
         <!-- Left: main content -->
         <div class="lg:col-span-2 space-y-8">
 
+          <!-- Screenshots -->
+          <section v-if="app.media?.screenshots?.length" aria-labelledby="screenshots-heading">
+            <h2 id="screenshots-heading" class="text-base font-semibold text-ink-gray-8 mb-4 flex items-center gap-2">
+              <FeatherIcon name="image" class="w-4 h-4 text-ink-gray-4" />
+              Screenshots
+            </h2>
+            <div class="grid grid-cols-1 gap-4" :class="{ 'sm:grid-cols-2': app.media.screenshots.length > 1 }">
+              <button 
+                v-for="(screenshot, idx) in app.media.screenshots" 
+                :key="idx" 
+                @click="openScreenshot(screenshot)"
+                class="rounded-lg border border-outline-gray-2 overflow-hidden bg-surface-gray-2 hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-ink-gray-9 aspect-video relative flex items-center justify-center"
+              >
+                <FeatherIcon name="image" class="w-8 h-8 text-ink-gray-3 absolute" />
+                <img :src="screenshot" :alt="`${app.title} screenshot ${idx + 1}`" class="w-full h-full object-contain relative" loading="lazy" />
+              </button>
+            </div>
+          </section>
+
           <!-- Installation -->
           <section aria-labelledby="install-heading">
             <h2 id="install-heading" class="text-base font-semibold text-ink-gray-8 mb-4 flex items-center gap-2">
@@ -149,25 +168,6 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
                   <span class="text-ink-gray-8 whitespace-nowrap">{{ cmd }}</span>
                 </div>
               </div>
-            </div>
-          </section>
-
-
-          <!-- Screenshots -->
-          <section v-if="app.media?.screenshots?.length" aria-labelledby="screenshots-heading">
-            <h2 id="screenshots-heading" class="text-base font-semibold text-ink-gray-8 mb-4 flex items-center gap-2">
-              <FeatherIcon name="image" class="w-4 h-4 text-ink-gray-4" />
-              Screenshots
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button 
-                v-for="(screenshot, idx) in app.media.screenshots" 
-                :key="idx" 
-                @click="openScreenshot(screenshot)"
-                class="rounded-lg border border-outline-gray-2 overflow-hidden bg-surface-gray-1 hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-ink-gray-9"
-              >
-                <img :src="screenshot" :alt="`${app.title} screenshot ${idx + 1}`" class="w-full h-auto object-cover" loading="lazy" />
-              </button>
             </div>
           </section>
         </div>
