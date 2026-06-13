@@ -113,10 +113,20 @@ const validateSchema = ajv.compile(schema as object);
 
 const allowedCategories = (schema as any).properties.categories.items.enum as string[];
 
+export function validateAppAgainstSchema(app: any): { valid: boolean; errors: string[] } {
+  const valid = validateSchema(app);
+  if (valid) return { valid: true, errors: [] };
+  const errors = validateSchema.errors?.map(e => `${e.instancePath || '(root)'}: ${e.message}`) || [];
+  return { valid: false, errors };
+}
+
 // ──────────────────────────────────────────────
-// Collect app files
+// Collect app files (CLI Entry)
 // ──────────────────────────────────────────────
-const files = fs
+import { fileURLToPath } from 'url';
+
+export async function main() {
+  const files = fs
   .readdirSync(APPS_DIR)
   .filter((file) => file.endsWith(".json") && !file.startsWith("_"))
   .sort();
@@ -126,9 +136,140 @@ if (files.length === 0) {
   process.exit(0);
 }
 
-let hasError = false;
-let warningCount = 0;
-const slugs = new Set<string>();
+export async function validateSingleApp(app: any, expectedSlug?: string): Promise<{ errors: string[], warnings: string[] }> {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  const fail = (message: string) => errors.push(message);
+  const warn = (message: string) => warnings.push(message);
+
+  // Schema validation (AJV)
+  if (!validateSchema(app)) {
+    fail(`schema validation failed`);
+    for (const error of validateSchema.errors ?? []) {
+      fail(`• ${error.instancePath || "(root)"}: ${error.message}`);
+    }
+  }
+
+  const slug = app.slug as string;
+  const name = app.name as string;
+  const repository = app.repository as string;
+  const required_apps = app.required_apps as string[] || [];
+  const frappe_versions = app.frappe_versions as string[] || [];
+  const install_branches = app.install_branches as Record<string, string>;
+  const categories = (app.categories as string[]) || [];
+  const media = app.media as { icon?: string; screenshots?: string[] } | undefined;
+  const links = app.links as { docs?: string } | undefined;
+
+  // slug must match filename
+  if (expectedSlug && slug !== expectedSlug) {
+    fail(`slug "${slug}" must match filename "${expectedSlug}.json"`);
+  }
+
+  // repository must be a GitHub URL and valid app
+  if (!repository || !isGitHubUrl(repository)) {
+    fail(`repository must be a valid GitHub URL (got: ${repository})`);
+  } else {
+    const isValidApp = await checkValidFrappeApp(repository, name);
+    if (!isValidApp) {
+      fail(`repository is either not public or not a valid Frappe app (missing ${name}/hooks.py on default branch)`);
+    } else if (install_branches && frappe_versions) {
+      const matrix_keys = Object.keys(install_branches).sort();
+      const sorted_versions = [...frappe_versions].sort();
+      if (matrix_keys.join(",") !== sorted_versions.join(",")) {
+        fail(`install_branches keys (${matrix_keys.join(", ")}) do not match frappe_versions (${sorted_versions.join(", ")})`);
+      } else {
+        try {
+          const output = execSync(`git ls-remote --heads ${repository}`, { stdio: "pipe" }).toString();
+          const remoteBranches = new Set(
+            output.split("\n").filter(line => line.includes("refs/heads/")).map(line => line.split("refs/heads/")[1].trim())
+          );
+          const match = repository.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/?$/);
+          const owner = match ? match[1] : "";
+          let repoName = match ? match[2] : "";
+          if (repoName.endsWith('.git')) repoName = repoName.slice(0, -4);
+
+          for (const [version, branch] of Object.entries(install_branches)) {
+            if (!remoteBranches.has(branch)) {
+              fail(`install_branches branch "${branch}" does not exist in repository`);
+            } else if (owner && repoName) {
+              const isCorrectVersion = await checkBranchVersion(owner, repoName, branch, name, version);
+              if (!isCorrectVersion) {
+                 if (branch === 'develop' || branch === 'master' || branch === 'main') {
+                   warn(`branch "${branch}" (mapped to ${version}) could not be strictly verified, but allowing since it is a development branch`);
+                 } else {
+                   fail(`install_branches branch "${branch}" exists, but its files (__init__.py, pyproject.toml, etc.) do NOT match Frappe major version ${version}`);
+                 }
+              }
+            }
+          }
+        } catch {
+           fail(`failed to query repository branches using git ls-remote`);
+        }
+      }
+    }
+  }
+
+  // required_apps must include "frappe"
+  if (!required_apps.includes("frappe")) {
+    fail(`required_apps must include "frappe"`);
+  }
+
+  // categories must be from the allowed list
+  for (const category of categories) {
+    if (!allowedCategories.includes(category as (typeof allowedCategories)[number])) {
+      fail(`unknown category "${category}" — allowed: ${allowedCategories.join(", ")}`);
+    }
+  }
+
+  // Network check 2: App logo/icon URL
+  if (!media?.icon) {
+    fail(`app logo/icon (media.icon) is mandatory`);
+  } else {
+    const isIconValid = await checkUrlAccessible(media.icon);
+    if (!isIconValid) fail(`app logo/icon URL is not accessible: ${media.icon}`);
+  }
+
+  // Network check 3: Screenshots
+  const screenshots = media?.screenshots || [];
+  if (screenshots.length < 1) {
+    fail(`at least 1 screenshot is mandatory in media.screenshots`);
+  } else {
+    if (screenshots.length < 2) {
+      warn(`2 screenshots are recommended (found ${screenshots.length})`);
+    }
+    for (const ss of screenshots) {
+      const isSsValid = await checkUrlAccessible(ss);
+      if (!isSsValid) fail(`screenshot URL is not accessible: ${ss}`);
+    }
+  }
+
+  if (!links?.docs) {
+    warn(`no docs link provided`);
+  }
+
+  return { errors, warnings };
+}
+
+// ──────────────────────────────────────────────
+// CLI Entry
+// ──────────────────────────────────────────────
+import { fileURLToPath } from 'url';
+
+export async function main() {
+  const files = fs
+    .readdirSync(APPS_DIR)
+    .filter((file) => file.endsWith(".json") && !file.startsWith("_"))
+    .sort();
+
+  if (files.length === 0) {
+    console.warn("⚠️  No app JSON files found in apps/");
+    process.exit(0);
+  }
+
+  let hasError = false;
+  let warningCount = 0;
+  const slugs = new Set<string>();
 
 // ──────────────────────────────────────────────
 // Validate each app file
@@ -152,133 +293,27 @@ for (const file of files) {
   try {
     app = readJson(filePath) as Record<string, unknown>;
   } catch (err) {
-    fail(`invalid JSON — ${(err as Error).message}`);
-    continue;
-  }
-
-  // Schema validation (AJV)
-  if (!validateSchema(app)) {
     hasError = true;
-    console.error(`❌ ${file}: schema validation failed`);
-    for (const error of validateSchema.errors ?? []) {
-      console.error(`   • ${error.instancePath || "(root)"}: ${error.message}`);
-    }
+    console.error(`❌ ${file}: invalid JSON — ${(err as Error).message}`);
     continue;
   }
 
-  const slug = app.slug as string;
-  const name = app.name as string;
-  const repository = app.repository as string;
-  const required_apps = app.required_apps as string[];
-  const frappe_versions = app.frappe_versions as string[];
-  const install_branches = app.install_branches as Record<string, string>;
-  const categories = (app.categories as string[]) || [];
-  const media = app.media as { icon?: string; screenshots?: string[] } | undefined;
-  const links = app.links as { docs?: string } | undefined;
-
-  // slug must match filename
-  if (slug !== expectedSlug) {
-    fail(`slug "${slug}" must match filename "${expectedSlug}.json"`);
+  if (slugs.has(app.slug as string)) {
+    hasError = true;
+    console.error(`❌ ${file}: duplicate slug "${app.slug}"`);
   }
+  slugs.add(app.slug as string);
 
-  // slug must be unique
-  if (slugs.has(slug)) {
-    fail(`duplicate slug "${slug}"`);
+  const { errors, warnings } = await validateSingleApp(app, expectedSlug);
+  
+  for (const error of errors) {
+    hasError = true;
+    console.error(`❌ ${file}: ${error}`);
   }
-  slugs.add(slug);
-
-  // repository must be a GitHub URL and valid app
-  if (!isGitHubUrl(repository)) {
-    fail(`repository must be a valid GitHub URL (got: ${repository})`);
-  } else {
-    const isValidApp = await checkValidFrappeApp(repository, name);
-    if (!isValidApp) {
-      fail(`repository is either not public or not a valid Frappe app (missing ${name}/hooks.py on default branch)`);
-    }
-  }
-
-  // required_apps must include "frappe"
-  if (!required_apps.includes("frappe")) {
-    fail(`required_apps must include "frappe"`);
-  }
-
-  // categories must be from the allowed list
-  for (const category of categories) {
-    if (!allowedCategories.includes(category as (typeof allowedCategories)[number])) {
-      fail(`unknown category "${category}" — allowed: ${allowedCategories.join(", ")}`);
-    }
-  }
-
-  // install_branches keys must exactly match frappe_versions
-  if (install_branches && frappe_versions) {
-    const matrix_keys = Object.keys(install_branches).sort();
-    const sorted_versions = [...frappe_versions].sort();
-    if (matrix_keys.join(",") !== sorted_versions.join(",")) {
-      fail(`install_branches keys (${matrix_keys.join(", ")}) do not match frappe_versions (${sorted_versions.join(", ")})`);
-    } else {
-      try {
-        const output = execSync(`git ls-remote --heads ${repository}`, { stdio: "pipe" }).toString();
-        const remoteBranches = new Set(
-          output.split("\n")
-            .filter(line => line.includes("refs/heads/"))
-            .map(line => line.split("refs/heads/")[1].trim())
-        );
-
-        const match = repository.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/?$/);
-        const owner = match ? match[1] : "";
-        let repoName = match ? match[2] : "";
-        if (repoName.endsWith('.git')) repoName = repoName.slice(0, -4);
-
-        for (const [version, branch] of Object.entries(install_branches)) {
-          if (!remoteBranches.has(branch)) {
-            fail(`install_branches branch "${branch}" does not exist in repository`);
-          } else if (owner && repoName) {
-            // Verify that the branch actually belongs to the stated Frappe version
-            const isCorrectVersion = await checkBranchVersion(owner, repoName, branch, name, version);
-            
-            if (!isCorrectVersion) {
-               // We allow 'develop' or 'master' branch to bypass strict matching if it's the latest version
-               // as it might be bumping to a new undocumented version
-               if (branch === 'develop' || branch === 'master' || branch === 'main') {
-                 warn(`branch "${branch}" (mapped to ${version}) could not be strictly verified, but allowing since it is a development branch`);
-               } else {
-                 fail(`install_branches branch "${branch}" exists, but its files (__init__.py, pyproject.toml, etc.) do NOT match Frappe major version ${version}`);
-               }
-            }
-          }
-        }
-      } catch {
-         fail(`failed to query repository branches using git ls-remote`);
-      }
-    }
-  }
-
-  // Network check 2: App logo/icon URL
-  if (!media?.icon) {
-    fail(`app logo/icon (media.icon) is mandatory`);
-  } else {
-    const isIconValid = await checkUrlAccessible(media.icon);
-    if (!isIconValid) fail(`app logo/icon URL is not accessible: ${media.icon}`);
-  }
-
-  // Network check 3: Screenshots
-  const screenshots = media?.screenshots || [];
-  if (screenshots.length < 1) {
-    fail(`at least 1 screenshot is mandatory in media.screenshots`);
-  } else {
-    if (screenshots.length < 2) {
-      warn(`2 screenshots are recommended (found ${screenshots.length})`);
-    }
-    
-    for (const ss of screenshots) {
-      const isSsValid = await checkUrlAccessible(ss);
-      if (!isSsValid) fail(`screenshot URL is not accessible: ${ss}`);
-    }
-  }
-
-  // ── Warnings (non-blocking) ──────────────────
-  if (!links?.docs) {
-    warn(`no docs link provided`);
+  
+  for (const warning of warnings) {
+    warningCount++;
+    console.warn(`⚠️  ${file}: ${warning}`);
   }
 }
 
@@ -297,4 +332,12 @@ if (hasError) {
   process.exit(1);
 }
 
-console.log(`✅ All ${files.length} app(s) passed validation`);
+  console.log(`✅ All ${files.length} app(s) passed validation`);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch(err => {
+    console.error("❌", err.message);
+    process.exit(1);
+  });
+}

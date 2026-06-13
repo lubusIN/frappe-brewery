@@ -1,5 +1,5 @@
 import { extractApp, parseRepoUrl } from "./extract.js";
-import { checkValidFrappeApp } from "./validate.js";
+import { checkValidFrappeApp, validateSingleApp } from "./validate.js";
 import fs from "node:fs";
 
 async function main() {
@@ -68,6 +68,29 @@ async function main() {
   // Write markdown comment
   const jsonStr = JSON.stringify(app, null, 2);
   
+  const branchesStr = Object.entries(app.install_branches || {}).map(([v, b]) => `**${v}**: \`${b}\``).join("<br>");
+  const reqAppsStr = (app.required_apps || []).join(", ");
+  const descStr = (app.description || "").replace(/\n/g, " ");
+
+  const mediaPreview = [];
+  if (app.media?.icon) mediaPreview.push(`**Icon:** <img src="${app.media.icon}" height="50" align="top"/>`);
+  if (app.media?.screenshots?.[0]) mediaPreview.push(`**Screenshot:** <br><img src="${app.media.screenshots[0]}" width="500"/>`);
+
+  const { errors, warnings } = await validateSingleApp(app);
+  
+  let validationStatus = "";
+  if (errors.length === 0) {
+    validationStatus = "✅ **Validation Passed!**";
+    if (warnings.length > 0) {
+      validationStatus += "\n\n⚠️ **Warnings (Non-blocking):**\n" + warnings.map(w => `- ${w}`).join("\n");
+    }
+  } else {
+    validationStatus = "❌ **Validation Failed!** Please fix the following errors before this app can be accepted:\n" + errors.map(e => `- ${e}`).join("\n");
+    if (warnings.length > 0) {
+      validationStatus += "\n\n⚠️ **Warnings:**\n" + warnings.map(w => `- ${w}`).join("\n");
+    }
+  }
+
   const markdown = `### ✅ Extraction Successful!
   
 We have automatically extracted your app's details from the repository. Please review the details below.
@@ -76,9 +99,18 @@ We have automatically extracted your app's details from the repository. Please r
 | --- | --- |
 | **App Name** | \`${app.name}\` |
 | **Title** | ${app.title} |
+| **Description** | ${descStr} |
+| **Repository** | ${app.repository} |
 | **Versions** | ${app.frappe_versions.join(", ")} |
+| **Min Version** | ${app.min_frappe_version || "Not specified"} |
 | **License** | ${app.license} |
-| **Categories** | ${app.categories.join(", ")} |
+| **Categories** | ${(app.categories || []).join(", ")} |
+| **Required Apps** | ${reqAppsStr} |
+| **Install Branches** | ${branchesStr} |
+
+${mediaPreview.length ? "### Media Preview\n\n" + mediaPreview.join("\n\n") + "\n\n" : ""}### Validation Results
+
+${validationStatus}
 
 <details>
 <summary>Raw JSON (Do not edit this block)</summary>
@@ -92,8 +124,11 @@ ${jsonStr}
 `;
 
   await postComment(markdown);
+  await setIssueState("open"); // Reopen in case it was previously closed
   console.log("Successfully posted extraction result to issue!");
 }
+
+const BOT_MARKER = "<!-- frappe-brewery-bot-comment -->";
 
 async function postComment(body: string) {
   const token = process.env.GITHUB_TOKEN;
@@ -105,6 +140,36 @@ async function postComment(body: string) {
     return;
   }
   
+  const finalBody = BOT_MARKER + "\n\n" + body;
+
+  // Fetch existing comments to see if we already commented
+  const res = await fetch(`https://api.github.com/repos/${repo}/issues/${issueNumber}/comments`, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Accept": "application/vnd.github.v3+json"
+    }
+  });
+
+  if (res.ok) {
+    const comments = await res.json();
+    const existingComment = comments.find((c: any) => c.body.includes(BOT_MARKER));
+    
+    if (existingComment) {
+      // Update existing comment
+      await fetch(`https://api.github.com/repos/${repo}/issues/comments/${existingComment.id}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ body: finalBody })
+      });
+      return;
+    }
+  }
+
+  // Create new comment
   await fetch(`https://api.github.com/repos/${repo}/issues/${issueNumber}/comments`, {
     method: "POST",
     headers: {
@@ -112,14 +177,11 @@ async function postComment(body: string) {
       "Accept": "application/vnd.github.v3+json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ body })
+    body: JSON.stringify({ body: finalBody })
   });
 }
 
-async function commentAndClose(message: string) {
-  const body = `### ❌ Validation Failed\n\n${message}\n\nClosing this issue. Feel free to open a new one once the problem is resolved!`;
-  await postComment(body);
-  
+async function setIssueState(state: "open" | "closed") {
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPOSITORY;
   const issueNumber = process.env.ISSUE_NUMBER;
@@ -132,9 +194,15 @@ async function commentAndClose(message: string) {
         "Accept": "application/vnd.github.v3+json",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ state: "closed" })
+      body: JSON.stringify({ state })
     });
   }
+}
+
+async function commentAndClose(message: string) {
+  const body = `### ❌ Validation Failed\n\n${message}\n\nClosing this issue. Feel free to fix the issues and edit the issue body to retry!`;
+  await postComment(body);
+  await setIssueState("closed");
 }
 
 main().catch(console.error);
