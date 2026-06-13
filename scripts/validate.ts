@@ -7,8 +7,6 @@ const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
 const SCHEMA_PATH = path.join(ROOT, "scripts", "app.schema.json");
 
-
-
 // ──────────────────────────────────────────────
 // Helpers
 // ──────────────────────────────────────────────
@@ -24,6 +22,57 @@ function isGitHubUrl(url: string): boolean {
   return /^https:\/\/github\.com\/[^/]+\/[^/]+\/?$/.test(url);
 }
 
+async function checkUrlAccessible(url: string): Promise<boolean> {
+  try {
+    // Some servers reject HEAD, so fallback to GET
+    let res = await fetch(url, { method: "HEAD" });
+    if (res.status === 405 || res.status === 403) {
+      res = await fetch(url, { method: "GET" });
+    }
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function checkValidFrappeApp(repoUrl: string, appName: string): Promise<boolean> {
+  const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/?$/);
+  if (!match) return false;
+  const owner = match[1];
+  let repo = match[2];
+  if (repo.endsWith('.git')) repo = repo.slice(0, -4);
+
+  const branches = ["main", "master", "develop"];
+  for (const branch of branches) {
+    const hooksUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${appName}/hooks.py`;
+    try {
+      const res = await fetch(hooksUrl, { method: "HEAD" });
+      if (res.ok) return true;
+    } catch {}
+  }
+  
+  try {
+    const headers: Record<string, string> = {
+      "User-Agent": "Frappe-Brewery-Validator"
+    };
+    if (process.env.GITHUB_TOKEN) {
+      headers["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`;
+    }
+    const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
+    if (repoRes.ok) {
+      const repoData = await repoRes.json();
+      const defaultBranch = repoData.default_branch;
+      if (!branches.includes(defaultBranch)) {
+        const hooksUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${appName}/hooks.py`;
+        const hooksRes = await fetch(hooksUrl, { method: "HEAD" });
+        return hooksRes.ok;
+      }
+    }
+  } catch {}
+
+  return false;
+}
+
 // ──────────────────────────────────────────────
 // Setup AJV & Schema
 // ──────────────────────────────────────────────
@@ -32,7 +81,6 @@ const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const validateSchema = ajv.compile(schema as object);
 
-// Dynamically extract allowed categories from schema
 const allowedCategories = (schema as any).properties.categories.items.enum as string[];
 
 // ──────────────────────────────────────────────
@@ -89,12 +137,13 @@ for (const file of files) {
   }
 
   const slug = app.slug as string;
+  const name = app.name as string;
   const repository = app.repository as string;
   const required_apps = app.required_apps as string[];
   const frappe_versions = app.frappe_versions as string[];
   const version_matrix = app.version_matrix as Record<string, string>;
   const categories = (app.categories as string[]) || [];
-  const media = app.media as { screenshots?: string[] } | undefined;
+  const media = app.media as { icon?: string; screenshots?: string[] } | undefined;
   const links = app.links as { docs?: string } | undefined;
 
   // slug must match filename
@@ -108,9 +157,14 @@ for (const file of files) {
   }
   slugs.add(slug);
 
-  // repository must be a GitHub URL
+  // repository must be a GitHub URL and valid app
   if (!isGitHubUrl(repository)) {
     fail(`repository must be a valid GitHub URL (got: ${repository})`);
+  } else {
+    const isValidApp = await checkValidFrappeApp(repository, name);
+    if (!isValidApp) {
+      fail(`repository is either not public or not a valid Frappe app (missing ${name}/hooks.py on default branch)`);
+    }
   }
 
   // required_apps must include "frappe"
@@ -134,11 +188,30 @@ for (const file of files) {
     }
   }
 
-  // ── Warnings (non-blocking) ──────────────────
-  if (!media?.screenshots?.length) {
-    warn(`no screenshots provided`);
+  // Network check 2: App logo/icon URL
+  if (!media?.icon) {
+    fail(`app logo/icon (media.icon) is mandatory`);
+  } else {
+    const isIconValid = await checkUrlAccessible(media.icon);
+    if (!isIconValid) fail(`app logo/icon URL is not accessible: ${media.icon}`);
   }
 
+  // Network check 3: Screenshots
+  const screenshots = media?.screenshots || [];
+  if (screenshots.length < 1) {
+    fail(`at least 1 screenshot is mandatory in media.screenshots`);
+  } else {
+    if (screenshots.length < 2) {
+      warn(`2 screenshots are recommended (found ${screenshots.length})`);
+    }
+    
+    for (const ss of screenshots) {
+      const isSsValid = await checkUrlAccessible(ss);
+      if (!isSsValid) fail(`screenshot URL is not accessible: ${ss}`);
+    }
+  }
+
+  // ── Warnings (non-blocking) ──────────────────
   if (!links?.docs) {
     warn(`no docs link provided`);
   }
