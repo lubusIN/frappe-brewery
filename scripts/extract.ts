@@ -13,6 +13,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
+import { execSync } from "node:child_process";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
@@ -41,10 +43,6 @@ interface GitHubRelease {
   published_at: string;
 }
 
-interface GitHubBranch {
-  name: string;
-}
-
 // ──────────────────────────────────────────────
 // Helpers
 // ──────────────────────────────────────────────
@@ -55,7 +53,9 @@ function parseRepoUrl(url: string): { owner: string; repo: string } {
   if (!match) {
     throw new Error(`Invalid GitHub URL: ${url}`);
   }
-  return { owner: match[1], repo: match[2] };
+  let repo = match[2];
+  if (repo.endsWith('.git')) repo = repo.slice(0, -4);
+  return { owner: match[1], repo };
 }
 
 function toSlug(str: string): string {
@@ -67,6 +67,7 @@ async function githubFetch(endpoint: string): Promise<unknown> {
   const headers: HeadersInit = {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "Frappe-Brewery-Extractor"
   };
   if (token) {
     (headers as Record<string, string>).Authorization = `Bearer ${token}`;
@@ -77,20 +78,14 @@ async function githubFetch(endpoint: string): Promise<unknown> {
   return res.json();
 }
 
-async function fetchFileContent(
-  owner: string,
-  repo: string,
-  filePath: string
-): Promise<string | null> {
-  try {
-    const data = (await githubFetch(
-      `/repos/${owner}/${repo}/contents/${filePath}`
-    )) as { content?: string } | null;
-    if (!data?.content) return null;
-    return Buffer.from(data.content, "base64").toString("utf8");
-  } catch {
-    return null;
+function getLocalFileContent(tmpDir: string, filePaths: string[]): string | null {
+  for (const p of filePaths) {
+    const fullPath = path.join(tmpDir, p);
+    if (fs.existsSync(fullPath)) {
+      return fs.readFileSync(fullPath, "utf8");
+    }
   }
+  return null;
 }
 
 // ──────────────────────────────────────────────
@@ -199,7 +194,7 @@ function topicsToCategories(topics: string[]): string[] {
   return found.size > 0 ? Array.from(found) : ["Utilities"];
 }
 
-async function detectIconUrl(owner: string, repo: string, branch: string, appName: string): Promise<string | null> {
+function detectIconUrl(owner: string, repo: string, defaultBranch: string, appName: string, tmpDir: string): string | null {
   const candidates = [
     `${appName}/public/images/${appName}-logo.svg`,
     `${appName}/public/images/${appName}-logo.png`,
@@ -218,14 +213,8 @@ async function detectIconUrl(owner: string, repo: string, branch: string, appNam
   ];
 
   for (const item of candidates) {
-    const url = `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/${branch}/${item}`;
-    try {
-      const res = await fetch(url, { method: "HEAD" });
-      if (res.ok) {
-        return url;
-      }
-    } catch {
-      // ignore network errors and try next
+    if (fs.existsSync(path.join(tmpDir, item))) {
+      return `https://raw.githubusercontent.com/${owner}/${repo}/refs/heads/${defaultBranch}/${item}`;
     }
   }
   return null;
@@ -237,7 +226,7 @@ async function detectIconUrl(owner: string, repo: string, branch: string, appNam
 async function main() {
   const repoUrl = process.argv[2];
   if (!repoUrl) {
-    console.error("Usage: npm run extract https://github.com/owner/repo");
+    console.error("Usage: npm run brewery:extract https://github.com/owner/repo");
     process.exit(1);
   }
 
@@ -252,95 +241,116 @@ async function main() {
     process.exit(1);
   }
 
-  // Fetch latest release
-  const releases = (await githubFetch(
-    `/repos/${owner}/${repo}/releases?per_page=1`
-  )) as GitHubRelease[] | null;
-  const latestRelease = releases?.[0] ?? null;
+  const defaultBranch = repoData.default_branch;
 
-  // Fetch branches
-  const branches = (await githubFetch(
-    `/repos/${owner}/${repo}/branches?per_page=100`
-  )) as GitHubBranch[] | null;
-  const branchNames = branches?.map(b => b.name) || [];
-
-  // Try to fetch hooks.py, pyproject.toml, setup.py
-  const hooksContent = await fetchFileContent(owner, repo, `${repo.replace(/-/g, "_")}/hooks.py`)
-    ?? await fetchFileContent(owner, repo, `hooks.py`)
-    ?? "";
-
-  // Derive fields
-  const appName = repo.replace(/-/g, "_");
-  const slug = toSlug(appName);
-  const title = extractAppTitle(hooksContent)
-    ?? repoData.name.replace(/_/g, " ").replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase());
-  const description = repoData.description ?? `A Frappe app from ${owner}/${repo}`;
-  const license = detectLicense(repoData.license?.spdx_id);
-  const frappeVersions = detectFrappeVersions(repoData.topics);
-  const minFrappeVersion = detectMinFrappeVersion(frappeVersions);
-  const versionMatrix = detectVersionMatrix(frappeVersions, branchNames, repoData.default_branch);
-  const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
-  const categories = topicsToCategories(repoData.topics);
-  const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t));
-  const iconUrl = await detectIconUrl(owner, repo, repoData.default_branch, appName);
-
-  const outputPath = path.join(APPS_DIR, `${slug}.json`);
-
-  if (fs.existsSync(outputPath)) {
-    console.warn(`⚠️  ${slug}.json already exists — NOT overwriting.`);
-    console.warn(`   Edit manually or delete ${outputPath} first.`);
-    process.exit(0);
+  // Clone repository locally to temp dir
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "frappe-brewery-"));
+  console.log(`📥 Cloning repository to temp directory...`);
+  try {
+    execSync(`git clone --depth 1 https://github.com/${owner}/${repo}.git ${tmpDir}`, { stdio: "ignore" });
+  } catch (err) {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+    console.error(`❌ Failed to clone repository`);
+    process.exit(1);
   }
 
-  const today = new Date().toISOString().slice(0, 10);
+  try {
+    // Fetch latest release
+    const releases = (await githubFetch(
+      `/repos/${owner}/${repo}/releases?per_page=1`
+    )) as GitHubRelease[] | null;
+    const latestRelease = releases?.[0] ?? null;
 
-  const app = {
-    slug,
-    name: appName,
-    title,
-    description: description.slice(0, 500),
-    repository: `https://github.com/${owner}/${repo}`,
-    license,
-    frappe_versions: frappeVersions,
-    min_frappe_version: minFrappeVersion,
-    version_matrix: versionMatrix,
-    required_apps: requiredApps,
-    categories,
-    tags,
-    install_commands: [
-      `bench get-app ${repoUrl}`,
-      `bench --site [site-name] install-app ${appName}`,
-      `bench --site [site-name] migrate`,
-      `bench restart`
-    ],
-    links: {
-      ...(repoData.homepage ? { website: repoData.homepage } : {}),
-    },
-    media: {
-      icon: iconUrl || "",
-      screenshots: [],
-    },
-    meta: {
-      source: "extracted",
-      verified: false,
-      status: "active",
-      added_at: today,
-    },
-  };
+    // Fetch branches using git ls-remote
+    let branchNames: string[] = [];
+    try {
+       const output = execSync(`git ls-remote --heads https://github.com/${owner}/${repo}.git`, { stdio: "pipe" }).toString();
+       branchNames = output.split("\n")
+            .filter(line => line.includes("refs/heads/"))
+            .map(line => line.split("refs/heads/")[1].trim());
+    } catch {}
 
-  fs.writeFileSync(outputPath, `${JSON.stringify(app, null, 2)}\n`);
+    const appName = repo.replace(/-/g, "_");
 
-  console.log(`✅ Written: apps/${slug}.json`);
-  console.log(`\n📝 Please review and fill in:`);
-  console.log(`   • description (currently auto-extracted)`);
-  console.log(`   • frappe_versions (if topics didn't include them)`);
-  console.log(`   • categories (may need adjustment)`);
-  console.log(`   • media.icon and media.screenshots`);
-  console.log(`   • links.docs`);
-  console.log(`\nThen run: npm run validate`);
+    // Extract files locally
+    const hooksContent = getLocalFileContent(tmpDir, [`${appName}/hooks.py`, "hooks.py"]) ?? "";
 
-  if (latestRelease) {
-    console.log(`\n📦 Latest release: ${latestRelease.tag_name} (${latestRelease.published_at.slice(0, 10)})`);
+    // Derive fields
+    const slug = toSlug(appName);
+    const title = extractAppTitle(hooksContent)
+      ?? repoData.name.replace(/_/g, " ").replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+    const description = repoData.description ?? `A Frappe app from ${owner}/${repo}`;
+    const license = detectLicense(repoData.license?.spdx_id);
+    const frappeVersions = detectFrappeVersions(repoData.topics);
+    const minFrappeVersion = detectMinFrappeVersion(frappeVersions);
+    const versionMatrix = detectVersionMatrix(frappeVersions, branchNames, defaultBranch);
+    const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
+    const categories = topicsToCategories(repoData.topics);
+    const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t));
+    const iconUrl = detectIconUrl(owner, repo, defaultBranch, appName, tmpDir);
+
+    const outputPath = path.join(APPS_DIR, `${slug}.json`);
+
+    if (fs.existsSync(outputPath)) {
+      console.warn(`⚠️  ${slug}.json already exists — NOT overwriting.`);
+      console.warn(`   Edit manually or delete ${outputPath} first.`);
+      process.exit(0);
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    const app = {
+      slug,
+      name: appName,
+      title,
+      description: description.slice(0, 500),
+      repository: `https://github.com/${owner}/${repo}`,
+      license,
+      frappe_versions: frappeVersions,
+      min_frappe_version: minFrappeVersion,
+      version_matrix: versionMatrix,
+      required_apps: requiredApps,
+      categories,
+      tags,
+      install_commands: [
+        `bench get-app ${repoUrl}`,
+        `bench --site [site-name] install-app ${appName}`,
+        `bench --site [site-name] migrate`,
+        `bench restart`
+      ],
+      links: {
+        ...(repoData.homepage ? { website: repoData.homepage } : {}),
+      },
+      media: {
+        icon: iconUrl || "",
+        screenshots: [],
+      },
+      meta: {
+        source: "extracted",
+        verified: false,
+        status: "active",
+        added_at: today,
+      },
+    };
+
+    fs.writeFileSync(outputPath, `${JSON.stringify(app, null, 2)}\n`);
+
+    console.log(`✅ Written: apps/${slug}.json`);
+    console.log(`\n📝 Please review and fill in:`);
+    console.log(`   • description (currently auto-extracted)`);
+    console.log(`   • frappe_versions (if topics didn't include them)`);
+    console.log(`   • categories (may need adjustment)`);
+    console.log(`   • media.icon and media.screenshots`);
+    console.log(`   • links.docs`);
+    console.log(`\nThen run: npm run brewery:validate`);
+
+    if (latestRelease) {
+      console.log(`\n📦 Latest release: ${latestRelease.tag_name} (${latestRelease.published_at.slice(0, 10)})`);
+    }
+
+  } finally {
+    // Clean up temporary directory
+    fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 }
 
@@ -348,3 +358,4 @@ main().catch(err => {
   console.error("❌", err.message);
   process.exit(1);
 });
+

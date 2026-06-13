@@ -35,6 +35,8 @@ async function checkUrlAccessible(url: string): Promise<boolean> {
   }
 }
 
+import { execSync } from "node:child_process";
+
 async function checkValidFrappeApp(repoUrl: string, appName: string): Promise<boolean> {
   const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/?$/);
   if (!match) return false;
@@ -42,33 +44,19 @@ async function checkValidFrappeApp(repoUrl: string, appName: string): Promise<bo
   let repo = match[2];
   if (repo.endsWith('.git')) repo = repo.slice(0, -4);
 
-  const branches = ["main", "master", "develop"];
-  for (const branch of branches) {
-    const hooksUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${appName}/hooks.py`;
-    try {
-      const res = await fetch(hooksUrl, { method: "HEAD" });
-      if (res.ok) return true;
-    } catch {}
-  }
-  
   try {
-    const headers: Record<string, string> = {
-      "User-Agent": "Frappe-Brewery-Validator"
-    };
-    if (process.env.GITHUB_TOKEN) {
-      headers["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`;
+    // Get default branch using git ls-remote
+    const output = execSync(`git ls-remote --symref ${repoUrl} HEAD`, { stdio: "pipe" }).toString();
+    const branchMatch = output.match(/ref:\s+refs\/heads\/([^\s]+)\s+HEAD/);
+    if (branchMatch) {
+      const defaultBranch = branchMatch[1];
+      const hooksUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${appName}/hooks.py`;
+      const res = await fetch(hooksUrl, { method: "HEAD" });
+      return res.ok;
     }
-    const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
-    if (repoRes.ok) {
-      const repoData = await repoRes.json();
-      const defaultBranch = repoData.default_branch;
-      if (!branches.includes(defaultBranch)) {
-        const hooksUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${appName}/hooks.py`;
-        const hooksRes = await fetch(hooksUrl, { method: "HEAD" });
-        return hooksRes.ok;
-      }
-    }
-  } catch {}
+  } catch (e) {
+    return false;
+  }
 
   return false;
 }
@@ -185,6 +173,23 @@ for (const file of files) {
     const sorted_versions = [...frappe_versions].sort();
     if (matrix_keys.join(",") !== sorted_versions.join(",")) {
       fail(`version_matrix keys (${matrix_keys.join(", ")}) do not match frappe_versions (${sorted_versions.join(", ")})`);
+    } else {
+      try {
+        const output = execSync(`git ls-remote --heads ${repository}`, { stdio: "pipe" }).toString();
+        const remoteBranches = new Set(
+          output.split("\n")
+            .filter(line => line.includes("refs/heads/"))
+            .map(line => line.split("refs/heads/")[1].trim())
+        );
+
+        for (const branch of Object.values(version_matrix)) {
+          if (!remoteBranches.has(branch)) {
+            fail(`version_matrix branch "${branch}" does not exist in repository`);
+          }
+        }
+      } catch {
+         fail(`failed to query repository branches using git ls-remote`);
+      }
     }
   }
 
