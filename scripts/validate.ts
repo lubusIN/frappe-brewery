@@ -221,10 +221,19 @@ export async function validateSingleApp(app: any, expectedSlug?: string): Promis
 import { fileURLToPath } from 'url';
 
 export async function main() {
-  const files = fs
-    .readdirSync(APPS_DIR)
-    .filter((file) => file.endsWith(".json") && !file.startsWith("_"))
-    .sort();
+  const args = process.argv.slice(2);
+  let files: string[];
+
+  if (args.length > 0) {
+    files = args
+      .map(arg => path.basename(arg))
+      .filter(f => f.endsWith(".json") && !f.startsWith("_"));
+  } else {
+    files = fs
+      .readdirSync(APPS_DIR)
+      .filter((file) => file.endsWith(".json") && !file.startsWith("_"))
+      .sort();
+  }
 
   if (files.length === 0) {
     console.warn("⚠️  No app JSON files found in apps/");
