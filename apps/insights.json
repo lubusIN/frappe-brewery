@@ -12,8 +12,8 @@
     "16"
   ],
   "install_branches": {
-    "14": "develop",
-    "15": "develop",
+    "14": "main",
+    "15": "main",
     "16": "develop"
   },
   "required_apps": [

@@ -121,7 +121,7 @@ async function checkBranchVersion(owner: string, repo: string, branch: string, a
       const text = await res.text();
       const versionMatch = text.match(/version\s*=\s*['"](\d+)\./);
       if (versionMatch && versionMatch[1] === expectedMajor) return true;
-      const frappeMatch = text.match(/frappe[^'"]*['"]([^'"]+)['"]/);
+      const frappeMatch = text.match(/(?:^|\n)\s*frappe\s*=\s*['"]([^'"]+)['"]/);
       if (frappeMatch) {
          const supported = parseFrappeDependencyVersions(frappeMatch[1]);
          if (supported.includes(expectedMajor)) return true;
