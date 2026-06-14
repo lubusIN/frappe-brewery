@@ -37,7 +37,7 @@ const requiredFields = [
   { name: 'license', type: 'string', desc: 'SPDX identifier (MIT, GPL-3.0, AGPL-3.0…)' },
   { name: 'frappe_versions', type: 'string[]', desc: 'Supported versions: "14", "15", "16"' },
   { name: 'required_apps', type: 'string[]', desc: 'Must include "frappe"; add "erpnext" if needed' },
-  { name: 'categories', type: 'string[]', desc: 'From allowed list (CRM, HR, Accounting…)' },
+  { name: 'categories', type: 'string[]', desc: 'From allowed list (CRM, HR, Accounting…) (max 4)' },
   { name: 'tags', type: 'string[]', desc: 'Optional. Free-form tags (max 4) to describe the app.' },
   { name: 'install_commands', type: 'string[]', desc: 'List of bench installation commands' },
   { name: 'min_frappe_version', type: 'string', desc: 'Minimum Frappe version required (e.g., "14.0.0")' },

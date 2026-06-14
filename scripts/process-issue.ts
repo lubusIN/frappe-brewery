@@ -59,8 +59,8 @@ async function main() {
 
   // Merge form data
   if (categoriesStr) {
-    // Categories are comma separated from dropdown
-    app.categories = categoriesStr.split(",").map(s => s.trim()).filter(Boolean);
+    // Categories are comma separated from dropdown, limited to 4
+    app.categories = categoriesStr.split(",").map(s => s.trim()).filter(Boolean).slice(0, 4);
   }
 
   if (tagsStr && tagsStr !== "_No response_") {

@@ -183,7 +183,10 @@ export async function validateSingleApp(app: any, expectedSlug?: string): Promis
   const media = app.media as { icon?: string; screenshots?: string[] } | undefined;
   const links = app.links as { docs?: string } | undefined;
 
-  // Explicit check for tags limit
+  // Explicit check for limits
+  if (categories.length > 4) {
+    fail(`categories list exceeds the maximum limit of 4 (found ${categories.length})`);
+  }
   if (tags.length > 4) {
     fail(`tags list exceeds the maximum limit of 4 (found ${tags.length})`);
   }

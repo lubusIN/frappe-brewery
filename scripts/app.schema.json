@@ -133,6 +133,7 @@
         ]
       },
       "minItems": 1,
+      "maxItems": 4,
       "uniqueItems": true
     },
     "tags": {
