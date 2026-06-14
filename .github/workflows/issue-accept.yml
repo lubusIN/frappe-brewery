@@ -42,8 +42,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "feat: add new app from issue #${{ github.event.issue.number }}"
-          title: "Add App: Issue #${{ github.event.issue.number }}"
-          body: "Automatically generated pull request from accepted app submission #${{ github.event.issue.number }}."
+          title: "${{ github.event.issue.title }} (#${{ github.event.issue.number }})"
+          body: "Automatically generated pull request from accepted app submission.\n\nCloses #${{ github.event.issue.number }}"
           branch: "add-app-${{ github.event.issue.number }}"
           delete-branch: true
 
