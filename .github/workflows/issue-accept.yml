@@ -35,6 +35,7 @@ jobs:
         run: npm run brewery:validate || echo "Validation failed but proceeding"
 
       - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -43,3 +44,11 @@ jobs:
           body: "Automatically generated pull request from accepted app submission #${{ github.event.issue.number }}."
           branch: "add-app-${{ github.event.issue.number }}"
           delete-branch: true
+
+      - name: Comment on Issue
+        if: steps.cpr.outputs.pull-request-number
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} \
+            --body "🚀 A pull request has been automatically created to add this app to the registry! You can track its progress here: ${{ steps.cpr.outputs.pull-request-url }}"
