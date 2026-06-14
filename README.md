@@ -4,9 +4,9 @@ A community app registry for the Frappe ecosystem.
 
 <img src=".github/assets/banner.png" />
 
-- **Open data** — all app entries are plain JSON, versioned in Git
-- **GitHub-based submissions** — submit apps via Pull Request
-- **Static JSON API** — no database, consumed directly by tools
+- **Open data** all app entries are plain JSON, versioned in Git
+- **GitHub-based submissions** submit apps via Pull Request
+- **Static JSON API** no database, consumed directly by tools
 - **Built for** Frappe Local, hosting platforms, and community tooling
 
 ## Using the API
@@ -44,13 +44,18 @@ GET /api/categories
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide.
 
-**Quick steps:**
+You can submit an app using either GitHub Issues (recommended) or a manual Pull Request.
 
+**Method 1: Via GitHub Issues (Recommended)**
+1. Open a new [App Submission Issue](https://github.com/lubusIN/frappe-brewery/issues/new?template=submit-app.yml)
+2. Provide your repository URL, select categories, and add tags
+3. The registry bot will automatically extract metadata and create a Pull Request once accepted.
+
+**Method 2: Via Pull Request**
 1. Fork this repository
 2. Copy `apps/_example-app.json` → `apps/your-app-slug.json`
-3. Fill in all required fields
-4. Run `npm run brewery:validate` locally
-5. Open a Pull Request
+3. Fill in required fields and run `npm run brewery:validate` locally
+4. Open a Pull Request
 
 ## Repository Structure
 
@@ -61,7 +66,7 @@ frappe-brewery/
 ├── scripts/            # TypeScript scripts and JSON schema
 ├── src/                # Vue 3 SPA frontend code
 ├── functions/          # Cloudflare Pages Functions (API endpoints)
-└── .github/            # Workflows and PR template
+└── .github/            # Workflows and Issue templates
 ```
 
 ## Local Development
@@ -73,11 +78,17 @@ npm install
 # Validate all app files
 npm run brewery:validate
 
+# Format all app files
+npm run brewery:format
+
 # Generate index files
 npm run brewery:build
 
 # Extract app metadata from a GitHub repo URL
 npm run brewery:extract https://github.com/your-org/your-app
+
+# Sync allowed categories to GitHub issue template
+npm run brewery:sync
 
 # Start the website locally
 npm run dev

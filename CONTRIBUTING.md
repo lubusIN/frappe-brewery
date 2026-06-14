@@ -2,8 +2,6 @@
 
 Thank you for helping grow the Frappe ecosystem! This guide explains how to submit, update, and maintain app entries in the registry.
 
----
-
 ## Table of Contents
 
 - [How to Submit an App](#how-to-submit-an-app)
@@ -14,9 +12,26 @@ Thank you for helping grow the Frappe ecosystem! This guide explains how to subm
 - [How Updates Work](#how-updates-work)
 - [Manual Overrides](#manual-overrides)
 
----
-
 ## How to Submit an App
+
+You can submit an app using either GitHub Issues (recommended) or a manual Pull Request.
+
+### Method 1: Via GitHub Issues (Recommended)
+
+1. **Open an Issue**: Navigate to the [Issues tab](https://github.com/lubusIN/frappe-brewery/issues) and click "New Issue"
+2. **Select the Template**: Choose the "Submit Frappe App" template
+3. **Fill in Details**: Provide your public GitHub repository URL, select appropriate categories, and add relevant tags
+4. **Submit**: Create the issue
+
+The registry bot will automatically:
+- Parse your repository URL
+- Extract metadata (slug, title, description, license, supported Frappe versions, install branches, etc.)
+- Add the app to the registry
+- Create a Pull Request on your behalf once a maintainer accepts the submission by adding the `[app]accepted` label.
+
+If any validation errors occur, the bot will notify you in the issue comments.
+
+### Method 2: Via Pull Request
 
 1. **Fork** this repository
 2. **Copy** `apps/_example-app.json` to `apps/your-app-slug.json`
@@ -30,8 +45,6 @@ Thank you for helping grow the Frappe ecosystem! This guide explains how to subm
 5. **Open a Pull Request** — the PR template will guide you through the checklist
 
 A maintainer will review your PR. The GitHub Actions CI will run the validator automatically and report any errors directly in the PR.
-
----
 
 ## How Validation Works
 
@@ -57,8 +70,6 @@ Every PR touching `apps/**` runs `scripts/validate.ts`, which performs these che
 | No screenshots | Encourages adding `media.screenshots` |
 | No docs link | Encourages adding `links.docs` |
 
----
-
 ## Required Fields
 
 | Field | Type | Description |
@@ -80,8 +91,6 @@ Every PR touching `apps/**` runs `scripts/validate.ts`, which performs these che
 | `meta.verified` | `boolean` | Leave as `false` — maintainers set this |
 | `meta.status` | `string` | `"active"` for new submissions |
 
----
-
 ## Optional Fields
 
 | Field | Description |
@@ -94,8 +103,6 @@ Every PR touching `apps/**` runs `scripts/validate.ts`, which performs these che
 | `media.screenshots` | Array of screenshot URLs |
 | `meta.added_at` | Date added (set automatically on merge) |
 | `meta.updated_at` | Date last updated |
-
----
 
 ## Categories
 
@@ -117,8 +124,6 @@ Only the following categories are accepted. An app may belong to multiple catego
 | `AI` | AI and ML-powered features |
 | `Utilities` | General-purpose utilities and helpers |
 
----
-
 ## How Updates Work
 
 To update an existing entry:
@@ -127,8 +132,6 @@ To update an existing entry:
 3. Open a PR — CI will re-validate the file
 
 > **Manual fields are never overwritten** by automation. Only auto-synced fields (stars, forks, last release, last commit) may be updated by the registry bot in the future.
-
----
 
 ## Manual Overrides
 
@@ -146,4 +149,4 @@ The extractor ranks machine-readable evidence in this order:
 An app release branch such as `version-3` is not assumed to target Frappe 3. It
 is mapped only when its dependency metadata or CI configuration identifies the
 supported Frappe versions. If no compatibility evidence is available, the
-generated mapping is marked for manual review.
+generated mapping is marked for manual review.w
