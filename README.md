@@ -15,19 +15,19 @@ The registry exposes a static JSON API via Cloudflare Pages:
 
 ```bash
 # All apps
-GET https://frappe-brewery.pages.dev/index/apps.json
+GET https://frappe-brewery.lubus.in/index/apps.json
 
 # Apps compatible with Frappe 15
-GET https://frappe-brewery.pages.dev/index/frappe-15.json
+GET https://frappe-brewery.lubus.in/index/frappe-15.json
 
 # App by slug
-GET https://frappe-brewery.pages.dev/apps/erpnext.json
+GET https://frappe-brewery.lubus.in/apps/erpnext.json
 
 # Categories
-GET https://frappe-brewery.pages.dev/index/categories.json
+GET https://frappe-brewery.lubus.in/index/categories.json
 
 # Stats
-GET https://frappe-brewery.pages.dev/index/stats.json
+GET https://frappe-brewery.lubus.in/index/stats.json
 ```
 
 Dynamic API endpoints (via Cloudflare Pages Functions):

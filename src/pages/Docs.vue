@@ -18,17 +18,17 @@ const overviewCards = [
 const usageExamples = [
   {
     title: 'Fetch all apps (JavaScript)',
-    code: `fetch('https://frappe-brewery.pages.dev/index/apps.json')
+    code: `fetch('https://frappe-brewery.lubus.in/index/apps.json')
   .then(r => r.json())
   .then(data => console.log(data.apps))`,
   },
   {
     title: 'Get install commands (curl + jq)',
-    code: `curl https://frappe-brewery.pages.dev/apps/erpnext.json | jq '.install_commands'`,
+    code: `curl https://frappe-brewery.lubus.in/apps/erpnext.json | jq '.install_commands'`,
   },
   {
     title: 'Filter CRM apps via Pages Function',
-    code: `fetch('https://frappe-brewery.pages.dev/api/apps?category=CRM&frappe_version=15')`,
+    code: `fetch('https://frappe-brewery.lubus.in/api/apps?category=CRM&frappe_version=15')`,
   },
 ]
 
@@ -111,16 +111,16 @@ const endpoints = [
     <!-- Base URL -->
     <section class="mb-12" aria-labelledby="base-url-heading">
       <h2 id="base-url-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Base URL</h2>
-      <div class="flex items-center gap-3 p-4 rounded-lg border border-outline-gray-2 bg-surface-gray-1">
-        <code class="flex-1 font-mono text-sm text-ink-gray-7">https://frappe-brewery.pages.dev</code>
+      <div class="flex items-center gap-3 bg-white p-3 rounded-lg border border-ink-gray-2 shadow-sm max-w-sm mt-4">
+        <code class="flex-1 font-mono text-sm text-ink-gray-7">https://frappe-brewery.lubus.in</code>
         <Button
-          :variant="copied === 'https://frappe-brewery.pages.dev' ? 'subtle' : 'outline'"
-          :theme="copied === 'https://frappe-brewery.pages.dev' ? 'green' : 'gray'"
-          @click="copy('https://frappe-brewery.pages.dev')"
-          aria-label="Copy base URL"
-          :icon-left="copied === 'https://frappe-brewery.pages.dev' ? 'check' : 'copy'"
+          :variant="copied === 'https://frappe-brewery.lubus.in' ? 'subtle' : 'outline'"
+          :theme="copied === 'https://frappe-brewery.lubus.in' ? 'green' : 'gray'"
+          @click="copy('https://frappe-brewery.lubus.in')"
+          class="shrink-0 transition-colors"
+          :icon-left="copied === 'https://frappe-brewery.lubus.in' ? 'check' : 'copy'"
         >
-          {{ copied === 'https://frappe-brewery.pages.dev' ? 'Copied' : 'Copy' }}
+          {{ copied === 'https://frappe-brewery.lubus.in' ? 'Copied' : 'Copy' }}
         </Button>
       </div>
     </section>
