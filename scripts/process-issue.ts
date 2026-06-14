@@ -15,11 +15,13 @@ async function main() {
   const repoMatch = issueBody.match(/### GitHub Repository URL\s+([^\n]+)/);
   const categoriesMatch = issueBody.match(/### Categories\s+([^\n]+)/);
   const tagsMatch = issueBody.match(/### Tags\s+([^\n]+)/);
+  const installBranchesMatch = issueBody.match(/### Install Branches\s+([^\n]+)/);
   const screenshotMatch = issueBody.match(/### Main Screenshot URL\s+([^\n]+)/);
 
   const repository = repoMatch ? repoMatch[1].trim() : "";
   let categoriesStr = categoriesMatch ? categoriesMatch[1].trim() : "";
   const tagsStr = tagsMatch ? tagsMatch[1].trim() : "";
+  const installBranchesStr = installBranchesMatch ? installBranchesMatch[1].trim() : "";
   const screenshot = screenshotMatch ? screenshotMatch[1].trim() : "";
 
   if (categoriesStr === "_No response_") categoriesStr = "";
@@ -66,6 +68,22 @@ async function main() {
   if (tagsStr && tagsStr !== "_No response_") {
     // Override auto-extracted tags with user provided tags, limited to 4
     app.tags = tagsStr.split(",").map(s => s.trim().toLowerCase()).filter(Boolean).slice(0, 4);
+  }
+
+  if (installBranchesStr && installBranchesStr !== "_No response_") {
+    const pairs = installBranchesStr.split(",").map(s => s.trim()).filter(Boolean);
+    const customBranches: Record<string, string> = {};
+    for (const pair of pairs) {
+      const parts = pair.split(":");
+      if (parts.length === 2) {
+        customBranches[parts[0].trim()] = parts[1].trim();
+      }
+    }
+    if (Object.keys(customBranches).length > 0) {
+      app.install_branches = customBranches;
+      app.frappe_versions = Object.keys(customBranches).sort();
+      app.min_frappe_version = app.frappe_versions[0] ? `${app.frappe_versions[0]}.0.0` : undefined;
+    }
   }
   
   if (screenshot && screenshot !== "_No response_") {

@@ -61,8 +61,17 @@ body:
     id: tags
     attributes:
       label: Tags
-      description: "Provide up to 4 comma-separated tags for your app (e.g. accounting, invoice, billing). This will override any auto-extracted tags from your repository."
+      description: "Provide up to 4 comma-separated tags for your app (e.g. accounting, invoice, billing)."
       placeholder: "tag1, tag2, tag3"
+    validations:
+      required: true
+      
+  - type: input
+    id: install_branches
+    attributes:
+      label: Install Branches
+      description: "Optional: Manually provide the install branches mapping. Format as comma-separated version:branch pairs (e.g. 14:version-14, 15:main). If left blank, we will attempt to auto-extract this from your repository."
+      placeholder: "14:version-14, 15:main"
     validations:
       required: false
       
