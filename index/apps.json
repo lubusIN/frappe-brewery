@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-14T14:53:54.158Z",
-  "count": 7,
+  "generated_at": "2026-06-14T15:14:12.332Z",
+  "count": 8,
   "apps": [
     {
       "slug": "erpnext",
@@ -371,6 +371,51 @@
         "verified": true,
         "status": "active",
         "added_at": "2026-06-09"
+      }
+    },
+    {
+      "slug": "studio",
+      "name": "studio",
+      "title": "Studio",
+      "description": "Visual App Builder for the Frappe Framework",
+      "repository": "https://github.com/frappe/studio",
+      "license": "AGPL-3.0",
+      "min_frappe_version": "15.0.0",
+      "frappe_versions": [
+        "15",
+        "16"
+      ],
+      "install_branches": {
+        "15": "develop",
+        "16": "develop"
+      },
+      "required_apps": [
+        "frappe"
+      ],
+      "categories": [
+        "Developer"
+      ],
+      "tags": [
+        "low-code. app-builder"
+      ],
+      "install_commands": [
+        "bench get-app studio",
+        "bench --site [site-name] install-app studio",
+        "bench --site [site-name] migrate",
+        "bench restart"
+      ],
+      "links": {},
+      "media": {
+        "icon": "https://raw.githubusercontent.com/frappe/studio/refs/heads/develop/frontend/public/studio-logo.svg",
+        "screenshots": [
+          "https://github.com/user-attachments/assets/2177dba2-2d4d-4c4b-95bd-bdd6c875278e"
+        ]
+      },
+      "meta": {
+        "source": "extracted",
+        "verified": false,
+        "status": "active",
+        "added_at": "2026-06-14"
       }
     }
   ]

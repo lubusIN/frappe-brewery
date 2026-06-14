@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T14:53:54.158Z",
+  "generated_at": "2026-06-14T15:14:12.332Z",
   "categories": [
     {
       "name": "Accounting",
@@ -409,7 +409,7 @@
     },
     {
       "name": "Developer",
-      "count": 1,
+      "count": 2,
       "apps": [
         {
           "slug": "builder",
@@ -451,6 +451,51 @@
             "icon": "https://raw.githubusercontent.com/frappe/builder/refs/heads/develop/frontend/public/builder_logo.png",
             "screenshots": [
               "https://github.com/user-attachments/assets/d20cec8a-9e30-4ad5-9fc0-9c136fffa916"
+            ]
+          },
+          "meta": {
+            "source": "extracted",
+            "verified": false,
+            "status": "active",
+            "added_at": "2026-06-14"
+          }
+        },
+        {
+          "slug": "studio",
+          "name": "studio",
+          "title": "Studio",
+          "description": "Visual App Builder for the Frappe Framework",
+          "repository": "https://github.com/frappe/studio",
+          "license": "AGPL-3.0",
+          "min_frappe_version": "15.0.0",
+          "frappe_versions": [
+            "15",
+            "16"
+          ],
+          "install_branches": {
+            "15": "develop",
+            "16": "develop"
+          },
+          "required_apps": [
+            "frappe"
+          ],
+          "categories": [
+            "Developer"
+          ],
+          "tags": [
+            "low-code. app-builder"
+          ],
+          "install_commands": [
+            "bench get-app studio",
+            "bench --site [site-name] install-app studio",
+            "bench --site [site-name] migrate",
+            "bench restart"
+          ],
+          "links": {},
+          "media": {
+            "icon": "https://raw.githubusercontent.com/frappe/studio/refs/heads/develop/frontend/public/studio-logo.svg",
+            "screenshots": [
+              "https://github.com/user-attachments/assets/2177dba2-2d4d-4c4b-95bd-bdd6c875278e"
             ]
           },
           "meta": {
