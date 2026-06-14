@@ -1,6 +1,7 @@
 import { extractApp, parseRepoUrl } from "./extract.js";
 import { checkValidFrappeApp, validateSingleApp } from "./validate.js";
 import fs from "node:fs";
+import { postOrUpdateBotComment, setIssueState as apiSetIssueState } from "./github.js";
 
 async function main() {
   const issueBody = process.env.ISSUE_BODY || "";
@@ -157,8 +158,6 @@ ${jsonStr}
   console.log("Successfully posted extraction result to issue!");
 }
 
-const BOT_MARKER = "<!-- frappe-brewery-bot-comment -->";
-
 async function postComment(body: string) {
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPOSITORY;
@@ -169,62 +168,15 @@ async function postComment(body: string) {
     return;
   }
   
-  const finalBody = BOT_MARKER + "\n\n" + body;
-
-  // Fetch existing comments to see if we already commented
-  const res = await fetch(`https://api.github.com/repos/${repo}/issues/${issueNumber}/comments`, {
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Accept": "application/vnd.github.v3+json"
-    }
-  });
-
-  if (res.ok) {
-    const comments = await res.json();
-    const existingComment = comments.find((c: any) => c.body.includes(BOT_MARKER));
-    
-    if (existingComment) {
-      // Update existing comment
-      await fetch(`https://api.github.com/repos/${repo}/issues/comments/${existingComment.id}`, {
-        method: "PATCH",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "application/vnd.github.v3+json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ body: finalBody })
-      });
-      return;
-    }
-  }
-
-  // Create new comment
-  await fetch(`https://api.github.com/repos/${repo}/issues/${issueNumber}/comments`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Accept": "application/vnd.github.v3+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ body: finalBody })
-  });
+  await postOrUpdateBotComment(repo, issueNumber, body);
 }
 
 async function setIssueState(state: "open" | "closed") {
-  const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPOSITORY;
   const issueNumber = process.env.ISSUE_NUMBER;
   
-  if (token && repo && issueNumber) {
-    await fetch(`https://api.github.com/repos/${repo}/issues/${issueNumber}`, {
-      method: "PATCH",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Accept": "application/vnd.github.v3+json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ state })
-    });
+  if (repo && issueNumber) {
+    await apiSetIssueState(repo, issueNumber, state);
   }
 }
 

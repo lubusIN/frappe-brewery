@@ -32,7 +32,9 @@ jobs:
         run: npx tsx scripts/accept-issue.ts
 
       - name: Format Apps
-        run: npm run brewery:validate || echo "Validation failed but proceeding"
+        run: |
+          npm run brewery:format
+          npm run brewery:validate || echo "Validation failed but proceeding"
 
       - name: Create Pull Request
         id: cpr

@@ -22,14 +22,12 @@ import {
   getFrappeVersionFromBranchName,
   selectInstallBranches,
 } from "./frappe-compat.js";
+import { getAllowedFrappeVersions, getAllowedLicenses } from "./schema.js";
+import { getRemoteBranches } from "./git.js";
+import { githubFetch } from "./github.js";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
-const SCHEMA_PATH = path.join(ROOT, "scripts", "app.schema.json");
-
-const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
-const SCHEMA_LICENSES = schema.properties.license.enum as string[];
-const SCHEMA_FRAPPE_VERSIONS = schema.properties.frappe_versions.items.enum as string[];
 
 // ──────────────────────────────────────────────
 // Types
@@ -77,21 +75,7 @@ export function toSlug(str: string): string {
   return str.toLowerCase().replace(/_/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
-export async function githubFetch(endpoint: string): Promise<unknown> {
-  const token = process.env.GITHUB_TOKEN;
-  const headers: HeadersInit = {
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "Frappe-Brewery-Extractor"
-  };
-  if (token) {
-    (headers as Record<string, string>).Authorization = `Bearer ${token}`;
-  }
-  const res = await fetch(`https://api.github.com${endpoint}`, { headers });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub API error ${res.status}: ${endpoint}`);
-  return res.json();
-}
+
 
 function getLocalFileContent(tmpDir: string, filePaths: string[]): string | null {
   for (const p of filePaths) {
@@ -136,7 +120,7 @@ function detectFrappeVersions(topics: string[]): string[] {
     const match = topic.match(/^(?:frappe-v|v)(\d+)$/);
     if (match) {
       const v = match[1];
-      if (SCHEMA_FRAPPE_VERSIONS.includes(v) && !versions.includes(v)) {
+      if (getAllowedFrappeVersions().includes(v) && !versions.includes(v)) {
         versions.push(v);
       }
     }
@@ -149,10 +133,10 @@ function detectLicense(spdxId: string | undefined): string {
   if (!spdxId || spdxId === "NOASSERTION") return "other";
   // Normalize GPL-3.0-only → GPL-3.0 etc.
   const normalized = spdxId.replace("-only", "").replace("-or-later", "");
-  return SCHEMA_LICENSES.includes(normalized) ? normalized : "other";
+  return getAllowedLicenses().includes(normalized) ? normalized : "other";
 }
 
-async function fetchRawFile(
+export async function fetchRawFile(
   owner: string,
   repo: string,
   branch: string,
@@ -168,13 +152,14 @@ async function fetchRawFile(
   }
 }
 
-async function inspectBranchCompatibility(
+export async function inspectBranchCompatibility(
   owner: string,
   repo: string,
   branch: string,
+  allowedVersions: string[],
 ): Promise<BranchCompatibility[]> {
   const evidence: BranchCompatibility[] = [];
-  const namedVersion = getFrappeVersionFromBranchName(branch, SCHEMA_FRAPPE_VERSIONS);
+  const namedVersion = getFrappeVersionFromBranchName(branch, allowedVersions);
   if (namedVersion) {
     evidence.push({
       branch,
@@ -186,7 +171,7 @@ async function inspectBranchCompatibility(
 
   const pyproject = await fetchRawFile(owner, repo, branch, "pyproject.toml");
   const dependencyVersions = pyproject
-    ? extractDependencyFrappeVersions(pyproject, SCHEMA_FRAPPE_VERSIONS)
+    ? extractDependencyFrappeVersions(pyproject, allowedVersions)
     : [];
   if (dependencyVersions.length > 0) {
     evidence.push({
@@ -200,9 +185,15 @@ async function inspectBranchCompatibility(
   // CI is the best available signal for apps that do not declare Frappe as a
   // package dependency. Inspect only .github text files to keep API use bounded.
   if (dependencyVersions.length === 0 && !namedVersion) {
-    const tree = await githubFetch(
-      `/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
-    ) as GitHubTree | null;
+    let tree: GitHubTree | null = null;
+    try {
+      tree = await githubFetch(
+        `/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
+      ) as GitHubTree | null;
+    } catch (err: any) {
+      console.warn(`⚠️  Failed to fetch git tree for ${owner}/${repo}@${branch}: ${err.message}`);
+    }
+
     const ciPaths = (tree?.tree ?? [])
       .filter((item) =>
         item.type === "blob"
@@ -219,7 +210,7 @@ async function inspectBranchCompatibility(
     const ciVersions = new Set<string>();
     for (const content of ciContents) {
       if (!content) continue;
-      for (const version of extractCiFrappeVersions(content, SCHEMA_FRAPPE_VERSIONS)) {
+      for (const version of extractCiFrappeVersions(content, allowedVersions)) {
         ciVersions.add(version);
       }
     }
@@ -259,13 +250,13 @@ async function detectInstallBranchesAsync(
 
   const evidence = (
     await Promise.all(
-      [...candidates].map((branch) => inspectBranchCompatibility(owner, repo, branch)),
+      [...candidates].map((branch) => inspectBranchCompatibility(owner, repo, branch, getAllowedFrappeVersions())),
     )
   ).flat();
   const warnings: string[] = [];
   let installBranches = selectInstallBranches(
     evidence,
-    SCHEMA_FRAPPE_VERSIONS,
+    getAllowedFrappeVersions(),
     defaultBranch,
   );
 
@@ -278,14 +269,14 @@ async function detectInstallBranchesAsync(
     }];
     installBranches = selectInstallBranches(
       topicEvidence,
-      SCHEMA_FRAPPE_VERSIONS,
+      getAllowedFrappeVersions(),
       defaultBranch,
     );
     warnings.push("Compatibility came only from GitHub topics; review install_branches.");
   }
 
   if (Object.keys(installBranches).length === 0) {
-    const latestVersion = SCHEMA_FRAPPE_VERSIONS.at(-1)!;
+    const latestVersion = getAllowedFrappeVersions().at(-1)!;
     installBranches = { [latestVersion]: defaultBranch };
     warnings.push(
       `No Frappe compatibility declaration was found; ${defaultBranch} was tentatively mapped to Frappe ${latestVersion}.`,
@@ -294,7 +285,7 @@ async function detectInstallBranchesAsync(
 
   return {
     installBranches,
-    validFrappeVersions: SCHEMA_FRAPPE_VERSIONS.filter(
+    validFrappeVersions: getAllowedFrappeVersions().filter(
       (version) => installBranches[version],
     ),
     warnings,
@@ -409,10 +400,7 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
     // Fetch branches using git ls-remote
     let branchNames: string[] = [];
     try {
-       const output = execSync(`git ls-remote --heads https://github.com/${owner}/${repo}.git`, { stdio: "pipe" }).toString();
-       branchNames = output.split("\n")
-            .filter(line => line.includes("refs/heads/"))
-            .map(line => line.split("refs/heads/")[1].trim());
+       branchNames = Array.from(getRemoteBranches(`https://github.com/${owner}/${repo}.git`));
     } catch {}
 
     const appName = repo.replace(/-/g, "_");

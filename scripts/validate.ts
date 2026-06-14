@@ -2,16 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
-import {
-  extractCiFrappeVersions,
-  extractDependencyFrappeVersions,
-  getFrappeVersionFromBranchName,
-  parseFrappeDependencyVersions,
-} from "./frappe-compat.js";
+import { inspectBranchCompatibility, parseRepoUrl } from "./extract.js";
+import { getSchema, getAllowedCategories, getAllowedFrappeVersions } from "./schema.js";
+import { getRemoteBranches, getDefaultBranch } from "./git.js";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
-const SCHEMA_PATH = path.join(ROOT, "scripts", "app.schema.json");
 
 // ──────────────────────────────────────────────
 // Helpers
@@ -24,9 +20,6 @@ function readJson(filePath: string): unknown {
   }
 }
 
-function isGitHubUrl(url: string): boolean {
-  return /^https:\/\/github\.com\/[^/]+\/[^/]+\/?$/.test(url);
-}
 
 async function checkUrlAccessible(url: string): Promise<boolean> {
   try {
@@ -44,109 +37,35 @@ async function checkUrlAccessible(url: string): Promise<boolean> {
 import { execSync } from "node:child_process";
 
 export async function checkValidFrappeApp(repoUrl: string, appName: string): Promise<boolean> {
-  const match = repoUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/?$/);
-  if (!match) return false;
-  const owner = match[1];
-  let repo = match[2];
-  if (repo.endsWith('.git')) repo = repo.slice(0, -4);
-
+  let parsed;
   try {
-    // Get default branch using git ls-remote
-    const output = execSync(`git ls-remote --symref ${repoUrl} HEAD`, { stdio: "pipe" }).toString();
-    const branchMatch = output.match(/ref:\s+refs\/heads\/([^\s]+)\s+HEAD/);
-    if (branchMatch) {
-      const defaultBranch = branchMatch[1];
-      const hooksUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${appName}/hooks.py`;
-      const res = await fetch(hooksUrl, { method: "HEAD" });
-      return res.ok;
-    }
-  } catch (e) {
+    parsed = parseRepoUrl(repoUrl);
+  } catch {
     return false;
+  }
+  const { owner, repo } = parsed;
+
+  const defaultBranch = getDefaultBranch(repoUrl);
+  if (defaultBranch) {
+    const hooksUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${defaultBranch}/${appName}/hooks.py`;
+    const res = await fetch(hooksUrl, { method: "HEAD" });
+    return res.ok;
   }
 
   return false;
 }
 
-export { parseFrappeDependencyVersions };
-
-async function checkBranchVersion(
-  owner: string,
-  repo: string,
-  branch: string,
-  expectedMajor: string,
-  allowedVersions: string[],
-): Promise<{ valid: boolean; verifiable: boolean }> {
-  const namedVersion = getFrappeVersionFromBranchName(branch, allowedVersions);
-  if (namedVersion) {
-    return { valid: namedVersion === expectedMajor, verifiable: true };
-  }
-
-  const pyprojectUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/pyproject.toml`;
-
-  try {
-    const res = await fetch(pyprojectUrl, { method: "GET" });
-    if (res.ok) {
-      const text = await res.text();
-      const supported = extractDependencyFrappeVersions(text, allowedVersions);
-      if (supported.length > 0) {
-        return { valid: supported.includes(expectedMajor), verifiable: true };
-      }
-    }
-  } catch {}
-
-  try {
-    const headers: HeadersInit = {
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "Frappe-Brewery-Validator",
-    };
-    if (process.env.GITHUB_TOKEN) {
-      (headers as Record<string, string>).Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-    }
-    const res = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
-      { headers },
-    );
-    if (res.ok) {
-      const tree = await res.json() as {
-        tree: Array<{ path: string; type: string; size?: number }>;
-      };
-      const ciPaths = tree.tree
-        .filter((item) =>
-          item.type === "blob"
-          && item.path.startsWith(".github/")
-          && /\.(?:ya?ml|sh)$/i.test(item.path)
-          && (item.size ?? 0) <= 200_000
-        )
-        .slice(0, 30);
-      const contents = await Promise.all(ciPaths.map(async (item) => {
-        const raw = await fetch(
-          `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${item.path}`,
-        );
-        return raw.ok ? raw.text() : "";
-      }));
-      const ciVersions = new Set(
-        contents.flatMap((content) => extractCiFrappeVersions(content, allowedVersions)),
-      );
-      if (ciVersions.size > 0) {
-        return { valid: ciVersions.has(expectedMajor), verifiable: true };
-      }
-    }
-  } catch {}
-
-  return { valid: false, verifiable: false };
-}
 
 // ──────────────────────────────────────────────
 // Setup AJV & Schema
 // ──────────────────────────────────────────────
-const schema = readJson(SCHEMA_PATH);
+const schema = getSchema();
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 const validateSchema = ajv.compile(schema as object);
 
-const allowedCategories = (schema as any).properties.categories.items.enum as string[];
-const allowedFrappeVersions = (schema as any).properties.frappe_versions.items.enum as string[];
+const allowedCategories = getAllowedCategories();
+const allowedFrappeVersions = getAllowedFrappeVersions();
 
 export function validateAppAgainstSchema(app: any): { valid: boolean; errors: string[] } {
   const valid = validateSchema(app);
@@ -196,8 +115,13 @@ export async function validateSingleApp(app: any, expectedSlug?: string): Promis
     fail(`slug "${slug}" must match filename "${expectedSlug}.json"`);
   }
 
+  let parsedRepo: { owner: string, repo: string } | null = null;
+  try {
+    parsedRepo = parseRepoUrl(repository);
+  } catch {}
+
   // repository must be a GitHub URL and valid app
-  if (!repository || !isGitHubUrl(repository)) {
+  if (!repository || !parsedRepo) {
     fail(`repository must be a valid GitHub URL (got: ${repository})`);
   } else {
     const isValidApp = await checkValidFrappeApp(repository, name);
@@ -209,37 +133,43 @@ export async function validateSingleApp(app: any, expectedSlug?: string): Promis
       if (matrix_keys.join(",") !== sorted_versions.join(",")) {
         fail(`install_branches keys (${matrix_keys.join(", ")}) do not match frappe_versions (${sorted_versions.join(", ")})`);
       } else {
+        let remoteBranches: Set<string> | null = null;
         try {
-          const output = execSync(`git ls-remote --heads ${repository}`, { stdio: "pipe" }).toString();
-          const remoteBranches = new Set(
-            output.split("\n").filter(line => line.includes("refs/heads/")).map(line => line.split("refs/heads/")[1].trim())
-          );
-          const match = repository.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/?$/);
-          const owner = match ? match[1] : "";
-          let repoName = match ? match[2] : "";
-          if (repoName.endsWith('.git')) repoName = repoName.slice(0, -4);
+          remoteBranches = getRemoteBranches(repository);
+        } catch {
+          fail(`failed to query repository branches using git ls-remote`);
+        }
 
-          for (const [version, branch] of Object.entries(install_branches)) {
-            if (!remoteBranches.has(branch)) {
-              fail(`install_branches branch "${branch}" does not exist in repository`);
-            } else if (owner && repoName) {
-              const compatibility = await checkBranchVersion(
+        if (remoteBranches) {
+        
+        const { owner, repo: repoName } = parsedRepo;
+
+        for (const [version, branch] of Object.entries(install_branches)) {
+          if (!remoteBranches.has(branch)) {
+            fail(`install_branches branch "${branch}" does not exist in repository`);
+          } else if (owner && repoName) {
+            try {
+              const evidence = await inspectBranchCompatibility(
                 owner,
                 repoName,
                 branch,
-                version,
                 allowedFrappeVersions,
               );
-              if (!compatibility.valid && compatibility.verifiable) {
+              
+              const verifiable = evidence.length > 0;
+              const valid = evidence.some(e => e.versions.includes(version));
+              
+              if (!valid && verifiable) {
                 fail(`install_branches branch "${branch}" declares compatibility that does not include Frappe ${version}`);
-              } else if (!compatibility.verifiable) {
+              } else if (!verifiable) {
                 warn(`branch "${branch}" (mapped to ${version}) has no machine-readable Frappe compatibility evidence`);
               }
+            } catch (err: any) {
+              fail(`failed to inspect branch compatibility: ${err.message}`);
             }
           }
-        } catch {
-           fail(`failed to query repository branches using git ls-remote`);
         }
+        } // close if (remoteBranches)
       }
     }
   }

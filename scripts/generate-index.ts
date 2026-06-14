@@ -4,9 +4,10 @@ import path from "node:path";
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
 const INDEX_DIR = path.join(ROOT, "index");
-const SCHEMA_PATH = path.join(ROOT, "scripts", "app.schema.json");
 
 import type { App } from "../src/types";
+import { formatApp as sharedFormatApp } from "./format-apps.js";
+import { getAllowedFrappeVersions } from "./schema.js";
 
 // ──────────────────────────────────────────────
 // Helpers
@@ -36,24 +37,7 @@ function writeJson(filePath: string, data: Record<string, any>): void {
 }
 
 function formatApp(app: App): App {
-  return {
-    slug: app.slug,
-    name: app.name,
-    title: app.title,
-    description: app.description,
-    repository: app.repository,
-    license: app.license,
-    min_frappe_version: app.min_frappe_version,
-    frappe_versions: app.frappe_versions,
-    install_branches: app.install_branches,
-    required_apps: app.required_apps,
-    categories: app.categories,
-    tags: app.tags,
-    install_commands: app.install_commands,
-    links: app.links,
-    media: app.media,
-    meta: app.meta,
-  }
+  return sharedFormatApp(app) as App;
 }
 
 // ──────────────────────────────────────────────
@@ -117,8 +101,7 @@ writeJson(path.join(INDEX_DIR, "categories.json"), {
 // ──────────────────────────────────────────────
 // index/frappe-{14,15,16}.json — filtered by version
 // ──────────────────────────────────────────────
-const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
-const frappeVersions = schema.properties.frappe_versions.items.enum as string[];
+const frappeVersions = getAllowedFrappeVersions();
 
 for (const version of frappeVersions) {
   const compatibleApps = apps

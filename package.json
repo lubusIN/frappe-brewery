@@ -12,6 +12,7 @@
     "typecheck": "vue-tsc --noEmit",
     "brewery:build": "tsx scripts/generate-index.ts",
     "brewery:extract": "tsx scripts/extract.ts",
+    "brewery:format": "tsx scripts/format-apps.ts",
     "brewery:validate": "tsx scripts/validate.ts",
     "brewery:sync": "tsx scripts/sync-issue-categories.ts"
   },
