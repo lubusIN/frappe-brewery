@@ -72,16 +72,6 @@ async function main() {
   
   console.log(`Successfully wrote apps/${app.slug}.json`);
   
-  // Also post a comment saying PR is being generated
-  await fetch(`https://api.github.com/repos/${repo}/issues/${issueNumber}/comments`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Accept": "application/vnd.github.v3+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ body: "### 🚀 App Accepted!\nA Pull Request is being automatically generated to add this app to the registry." })
-  });
 }
 
 main().catch(err => {
