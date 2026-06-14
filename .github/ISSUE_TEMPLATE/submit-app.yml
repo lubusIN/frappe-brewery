@@ -58,6 +58,15 @@ body:
       required: true
       
   - type: input
+    id: tags
+    attributes:
+      label: Tags
+      description: "Provide up to 4 comma-separated tags for your app (e.g. accounting, invoice, billing). This will override any auto-extracted tags from your repository."
+      placeholder: "tag1, tag2, tag3"
+    validations:
+      required: false
+      
+  - type: input
     id: screenshot
     attributes:
       label: Main Screenshot URL

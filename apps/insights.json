@@ -26,9 +26,7 @@
     "analytics",
     "bi",
     "charts",
-    "dashboard",
-    "data",
-    "reports"
+    "dashboard"
   ],
   "install_commands": [
     "bench get-app https://github.com/frappe/insights",

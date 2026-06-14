@@ -29,10 +29,7 @@
     "erp",
     "accounting",
     "inventory",
-    "manufacturing",
-    "crm",
-    "hr",
-    "payroll"
+    "manufacturing"
   ],
   "install_commands": [
     "bench get-app https://github.com/frappe/erpnext",

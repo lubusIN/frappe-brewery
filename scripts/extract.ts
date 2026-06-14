@@ -442,7 +442,7 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
     const minFrappeVersion = detectMinFrappeVersion(frappeVersions);
     const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
     const categories = topicsToCategories(repoData.topics);
-    const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t));
+    const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t)).slice(0, 4);
     const iconUrl = detectIconUrl(owner, repo, defaultBranch, appName, tmpDir);
 
     const outputPath = path.join(APPS_DIR, `${slug}.json`);

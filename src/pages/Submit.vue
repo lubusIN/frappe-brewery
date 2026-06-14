@@ -38,6 +38,7 @@ const requiredFields = [
   { name: 'frappe_versions', type: 'string[]', desc: 'Supported versions: "14", "15", "16"' },
   { name: 'required_apps', type: 'string[]', desc: 'Must include "frappe"; add "erpnext" if needed' },
   { name: 'categories', type: 'string[]', desc: 'From allowed list (CRM, HR, Accounting…)' },
+  { name: 'tags', type: 'string[]', desc: 'Optional. Free-form tags (max 4) to describe the app.' },
   { name: 'install_commands', type: 'string[]', desc: 'List of bench installation commands' },
   { name: 'min_frappe_version', type: 'string', desc: 'Minimum Frappe version required (e.g., "14.0.0")' },
   { name: 'install_branches', type: 'object', desc: 'Maps Frappe versions to specific installation branches' },
@@ -58,6 +59,7 @@ const schemaExample = `{
   },
   "required_apps": ["frappe"],
   "categories": ["Utilities"],
+  "tags": ["awesome", "tool"],
   "install_commands": [
     "bench get-app https://github.com/your-org/my-app",
     "bench --site [site-name] install-app my_app",

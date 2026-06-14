@@ -27,8 +27,7 @@
     "helpdesk",
     "support",
     "tickets",
-    "sla",
-    "customer-service"
+    "sla"
   ],
   "install_commands": [
     "bench get-app https://github.com/frappe/helpdesk",

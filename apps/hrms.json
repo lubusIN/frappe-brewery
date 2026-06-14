@@ -27,9 +27,7 @@
     "hr",
     "payroll",
     "leave",
-    "attendance",
-    "expense",
-    "shift"
+    "attendance"
   ],
   "install_commands": [
     "bench get-app https://github.com/frappe/hrms",

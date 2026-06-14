@@ -14,10 +14,12 @@ async function main() {
   // Parse markdown from GitHub Issue Form
   const repoMatch = issueBody.match(/### GitHub Repository URL\s+([^\n]+)/);
   const categoriesMatch = issueBody.match(/### Categories\s+([^\n]+)/);
+  const tagsMatch = issueBody.match(/### Tags\s+([^\n]+)/);
   const screenshotMatch = issueBody.match(/### Main Screenshot URL\s+([^\n]+)/);
 
   const repository = repoMatch ? repoMatch[1].trim() : "";
   let categoriesStr = categoriesMatch ? categoriesMatch[1].trim() : "";
+  const tagsStr = tagsMatch ? tagsMatch[1].trim() : "";
   const screenshot = screenshotMatch ? screenshotMatch[1].trim() : "";
 
   if (categoriesStr === "_No response_") categoriesStr = "";
@@ -59,6 +61,11 @@ async function main() {
   if (categoriesStr) {
     // Categories are comma separated from dropdown
     app.categories = categoriesStr.split(",").map(s => s.trim()).filter(Boolean);
+  }
+
+  if (tagsStr && tagsStr !== "_No response_") {
+    // Override auto-extracted tags with user provided tags, limited to 4
+    app.tags = tagsStr.split(",").map(s => s.trim().toLowerCase()).filter(Boolean).slice(0, 4);
   }
   
   if (screenshot && screenshot !== "_No response_") {
@@ -105,6 +112,7 @@ We have automatically extracted your app's details from the repository. Please r
 | **Min Version** | ${app.min_frappe_version || "Not specified"} |
 | **License** | ${app.license} |
 | **Categories** | ${(app.categories || []).join(", ")} |
+| **Tags** | ${(app.tags || []).join(", ")} |
 | **Required Apps** | ${reqAppsStr} |
 | **Install Branches** | ${branchesStr} |
 

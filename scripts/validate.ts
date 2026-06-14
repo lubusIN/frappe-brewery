@@ -179,8 +179,14 @@ export async function validateSingleApp(app: any, expectedSlug?: string): Promis
   const frappe_versions = app.frappe_versions as string[] || [];
   const install_branches = app.install_branches as Record<string, string>;
   const categories = (app.categories as string[]) || [];
+  const tags = (app.tags as string[]) || [];
   const media = app.media as { icon?: string; screenshots?: string[] } | undefined;
   const links = app.links as { docs?: string } | undefined;
+
+  // Explicit check for tags limit
+  if (tags.length > 4) {
+    fail(`tags list exceeds the maximum limit of 4 (found ${tags.length})`);
+  }
 
   // slug must match filename
   if (expectedSlug && slug !== expectedSlug) {
