@@ -338,6 +338,12 @@ function detectIconUrl(owner: string, repo: string, defaultBranch: string, appNa
   const candidates = [
     `${appName}/public/images/${appName}-logo.svg`,
     `${appName}/public/images/${appName}-logo.png`,
+    `${appName}/public/images/${appName}_logo.svg`,
+    `${appName}/public/images/${appName}_logo.png`,
+    `${appName}/public/images/${appName}-icon.svg`,
+    `${appName}/public/images/${appName}-icon.png`,
+    `${appName}/public/images/${appName}_icon.svg`,
+    `${appName}/public/images/${appName}_icon.png`,
     `${appName}/public/images/frappe-${appName}-logo.svg`,
     `${appName}/public/images/frappe-${appName}-logo.png`,
     `${appName}/public/images/logo.svg`,
