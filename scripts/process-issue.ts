@@ -147,6 +147,9 @@ ${jsonStr}
 </details>
 
 *Maintainers will review your submission shortly! If everything looks good, they will label this issue as \`[app]accepted\` to automatically add it to the registry.*
+
+> [!NOTE]  
+> Please review the extracted details above! If anything looks incorrect or if you'd like to suggest changes, please leave a comment below.
 `;
 
   await postComment(markdown);
