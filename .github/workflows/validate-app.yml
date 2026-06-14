@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   validate:
@@ -30,4 +30,31 @@ jobs:
         run: npm ci
 
       - name: Validate app JSON files
-        run: npm run brewery:validate
+        run: |
+          set +e
+          NO_COLOR=1 npm run brewery:validate > validation.log 2>&1
+          exit_code=$?
+          set -e
+          
+          echo "VALIDATION_EXIT_CODE=$exit_code" >> $GITHUB_ENV
+          cat validation.log
+
+      - name: Comment PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "$VALIDATION_EXIT_CODE" -eq 0 ]; then
+            echo "### ✅ Validation Passed" > comment.md
+          else
+            echo "### ❌ Validation Failed" > comment.md
+          fi
+          echo "" >> comment.md
+          echo "\`\`\`" >> comment.md
+          cat validation.log >> comment.md
+          echo "\`\`\`" >> comment.md
+          
+          gh pr comment ${{ github.event.pull_request.number }} --body-file comment.md
+
+      - name: Fail on validation error
+        if: env.VALIDATION_EXIT_CODE != '0'
+        run: exit 1
