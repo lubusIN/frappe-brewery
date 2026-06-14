@@ -15,7 +15,13 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { execSync } from "node:child_process";
-import { parseFrappeDependencyVersions } from "./validate.js";
+import {
+  type BranchCompatibility,
+  extractCiFrappeVersions,
+  extractDependencyFrappeVersions,
+  getFrappeVersionFromBranchName,
+  selectInstallBranches,
+} from "./frappe-compat.js";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
@@ -42,6 +48,14 @@ interface GitHubRepo {
 interface GitHubRelease {
   tag_name: string;
   published_at: string;
+}
+
+interface GitHubTree {
+  tree: Array<{
+    path: string;
+    type: "blob" | "tree";
+    size?: number;
+  }>;
 }
 
 // ──────────────────────────────────────────────
@@ -128,8 +142,7 @@ function detectFrappeVersions(topics: string[]): string[] {
     }
   }
 
-  // Default: all allowed versions if none detected from topics
-  return versions.length > 0 ? versions : SCHEMA_FRAPPE_VERSIONS;
+  return versions;
 }
 
 function detectLicense(spdxId: string | undefined): string {
@@ -139,94 +152,152 @@ function detectLicense(spdxId: string | undefined): string {
   return SCHEMA_LICENSES.includes(normalized) ? normalized : "other";
 }
 
-async function getSupportedFrappeVersionsForBranch(owner: string, repo: string, branch: string, appName: string): Promise<string[]> {
-  const versions = new Set<string>();
+async function fetchRawFile(
+  owner: string,
+  repo: string,
+  branch: string,
+  filePath: string,
+): Promise<string | null> {
   try {
-    const res = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/pyproject.toml`);
-    if (res.ok) {
-      const text = await res.text();
-      const frappeMatch = text.match(/(?:^|\n)\s*frappe\s*=\s*['"]([^'"]+)['"]/);
-      if (frappeMatch) {
-         const supported = parseFrappeDependencyVersions(frappeMatch[1]);
-         supported.forEach(v => versions.add(v));
-      }
-      const versionMatch = text.match(/version\s*=\s*['"](\d+)\./);
-      if (versionMatch) versions.add(versionMatch[1]);
-    }
-  } catch {}
-
-  if (versions.size === 0) {
-    try {
-      const res = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${appName}/__init__.py`);
-      if (res.ok) {
-        const text = await res.text();
-        const match = text.match(/__version__\s*=\s*['"](\d+)\./);
-        if (match) versions.add(match[1]);
-      }
-    } catch {}
+    const res = await fetch(
+      `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`,
+    );
+    return res.ok ? res.text() : null;
+  } catch {
+    return null;
   }
-  return Array.from(versions);
+}
+
+async function inspectBranchCompatibility(
+  owner: string,
+  repo: string,
+  branch: string,
+): Promise<BranchCompatibility[]> {
+  const evidence: BranchCompatibility[] = [];
+  const namedVersion = getFrappeVersionFromBranchName(branch, SCHEMA_FRAPPE_VERSIONS);
+  if (namedVersion) {
+    evidence.push({
+      branch,
+      versions: [namedVersion],
+      source: "branch-name",
+      score: 100,
+    });
+  }
+
+  const pyproject = await fetchRawFile(owner, repo, branch, "pyproject.toml");
+  const dependencyVersions = pyproject
+    ? extractDependencyFrappeVersions(pyproject, SCHEMA_FRAPPE_VERSIONS)
+    : [];
+  if (dependencyVersions.length > 0) {
+    evidence.push({
+      branch,
+      versions: dependencyVersions,
+      source: "dependency",
+      score: 80,
+    });
+  }
+
+  // CI is the best available signal for apps that do not declare Frappe as a
+  // package dependency. Inspect only .github text files to keep API use bounded.
+  if (dependencyVersions.length === 0 && !namedVersion) {
+    const tree = await githubFetch(
+      `/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
+    ) as GitHubTree | null;
+    const ciPaths = (tree?.tree ?? [])
+      .filter((item) =>
+        item.type === "blob"
+        && item.path.startsWith(".github/")
+        && /\.(?:ya?ml|sh)$/i.test(item.path)
+        && (item.size ?? 0) <= 200_000
+      )
+      .slice(0, 30)
+      .map((item) => item.path);
+
+    const ciContents = await Promise.all(
+      ciPaths.map((filePath) => fetchRawFile(owner, repo, branch, filePath)),
+    );
+    const ciVersions = new Set<string>();
+    for (const content of ciContents) {
+      if (!content) continue;
+      for (const version of extractCiFrappeVersions(content, SCHEMA_FRAPPE_VERSIONS)) {
+        ciVersions.add(version);
+      }
+    }
+    if (ciVersions.size > 0) {
+      evidence.push({
+        branch,
+        versions: [...ciVersions],
+        source: "ci",
+        score: 60,
+      });
+    }
+  }
+
+  return evidence;
 }
 
 async function detectInstallBranchesAsync(
   owner: string,
   repo: string,
-  appName: string,
-  initialFrappeVersions: string[], 
-  branchNames: string[], 
-  defaultBranch: string
-): Promise<{ installBranches: Record<string, string>, validFrappeVersions: string[] }> {
-  const branches: Record<string, string> = {};
-  
-  // 1. Filter and identify standard Frappe-compatible branch patterns
-  const candidates = new Set<string>();
-  
-  // High Priority: Explicit version branches (e.g. version-14, v14)
-  const exactBranches = branchNames.filter(b => /^(?:version-|v)(\d+)$/.test(b));
-  exactBranches.forEach(b => candidates.add(b));
-  
-  // Medium Priority: Stable/Default branches
-  if (branchNames.includes("main")) candidates.add("main");
-  if (branchNames.includes("master")) candidates.add("master");
-  
-  // Low Priority: Future/Development branches
-  if (branchNames.includes("develop")) candidates.add("develop");
-  
-  // Add repository default branch if it's not already in there
-  if (branchNames.includes(defaultBranch)) candidates.add(defaultBranch);
+  topicVersions: string[],
+  branchNames: string[],
+  defaultBranch: string,
+): Promise<{
+  installBranches: Record<string, string>;
+  validFrappeVersions: string[];
+  warnings: string[];
+}> {
+  const candidates = new Set(
+    branchNames.filter((branch) =>
+      branch === defaultBranch
+      || ["main", "master", "develop"].includes(branch)
+      || /^(?:version-|v)\d+$/i.test(branch)
+      || /^(?:frappe-v?|version-)\d+$/i.test(branch)
+    ),
+  );
+  candidates.add(defaultBranch);
 
-  // 2. Map versions explicitly declared in these branches' pyproject.toml
-  for (const branch of candidates) {
-    const supported = await getSupportedFrappeVersionsForBranch(owner, repo, branch, appName);
-    for (const v of supported) {
-      if (SCHEMA_FRAPPE_VERSIONS.includes(v) && !branches[v]) {
-        branches[v] = branch;
-      }
-    }
-  }
-  
-  // 3. Guaranteed mapping for explicit version branches even if pyproject is missing
-  for (const branch of exactBranches) {
-    const match = branch.match(/^(?:version-|v)(\d+)$/);
-    if (match) {
-      const v = match[1];
-      if (SCHEMA_FRAPPE_VERSIONS.includes(v) && !branches[v]) {
-         branches[v] = branch;
-      }
-    }
+  const evidence = (
+    await Promise.all(
+      [...candidates].map((branch) => inspectBranchCompatibility(owner, repo, branch)),
+    )
+  ).flat();
+  const warnings: string[] = [];
+  let installBranches = selectInstallBranches(
+    evidence,
+    SCHEMA_FRAPPE_VERSIONS,
+    defaultBranch,
+  );
+
+  if (Object.keys(installBranches).length === 0 && topicVersions.length > 0) {
+    const topicEvidence: BranchCompatibility[] = [{
+      branch: defaultBranch,
+      versions: topicVersions,
+      source: "topic",
+      score: 20,
+    }];
+    installBranches = selectInstallBranches(
+      topicEvidence,
+      SCHEMA_FRAPPE_VERSIONS,
+      defaultBranch,
+    );
+    warnings.push("Compatibility came only from GitHub topics; review install_branches.");
   }
 
-  // 4. Fallback for absolute minimum operation if NOTHING was found
-  if (Object.keys(branches).length === 0) {
-      const fallbackVersion = initialFrappeVersions.length > 0 
-        ? initialFrappeVersions[initialFrappeVersions.length - 1] 
-        : SCHEMA_FRAPPE_VERSIONS[SCHEMA_FRAPPE_VERSIONS.length - 1];
-      branches[fallbackVersion] = defaultBranch;
+  if (Object.keys(installBranches).length === 0) {
+    const latestVersion = SCHEMA_FRAPPE_VERSIONS.at(-1)!;
+    installBranches = { [latestVersion]: defaultBranch };
+    warnings.push(
+      `No Frappe compatibility declaration was found; ${defaultBranch} was tentatively mapped to Frappe ${latestVersion}.`,
+    );
   }
-  
+
   return {
-    installBranches: branches,
-    validFrappeVersions: Object.keys(branches).sort()
+    installBranches,
+    validFrappeVersions: SCHEMA_FRAPPE_VERSIONS.filter(
+      (version) => installBranches[version],
+    ),
+    warnings,
   };
 }
 
@@ -356,7 +427,17 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
     const description = repoData.description ?? `A Frappe app from ${owner}/${repo}`;
     const license = detectLicense(repoData.license?.spdx_id);
     let frappeVersions = detectFrappeVersions(repoData.topics);
-    const { installBranches, validFrappeVersions } = await detectInstallBranchesAsync(owner, repo, appName, frappeVersions, branchNames, defaultBranch);
+    const {
+      installBranches,
+      validFrappeVersions,
+      warnings: compatibilityWarnings,
+    } = await detectInstallBranchesAsync(
+      owner,
+      repo,
+      frappeVersions,
+      branchNames,
+      defaultBranch,
+    );
     frappeVersions = validFrappeVersions;
     const minFrappeVersion = detectMinFrappeVersion(frappeVersions);
     const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
@@ -418,6 +499,9 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
       console.log(`   • categories (may need adjustment)`);
       console.log(`   • media.icon and media.screenshots`);
       console.log(`   • links.docs`);
+      for (const warning of compatibilityWarnings) {
+        console.warn(`   ⚠ ${warning}`);
+      }
       console.log(`\nThen run: npm run brewery:validate`);
 
       if (latestRelease) {
@@ -449,4 +533,3 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     process.exit(1);
   });
 }
-

@@ -2,6 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
+import {
+  extractCiFrappeVersions,
+  extractDependencyFrappeVersions,
+  getFrappeVersionFromBranchName,
+  parseFrappeDependencyVersions,
+} from "./frappe-compat.js";
 
 const ROOT = process.cwd();
 const APPS_DIR = path.join(ROOT, "apps");
@@ -61,84 +67,74 @@ export async function checkValidFrappeApp(repoUrl: string, appName: string): Pro
   return false;
 }
 
-export function parseFrappeDependencyVersions(req: string): string[] {
-  const supported = new Set<string>();
-  const ALL_MAJORS = [14, 15, 16, 17];
-  
-  for (const major of ALL_MAJORS) {
-    let matches = true;
-    let hasConstraint = false;
+export { parseFrappeDependencyVersions };
 
-    for (const token of req.split(',')) {
-      const gte = token.match(/>=(1\d)/);
-      const gt = token.match(/>(1\d)/);
-      const lte = token.match(/<=(1\d)/);
-      const lt = token.match(/<(1\d)/);
-      const eq = token.match(/[=~]=(1\d)/);
-      
-      if (gte) { hasConstraint = true; if (major < parseInt(gte[1])) matches = false; }
-      else if (gt && !gte) { hasConstraint = true; if (major <= parseInt(gt[1])) matches = false; }
-      
-      if (lte) { hasConstraint = true; if (major > parseInt(lte[1])) matches = false; }
-      else if (lt && !lte) { hasConstraint = true; if (major >= parseInt(lt[1])) matches = false; }
-      
-      if (eq) { hasConstraint = true; if (major !== parseInt(eq[1])) matches = false; }
-    }
-    
-    if (matches && hasConstraint) supported.add(major.toString());
-  }
-  
-  if (supported.size === 0) {
-     for (const major of ALL_MAJORS) {
-        if (req.includes(major.toString())) supported.add(major.toString());
-     }
+async function checkBranchVersion(
+  owner: string,
+  repo: string,
+  branch: string,
+  expectedMajor: string,
+  allowedVersions: string[],
+): Promise<{ valid: boolean; verifiable: boolean }> {
+  const namedVersion = getFrappeVersionFromBranchName(branch, allowedVersions);
+  if (namedVersion) {
+    return { valid: namedVersion === expectedMajor, verifiable: true };
   }
 
-  return Array.from(supported);
-}
-
-async function checkBranchVersion(owner: string, repo: string, branch: string, appName: string, expectedMajor: string): Promise<boolean> {
-  if (branch === `version-${expectedMajor}` || branch === `v${expectedMajor}`) {
-    return true;
-  }
-
-  const initUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${appName}/__init__.py`;
   const pyprojectUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/pyproject.toml`;
-  const setupUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/setup.py`;
-
-  try {
-    const res = await fetch(initUrl, { method: "GET" });
-    if (res.ok) {
-      const text = await res.text();
-      const match = text.match(/__version__\s*=\s*['"](\d+)\./);
-      if (match && match[1] === expectedMajor) return true;
-    }
-  } catch {}
 
   try {
     const res = await fetch(pyprojectUrl, { method: "GET" });
     if (res.ok) {
       const text = await res.text();
-      const versionMatch = text.match(/version\s*=\s*['"](\d+)\./);
-      if (versionMatch && versionMatch[1] === expectedMajor) return true;
-      const frappeMatch = text.match(/(?:^|\n)\s*frappe\s*=\s*['"]([^'"]+)['"]/);
-      if (frappeMatch) {
-         const supported = parseFrappeDependencyVersions(frappeMatch[1]);
-         if (supported.includes(expectedMajor)) return true;
+      const supported = extractDependencyFrappeVersions(text, allowedVersions);
+      if (supported.length > 0) {
+        return { valid: supported.includes(expectedMajor), verifiable: true };
       }
     }
   } catch {}
 
   try {
-    const res = await fetch(setupUrl, { method: "GET" });
+    const headers: HeadersInit = {
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "Frappe-Brewery-Validator",
+    };
+    if (process.env.GITHUB_TOKEN) {
+      (headers as Record<string, string>).Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    }
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
+      { headers },
+    );
     if (res.ok) {
-      const text = await res.text();
-      const versionMatch = text.match(/version\s*=\s*['"](\d+)\./);
-      if (versionMatch && versionMatch[1] === expectedMajor) return true;
+      const tree = await res.json() as {
+        tree: Array<{ path: string; type: string; size?: number }>;
+      };
+      const ciPaths = tree.tree
+        .filter((item) =>
+          item.type === "blob"
+          && item.path.startsWith(".github/")
+          && /\.(?:ya?ml|sh)$/i.test(item.path)
+          && (item.size ?? 0) <= 200_000
+        )
+        .slice(0, 30);
+      const contents = await Promise.all(ciPaths.map(async (item) => {
+        const raw = await fetch(
+          `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${item.path}`,
+        );
+        return raw.ok ? raw.text() : "";
+      }));
+      const ciVersions = new Set(
+        contents.flatMap((content) => extractCiFrappeVersions(content, allowedVersions)),
+      );
+      if (ciVersions.size > 0) {
+        return { valid: ciVersions.has(expectedMajor), verifiable: true };
+      }
     }
   } catch {}
 
-  return false;
+  return { valid: false, verifiable: false };
 }
 
 // ──────────────────────────────────────────────
@@ -150,6 +146,7 @@ addFormats(ajv);
 const validateSchema = ajv.compile(schema as object);
 
 const allowedCategories = (schema as any).properties.categories.items.enum as string[];
+const allowedFrappeVersions = (schema as any).properties.frappe_versions.items.enum as string[];
 
 export function validateAppAgainstSchema(app: any): { valid: boolean; errors: string[] } {
   const valid = validateSchema(app);
@@ -217,13 +214,17 @@ export async function validateSingleApp(app: any, expectedSlug?: string): Promis
             if (!remoteBranches.has(branch)) {
               fail(`install_branches branch "${branch}" does not exist in repository`);
             } else if (owner && repoName) {
-              const isCorrectVersion = await checkBranchVersion(owner, repoName, branch, name, version);
-              if (!isCorrectVersion) {
-                 if (branch === 'develop' || branch === 'master' || branch === 'main') {
-                   warn(`branch "${branch}" (mapped to ${version}) could not be strictly verified, but allowing since it is a development branch`);
-                 } else {
-                   fail(`install_branches branch "${branch}" exists, but its files (__init__.py, pyproject.toml, etc.) do NOT match Frappe major version ${version}`);
-                 }
+              const compatibility = await checkBranchVersion(
+                owner,
+                repoName,
+                branch,
+                version,
+                allowedFrappeVersions,
+              );
+              if (!compatibility.valid && compatibility.verifiable) {
+                fail(`install_branches branch "${branch}" declares compatibility that does not include Frappe ${version}`);
+              } else if (!compatibility.verifiable) {
+                warn(`branch "${branch}" (mapped to ${version}) has no machine-readable Frappe compatibility evidence`);
               }
             }
           }

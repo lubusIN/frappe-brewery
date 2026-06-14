@@ -70,6 +70,7 @@ Every PR touching `apps/**` runs `scripts/validate.ts`, which performs these che
 | `repository` | `string` | Public GitHub URL (`https://github.com/owner/repo`) |
 | `license` | `string` | SPDX identifier (e.g. `MIT`, `GPL-3.0`, `AGPL-3.0`) |
 | `frappe_versions` | `string[]` | Supported Frappe versions: `"14"`, `"15"`, `"16"` |
+| `install_branches` | `object` | Maps each supported Frappe major to the app branch that should be installed |
 | `required_apps` | `string[]` | Must include `"frappe"`; add `"erpnext"` if needed |
 | `categories` | `string[]` | One or more values from the [allowed list](#categories) |
 | `install.method` | `string` | `"bench"`, `"pip"`, or `"manual"` |
@@ -132,3 +133,17 @@ To update an existing entry:
 ## Manual Overrides
 
 If you need to correct auto-extracted data or override a field, edit the JSON directly in your PR. Manual edits in `apps/` always take precedence over any automated extraction.
+
+### How Branch Compatibility Is Detected
+
+The extractor ranks machine-readable evidence in this order:
+
+1. Frappe-specific branch names such as `version-15`, `v15`, or `frappe-15`
+2. Frappe dependency constraints in `pyproject.toml`
+3. Frappe branches referenced by GitHub Actions workflows and install helpers
+4. GitHub topics such as `frappe-v15`
+
+An app release branch such as `version-3` is not assumed to target Frappe 3. It
+is mapped only when its dependency metadata or CI configuration identifies the
+supported Frappe versions. If no compatibility evidence is available, the
+generated mapping is marked for manual review.

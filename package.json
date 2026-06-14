@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "npm run brewery:build && vite build && cp -r index dist/index && cp -r apps dist/apps",
     "preview": "vite preview",
+    "test": "tsx --test scripts/*.test.ts",
     "typecheck": "vue-tsc --noEmit",
     "brewery:build": "tsx scripts/generate-index.ts",
     "brewery:extract": "tsx scripts/extract.ts",
