@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-13T13:52:32.469Z",
+  "generated_at": "2026-06-14T09:55:06.384Z",
   "total_apps": 5,
   "total_categories": 6,
   "by_frappe_version": {
     "14": 5,
-    "15": 5,
+    "15": 4,
     "16": 5
   },
   "by_category": {

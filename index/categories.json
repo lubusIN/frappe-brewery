@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-13T14:56:09.552Z",
+  "generated_at": "2026-06-14T09:55:06.384Z",
   "categories": [
     {
       "name": "Accounting",
@@ -36,10 +36,7 @@
             "erp",
             "accounting",
             "inventory",
-            "manufacturing",
-            "crm",
-            "hr",
-            "payroll"
+            "manufacturing"
           ],
           "install_commands": [
             "bench get-app https://github.com/frappe/erpnext",
@@ -85,8 +82,8 @@
             "16"
           ],
           "install_branches": {
-            "14": "develop",
-            "15": "develop",
+            "14": "main",
+            "15": "main",
             "16": "develop"
           },
           "required_apps": [
@@ -99,9 +96,7 @@
             "analytics",
             "bi",
             "charts",
-            "dashboard",
-            "data",
-            "reports"
+            "dashboard"
           ],
           "install_commands": [
             "bench get-app https://github.com/frappe/insights",
@@ -164,10 +159,7 @@
             "erp",
             "accounting",
             "inventory",
-            "manufacturing",
-            "crm",
-            "hr",
-            "payroll"
+            "manufacturing"
           ],
           "install_commands": [
             "bench get-app https://github.com/frappe/erpnext",
@@ -230,10 +222,7 @@
             "erp",
             "accounting",
             "inventory",
-            "manufacturing",
-            "crm",
-            "hr",
-            "payroll"
+            "manufacturing"
           ],
           "install_commands": [
             "bench get-app https://github.com/frappe/erpnext",
@@ -274,7 +263,7 @@
           ],
           "install_branches": {
             "14": "version-14",
-            "15": "develop",
+            "15": "main",
             "16": "develop"
           },
           "required_apps": [
@@ -288,8 +277,7 @@
             "helpdesk",
             "support",
             "tickets",
-            "sla",
-            "customer-service"
+            "sla"
           ],
           "install_commands": [
             "bench get-app https://github.com/frappe/helpdesk",
@@ -352,10 +340,7 @@
             "erp",
             "accounting",
             "inventory",
-            "manufacturing",
-            "crm",
-            "hr",
-            "payroll"
+            "manufacturing"
           ],
           "install_commands": [
             "bench get-app https://github.com/frappe/erpnext",
@@ -410,9 +395,7 @@
             "hr",
             "payroll",
             "leave",
-            "attendance",
-            "expense",
-            "shift"
+            "attendance"
           ],
           "install_commands": [
             "bench get-app https://github.com/frappe/hrms",
@@ -458,7 +441,7 @@
           ],
           "install_branches": {
             "14": "version-14",
-            "15": "develop",
+            "15": "main",
             "16": "develop"
           },
           "required_apps": [
@@ -472,8 +455,7 @@
             "helpdesk",
             "support",
             "tickets",
-            "sla",
-            "customer-service"
+            "sla"
           ],
           "install_commands": [
             "bench get-app https://github.com/frappe/helpdesk",
@@ -509,13 +491,11 @@
           "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
-            "15",
             "16"
           ],
           "install_branches": {
             "14": "version-14",
-            "15": "develop",
-            "16": "develop"
+            "16": "version-3"
           },
           "required_apps": [
             "frappe"
