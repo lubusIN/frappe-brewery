@@ -1,17 +1,19 @@
 {
-  "generated_at": "2026-06-14T12:08:31.461Z",
-  "total_apps": 6,
-  "total_categories": 6,
+  "generated_at": "2026-06-14T14:53:54.158Z",
+  "total_apps": 7,
+  "total_categories": 8,
   "by_frappe_version": {
     "14": 5,
-    "15": 5,
-    "16": 6
+    "15": 6,
+    "16": 7
   },
   "by_category": {
     "Accounting": 1,
     "Business": 2,
     "Human Resources": 2,
     "Customer Relations": 3,
+    "Developer": 1,
+    "Website": 1,
     "Utilities": 2,
     "Analytics": 1
   }

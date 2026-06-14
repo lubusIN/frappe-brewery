@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-14T12:08:31.461Z",
-  "count": 6,
+  "generated_at": "2026-06-14T14:53:54.158Z",
+  "count": 7,
   "apps": [
     {
       "slug": "erpnext",
@@ -57,6 +57,55 @@
         "verified": true,
         "status": "active",
         "added_at": "2026-06-09"
+      }
+    },
+    {
+      "slug": "builder",
+      "name": "builder",
+      "title": "Frappe Builder",
+      "description": "Craft beautiful websites effortlessly with an intuitive visual builder and publish them instantly",
+      "repository": "https://github.com/frappe/builder",
+      "license": "AGPL-3.0",
+      "min_frappe_version": "15.0.0",
+      "frappe_versions": [
+        "15",
+        "16"
+      ],
+      "install_branches": {
+        "15": "develop",
+        "16": "develop"
+      },
+      "required_apps": [
+        "frappe"
+      ],
+      "categories": [
+        "Developer",
+        "Website"
+      ],
+      "tags": [
+        "low-code",
+        "website-builder"
+      ],
+      "install_commands": [
+        "bench get-app builder",
+        "bench --site [site-name] install-app builder",
+        "bench --site [site-name] migrate",
+        "bench restart"
+      ],
+      "links": {
+        "website": "https://frappe.io/builder"
+      },
+      "media": {
+        "icon": "https://raw.githubusercontent.com/frappe/builder/refs/heads/develop/frontend/public/builder_logo.png",
+        "screenshots": [
+          "https://github.com/user-attachments/assets/d20cec8a-9e30-4ad5-9fc0-9c136fffa916"
+        ]
+      },
+      "meta": {
+        "source": "extracted",
+        "verified": false,
+        "status": "active",
+        "added_at": "2026-06-14"
       }
     },
     {
