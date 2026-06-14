@@ -3,8 +3,8 @@
     class="flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg transition-colors"
     :class="active ? 'bg-surface-gray-2' : ''"
   >
-    <div v-if="item.icon && !imageError" class="w-8 h-8 rounded shrink-0 overflow-hidden bg-surface-gray-1 border border-outline-gray-1 flex items-center justify-center">
-      <img :src="item.icon" class="w-full h-full object-cover" @error="imageError = true" />
+    <div v-if="item.media?.icon && !imageError" class="w-8 h-8 rounded shrink-0 overflow-hidden bg-surface-gray-1 border border-outline-gray-1 flex items-center justify-center">
+      <img :src="item.media.icon" class="w-full h-full object-cover" @error="imageError = true" />
     </div>
     <div v-else class="w-8 h-8 rounded shrink-0 bg-surface-gray-2 border border-outline-gray-2 flex items-center justify-center">
       <FeatherIcon name="box" class="w-4 h-4 text-ink-gray-5" />
@@ -38,7 +38,7 @@ const props = defineProps({
 const imageError = ref(false)
 
 // Reset error state if the icon URL changes
-watch(() => props.item.icon, () => {
+watch(() => props.item.media?.icon, () => {
   imageError.value = false
 })
 </script>
