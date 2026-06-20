@@ -245,6 +245,15 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
                   </span>
                 </dd>
               </div>
+              <div v-if="app.install_branches && Object.keys(app.install_branches).length" class="flex items-start gap-3 px-4 py-3">
+                <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Install Branches</dt>
+                <dd class="flex flex-col w-full gap-2 pt-0.5">
+                  <div v-for="(branch, version) in app.install_branches" :key="version" class="flex items-center justify-between pb-2 border-b border-outline-gray-1 last:border-0 last:pb-0">
+                    <span class="text-ink-gray-7 font-medium">v{{ version }}</span>
+                    <span class="text-ink-gray-8 font-mono text-sm">{{ branch }}</span>
+                  </div>
+                </dd>
+              </div>
               <div v-if="app.required_apps?.length" class="flex items-start gap-3 px-4 py-3">
                 <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Requires</dt>
                 <dd class="flex gap-x-1.5 gap-y-1 flex-wrap pt-0.5">
