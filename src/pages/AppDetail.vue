@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { FeatherIcon, Badge, Button } from 'frappe-ui'
+import { FeatherIcon, Badge, Button, FormControl } from 'frappe-ui'
 import { fetchApp } from '../api'
 import type { App } from '../types'
 
@@ -13,6 +13,7 @@ const copied = ref(false)
 const imageError = ref(false)
 const showLightbox = ref(false)
 const selectedScreenshot = ref('')
+const selectedVersion = ref('')
 
 function openScreenshot(url: string) {
   selectedScreenshot.value = url
@@ -21,6 +22,16 @@ function openScreenshot(url: string) {
 
 watch(() => app.value?.media?.icon, () => {
   imageError.value = false
+})
+
+watch(() => app.value, () => {
+  if (app.value?.frappe_versions?.length) {
+    if (!selectedVersion.value || !app.value.frappe_versions.includes(selectedVersion.value)) {
+      selectedVersion.value = app.value.frappe_versions[app.value.frappe_versions.length - 1]
+    }
+  } else {
+    selectedVersion.value = ''
+  }
 })
 
 async function loadApp(slug: string) {
@@ -35,14 +46,27 @@ async function loadApp(slug: string) {
   }
 }
 
+const versionOptions = computed(() => {
+  if (!app.value?.frappe_versions) return []
+  return app.value.frappe_versions.map(v => ({ label: `Frappe v${v}`, value: v }))
+})
+
 const displayCommands = computed(() => {
   if (!app.value?.install_commands) return []
   return app.value.install_commands.map(cmd => {
+    let finalCmd = cmd
     const match = cmd.match(/^bench get-app https:\/\/github\.com\/frappe\/([^/]+?)(?:\.git)?\/?$/)
     if (match) {
-      return `bench get-app ${match[1]}`
+      finalCmd = `bench get-app ${match[1]}`
     }
-    return cmd
+    
+    if (finalCmd.startsWith('bench get-app ') && selectedVersion.value && app.value?.install_branches) {
+      const branch = app.value.install_branches[selectedVersion.value]
+      if (branch && !finalCmd.includes('--branch')) {
+        finalCmd = `${finalCmd} --branch ${branch}`
+      }
+    }
+    return finalCmd
   })
 })
 
@@ -141,10 +165,19 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
 
           <!-- Installation -->
           <section aria-labelledby="install-heading">
-            <h2 id="install-heading" class="text-base font-semibold text-ink-gray-8 mb-4 flex items-center gap-2">
-              <FeatherIcon name="terminal" class="w-4 h-4 text-ink-gray-4" />
-              Installation
-            </h2>
+            <div class="flex items-center justify-between mb-4">
+              <h2 id="install-heading" class="text-base font-semibold text-ink-gray-8 flex items-center gap-2">
+                <FeatherIcon name="terminal" class="w-4 h-4 text-ink-gray-4" />
+                Installation
+              </h2>
+              <div v-if="versionOptions.length > 0">
+                <FormControl
+                  type="select"
+                  :options="versionOptions"
+                  v-model="selectedVersion"
+                />
+              </div>
+            </div>
             <div class="rounded-lg overflow-hidden bg-surface-white border border-outline-gray-2 shadow-sm">
               <div class="flex items-center justify-between px-4 py-2 bg-surface-gray-1 border-b border-outline-gray-1">
                 <div class="flex items-center gap-2">
