@@ -23,3 +23,11 @@ export function getAllowedFrappeVersions(): string[] {
 export function getAllowedCategories(): string[] {
   return getSchema().properties.categories.items.enum as string[];
 }
+
+export function readJson(filePath: string): unknown {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch {
+    throw new Error(`Failed to parse JSON at ${filePath}`);
+  }
+}

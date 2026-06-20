@@ -5,6 +5,8 @@ on:
     paths:
       - "apps/**/*.json"
       - "scripts/**"
+      - ".github/actions/**"
+      - ".github/workflows/validate-app.yml"
       - "package.json"
       - "package-lock.json"
 
@@ -12,59 +14,114 @@ permissions:
   contents: read
   pull-requests: write
 
+concurrency:
+  group: app-validation-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: Validate registry data
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v5
         with:
-          node-version: 22
+          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v45
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
         with:
-          files: apps/**/*.json
+          python: "true"
+
+      - name: Find changed apps
+        id: changed-apps
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          changed_apps="$RUNNER_TEMP/changed-apps"
+          git diff --name-only -z "$BASE_SHA" "$HEAD_SHA" -- ':(glob)apps/**/*.json' > "$changed_apps"
+          mapfile -d '' files < "$changed_apps"
+
+          echo "file=$changed_apps" >> "$GITHUB_OUTPUT"
+          if [ "${#files[@]}" -gt 0 ]; then
+            echo "any_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "any_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ "${#files[@]}" -gt 1 ]; then
+            printf '### ❌ Validation Failed\n\nA pull request may add or update only one app. Please split this submission into separate pull requests.\n' > validation.md
+            echo "SINGLE_APP_VALID=false" >> "$GITHUB_ENV"
+          else
+            echo "SINGLE_APP_VALID=true" >> "$GITHUB_ENV"
+          fi
 
       - name: Validate app JSON files
+        if: env.SINGLE_APP_VALID == 'true'
+        env:
+          CHANGED_APPS_FILE: ${{ steps.changed-apps.outputs.file }}
         run: |
           set +e
-          if [ "${{ steps.changed-files.outputs.any_changed }}" == "true" ]; then
-            NO_COLOR=1 npm run brewery:validate ${{ steps.changed-files.outputs.all_changed_files }} > validation.log 2>&1
+          if [ "${{ steps.changed-apps.outputs.any_changed }}" == "true" ]; then
+            mapfile -d '' files < "$CHANGED_APPS_FILE"
+            NO_COLOR=1 npm run brewery:validate -- "${files[@]}" > validation.log 2>&1
           else
             NO_COLOR=1 npm run brewery:validate > validation.log 2>&1
           fi
           exit_code=$?
           set -e
-          
+
           echo "VALIDATION_EXIT_CODE=$exit_code" >> $GITHUB_ENV
           cat validation.log
 
-      - name: Comment PR
+      - name: Lint App
+        id: lint
+        if: env.SINGLE_APP_VALID == 'true' && steps.changed-apps.outputs.any_changed == 'true'
+        continue-on-error: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGED_APPS_FILE: ${{ steps.changed-apps.outputs.file }}
         run: |
-          if [ "$VALIDATION_EXIT_CODE" -eq 0 ]; then
-            echo "### ✅ Validation Passed" > comment.md
+          mapfile -d '' files < "$CHANGED_APPS_FILE"
+          if [ "${#files[@]}" -eq 1 ] && [[ "${files[0]}" == apps/*.json ]]; then
+            echo "Linting ${files[0]}..."
+            npx tsx scripts/lint-app.ts "${files[0]}"
           else
-            echo "### ❌ Validation Failed" > comment.md
+            echo "Skipping linting (either 0 or >1 apps changed, or not an app JSON)."
           fi
-          echo "" >> comment.md
-          echo "\`\`\`" >> comment.md
-          cat validation.log >> comment.md
-          echo "\`\`\`" >> comment.md
-          
-          gh pr comment ${{ github.event.pull_request.number }} --body-file comment.md
 
-      - name: Fail on validation error
-        if: env.VALIDATION_EXIT_CODE != '0'
+      - name: Comment PR
+        if: always() && steps.changed-apps.outputs.any_changed == 'true'
+        run: |
+          if [ -f validation.md ]; then
+            cp validation.md comment.md
+          elif [ "${VALIDATION_EXIT_CODE:-1}" -eq 0 ]; then
+            printf '### ✅ Validation Passed\n\n' > comment.md
+          else
+            printf '### ❌ Validation Failed\n\n' > comment.md
+          fi
+
+          if [ -f validation.log ]; then
+            printf '```text\n' >> comment.md
+            cat validation.log >> comment.md
+            printf '\n```\n' >> comment.md
+          fi
+
+          if [ -f linter_report.md ]; then
+            printf '\n' >> comment.md
+            cat linter_report.md >> comment.md
+          fi
+
+      - name: Upsert PR comment
+        if: always() && steps.changed-apps.outputs.any_changed == 'true'
+        uses: ./.github/actions/upsert-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-file: comment.md
+
+      - name: Fail on error
+        if: always() && (env.SINGLE_APP_VALID != 'true' || steps.lint.outcome == 'failure' || env.VALIDATION_EXIT_CODE != '0')
         run: exit 1

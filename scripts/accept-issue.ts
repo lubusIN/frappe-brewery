@@ -1,29 +1,35 @@
 import fs from "node:fs";
 import path from "node:path";
 import { formatApp } from "./format-apps.js";
-import { fetchIssueComments, BOT_MARKER } from "./github.js";
+
+const COMMENTS_PATH = path.join(process.cwd(), "issue-comments.json");
 
 async function main() {
-  const token = process.env.GITHUB_TOKEN;
-  const repo = process.env.GITHUB_REPOSITORY;
-  const issueNumber = process.env.ISSUE_NUMBER;
-
-  if (!token || !repo || !issueNumber) {
-    console.error("Missing environment variables");
+  if (!fs.existsSync(COMMENTS_PATH)) {
+    console.error(
+      `Missing ${path.basename(COMMENTS_PATH)}. Fetch issue comments before running this script.`,
+    );
     process.exit(1);
   }
 
-  // Fetch all comments on the issue
-  const comments = await fetchIssueComments(repo, issueNumber);
-  
+  const comments = JSON.parse(fs.readFileSync(COMMENTS_PATH, "utf8"));
+  if (!Array.isArray(comments)) {
+    throw new Error("Issue comments payload must be an array.");
+  }
+
   // Find the latest comment containing the Raw JSON
-  const botComment = comments.reverse().find((c: any) => 
-    c.user.login === "github-actions[bot]" && 
-    c.body.includes("<summary>Raw JSON (Do not edit this block)</summary>")
-  );
+  const botComment = comments
+    .toReversed()
+    .find(
+      (c: any) =>
+        c.user.login === "github-actions[bot]" &&
+        c.body.includes("<summary>Raw JSON (Do not edit this block)</summary>"),
+    );
 
   if (!botComment) {
-    console.error("Could not find the automated comment with the extracted JSON.");
+    console.error(
+      "Could not find the automated comment with the extracted JSON.",
+    );
     process.exit(1);
   }
 
@@ -51,12 +57,11 @@ async function main() {
 
   const outputPath = path.join(process.cwd(), "apps", `${app.slug}.json`);
   fs.writeFileSync(outputPath, JSON.stringify(formatted, null, 2) + "\n");
-  
+
   console.log(`Successfully wrote apps/${app.slug}.json`);
-  
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

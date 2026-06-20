@@ -7,3 +7,14 @@ scratch/
 # Generated types
 auto-imports.d.ts
 components.d.ts
+
+# CI-generated artifacts (never commit these)
+linter_report.md
+validation.md
+validation.log
+issue_state.txt
+issue-comments.json
+comment.md
+process.log
+app.json
+test-linter/

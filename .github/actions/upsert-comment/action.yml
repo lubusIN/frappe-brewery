@@ -1,0 +1,38 @@
+name: Upsert bot comment
+description: Create or update the Brewery bot comment on an issue or pull request
+inputs:
+  issue-number:
+    description: Issue or pull request number
+    required: true
+  body-file:
+    description: Markdown file containing the comment body
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Create or update comment
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        ISSUE_NUMBER: ${{ inputs.issue-number }}
+        BODY_FILE: ${{ inputs.body-file }}
+      run: |
+        marker='<!-- frappe-brewery-bot-comment -->'
+        body="$RUNNER_TEMP/frappe-brewery-comment.md"
+        printf '%s\n\n' "$marker" > "$body"
+        cat "$BODY_FILE" >> "$body"
+
+        comment_id=$(gh api --paginate \
+          "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments?per_page=100" \
+          --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | contains("<!-- frappe-brewery-bot-comment -->")) | .id' \
+          | tail -n 1)
+
+        if [ -n "$comment_id" ]; then
+          gh api --method PATCH \
+            "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" \
+            -F "body=@$body" > /dev/null
+        else
+          gh api --method POST \
+            "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments" \
+            -F "body=@$body" > /dev/null
+        fi

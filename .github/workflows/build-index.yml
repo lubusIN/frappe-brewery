@@ -11,10 +11,15 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: registry-writes
+  cancel-in-progress: false
+
 jobs:
   build-index:
     name: Generate index files
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -22,13 +27,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
 
       - name: Validate all apps
         run: npm run brewery:validate

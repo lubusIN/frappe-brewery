@@ -1,0 +1,29 @@
+name: "Setup Environment"
+description: "Set up Node, install dependencies, and optionally setup Python for linting"
+inputs:
+  python:
+    description: "Whether to install Python and Linters"
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v5
+      with:
+        node-version: 22
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Setup Python
+      if: inputs.python == 'true'
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install Linters
+      if: inputs.python == 'true'
+      shell: bash
+      run: pip install semgrep pip-audit

@@ -1,0 +1,85 @@
+name: Process App Submission
+
+on:
+  issues:
+    types: [opened, edited]
+
+concurrency:
+  group: issue-submission-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  process:
+    if: contains(github.event.issue.labels.*.name, '[app]submission')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
+        with:
+          python: "true"
+
+      - name: Process Issue
+        id: process
+        continue-on-error: true
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: npx tsx scripts/process-issue.ts > process.log 2>&1
+
+      - name: Lint App
+        id: lint
+        continue-on-error: true
+        run: |
+          if [ -f "app.json" ]; then
+            npx tsx scripts/lint-app.ts app.json
+          else
+            echo "Skipping linting (app.json not generated)."
+          fi
+
+      - name: Comment and update issue
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          if [ -f validation.md ]; then
+            cp validation.md comment.md
+          else
+            printf '### ❌ Submission Processing Failed\n\n```text\n' > comment.md
+            cat process.log >> comment.md
+            printf '\n```\n' >> comment.md
+          fi
+
+          if [ -f linter_report.md ]; then
+            printf '\n\n' >> comment.md
+            cat linter_report.md >> comment.md
+          fi
+
+          if [ -f issue_state.txt ]; then
+            state=$(tr -d '[:space:]' < issue_state.txt)
+            if [ "$state" = "closed" ]; then
+              gh issue close "$ISSUE_NUMBER"
+            elif [ "$state" = "open" ]; then
+              gh issue reopen "$ISSUE_NUMBER" || true
+            else
+              echo "Invalid issue state: $state" >&2
+              exit 1
+            fi
+          fi
+
+      - name: Upsert issue comment
+        if: always()
+        uses: ./.github/actions/upsert-comment
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body-file: comment.md
+
+      - name: Fail on error
+        if: always() && (steps.process.outcome == 'failure' || steps.lint.outcome == 'failure')
+        run: exit 1

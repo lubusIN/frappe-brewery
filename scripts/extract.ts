@@ -14,7 +14,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import {
   type BranchCompatibility,
   extractCiFrappeVersions,
@@ -60,24 +60,48 @@ interface GitHubTree {
 // Helpers
 // ──────────────────────────────────────────────
 export function parseRepoUrl(url: string): { owner: string; repo: string } {
-  const match = url.match(
-    /^https?:\/\/github\.com\/([^/]+)\/([^/]+?)\/?$/
-  );
-  if (!match) {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
     throw new Error(`Invalid GitHub URL: ${url}`);
   }
-  let repo = match[2];
-  if (repo.endsWith('.git')) repo = repo.slice(0, -4);
-  return { owner: match[1], repo };
+
+  const parts = parsed.pathname.split("/").filter(Boolean);
+  let repo = parts[1] ?? "";
+  if (repo.endsWith(".git")) repo = repo.slice(0, -4);
+
+  const owner = parts[0] ?? "";
+  const validOwner = /^[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i.test(owner);
+  const validRepo = /^[a-z\d._-]+$/i.test(repo);
+  if (
+    !["http:", "https:"].includes(parsed.protocol) ||
+    parsed.hostname.toLowerCase() !== "github.com" ||
+    parsed.username ||
+    parsed.password ||
+    parsed.search ||
+    parsed.hash ||
+    parts.length !== 2 ||
+    !validOwner ||
+    !validRepo
+  ) {
+    throw new Error(`Invalid GitHub URL: ${url}`);
+  }
+
+  return { owner, repo };
 }
 
 export function toSlug(str: string): string {
-  return str.toLowerCase().replace(/_/g, "-").replace(/[^a-z0-9-]/g, "");
+  return str
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 }
 
-
-
-function getLocalFileContent(tmpDir: string, filePaths: string[]): string | null {
+function getLocalFileContent(
+  tmpDir: string,
+  filePaths: string[],
+): string | null {
   for (const p of filePaths) {
     const fullPath = path.join(tmpDir, p);
     if (fs.existsSync(fullPath)) {
@@ -115,7 +139,7 @@ function extractRequiredApps(hooksContent: string): string[] {
 
 function detectFrappeVersions(topics: string[]): string[] {
   const versions: string[] = [];
-  
+
   for (const topic of topics) {
     const match = topic.match(/^(?:frappe-v|v)(\d+)$/);
     if (match) {
@@ -187,19 +211,22 @@ export async function inspectBranchCompatibility(
   if (dependencyVersions.length === 0 && !namedVersion) {
     let tree: GitHubTree | null = null;
     try {
-      tree = await githubFetch(
+      tree = (await githubFetch(
         `/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
-      ) as GitHubTree | null;
+      )) as GitHubTree | null;
     } catch (err: any) {
-      console.warn(`⚠️  Failed to fetch git tree for ${owner}/${repo}@${branch}: ${err.message}`);
+      console.warn(
+        `⚠️  Failed to fetch git tree for ${owner}/${repo}@${branch}: ${err.message}`,
+      );
     }
 
     const ciPaths = (tree?.tree ?? [])
-      .filter((item) =>
-        item.type === "blob"
-        && item.path.startsWith(".github/")
-        && /\.(?:ya?ml|sh)$/i.test(item.path)
-        && (item.size ?? 0) <= 200_000
+      .filter(
+        (item) =>
+          item.type === "blob" &&
+          item.path.startsWith(".github/") &&
+          /\.(?:ya?ml|sh)$/i.test(item.path) &&
+          (item.size ?? 0) <= 200_000,
       )
       .slice(0, 30)
       .map((item) => item.path);
@@ -239,18 +266,26 @@ async function detectInstallBranchesAsync(
   warnings: string[];
 }> {
   const candidates = new Set(
-    branchNames.filter((branch) =>
-      branch === defaultBranch
-      || ["main", "master", "develop"].includes(branch)
-      || /^(?:version-|v)\d+$/i.test(branch)
-      || /^(?:frappe-v?|version-)\d+$/i.test(branch)
+    branchNames.filter(
+      (branch) =>
+        branch === defaultBranch ||
+        ["main", "master", "develop"].includes(branch) ||
+        /^(?:version-|v)\d+$/i.test(branch) ||
+        /^(?:frappe-v?|version-)\d+$/i.test(branch),
     ),
   );
   candidates.add(defaultBranch);
 
   const evidence = (
     await Promise.all(
-      [...candidates].map((branch) => inspectBranchCompatibility(owner, repo, branch, getAllowedFrappeVersions())),
+      [...candidates].map((branch) =>
+        inspectBranchCompatibility(
+          owner,
+          repo,
+          branch,
+          getAllowedFrappeVersions(),
+        ),
+      ),
     )
   ).flat();
   const warnings: string[] = [];
@@ -261,18 +296,22 @@ async function detectInstallBranchesAsync(
   );
 
   if (Object.keys(installBranches).length === 0 && topicVersions.length > 0) {
-    const topicEvidence: BranchCompatibility[] = [{
-      branch: defaultBranch,
-      versions: topicVersions,
-      source: "topic",
-      score: 20,
-    }];
+    const topicEvidence: BranchCompatibility[] = [
+      {
+        branch: defaultBranch,
+        versions: topicVersions,
+        source: "topic",
+        score: 20,
+      },
+    ];
     installBranches = selectInstallBranches(
       topicEvidence,
       getAllowedFrappeVersions(),
       defaultBranch,
     );
-    warnings.push("Compatibility came only from GitHub topics; review install_branches.");
+    warnings.push(
+      "Compatibility came only from GitHub topics; review install_branches.",
+    );
   }
 
   if (Object.keys(installBranches).length === 0) {
@@ -294,38 +333,46 @@ async function detectInstallBranchesAsync(
 
 function detectMinFrappeVersion(frappeVersions: string[]): string {
   if (frappeVersions.length === 0) return "14.0.0";
-  const minV = frappeVersions.map(v => parseInt(v)).sort((a, b) => a - b)[0];
+  const minV = frappeVersions.map((v) => parseInt(v)).sort((a, b) => a - b)[0];
   return `${minV}.0.0`;
 }
 
 function topicsToCategories(topics: string[]): string[] {
+  // Values MUST match the allowed categories in app.schema.json
   const map: Record<string, string> = {
-    crm: "Customer Relations",
+    crm: "CRM & Support",
+    support: "CRM & Support",
+    helpdesk: "CRM & Support",
     hr: "Human Resources",
     hrms: "Human Resources",
     payroll: "Human Resources",
-    accounting: "Accounting",
-    erpnext: "Accounting",
-    manufacturing: "Business",
-    pos: "Retail",
-    healthcare: "Healthcare",
-    education: "Business",
-    lms: "Business",
-    integration: "Integrations",
-    payments: "Payments",
-    payment: "Payments",
-    reports: "Analytics",
-    analytics: "Analytics",
-    bi: "Analytics",
-    "developer-tools": "Developer",
-    developer: "Developer",
-    ai: "AI",
-    ecommerce: "E-Commerce",
-    "e-commerce": "E-Commerce",
+    accounting: "Accounting & Finance",
+    finance: "Accounting & Finance",
+    erpnext: "Business & Operations",
+    manufacturing: "Business & Operations",
+    operations: "Business & Operations",
+    pos: "E-Commerce & Retail",
+    retail: "E-Commerce & Retail",
+    healthcare: "Industry Specific",
+    education: "Industry Specific",
+    lms: "Industry Specific",
+    integration: "Utilities",
+    payments: "Accounting & Finance",
+    payment: "Accounting & Finance",
+    reports: "Analytics & AI",
+    analytics: "Analytics & AI",
+    bi: "Analytics & AI",
+    ai: "Analytics & AI",
+    "developer-tools": "Developer Tools",
+    developer: "Developer Tools",
+    ecommerce: "E-Commerce & Retail",
+    "e-commerce": "E-Commerce & Retail",
     utilities: "Utilities",
-    utility: "Utility",
-    theme: "Themes",
-    website: "Website",
+    utility: "Utilities",
+    theme: "Website & Themes",
+    website: "Website & Themes",
+    marketing: "Marketing",
+    mobile: "Mobile",
   };
   const found = new Set<string>();
   for (const topic of topics) {
@@ -334,7 +381,13 @@ function topicsToCategories(topics: string[]): string[] {
   return found.size > 0 ? Array.from(found) : ["Utilities"];
 }
 
-function detectIconUrl(owner: string, repo: string, defaultBranch: string, appName: string, tmpDir: string): string | null {
+function detectIconUrl(
+  owner: string,
+  repo: string,
+  defaultBranch: string,
+  appName: string,
+  tmpDir: string,
+): string | null {
   const candidates = [
     `${appName}/public/images/${appName}-logo.svg`,
     `${appName}/public/images/${appName}-logo.png`,
@@ -367,7 +420,7 @@ function detectIconUrl(owner: string, repo: string, defaultBranch: string, appNa
     `desk/public/favicon.svg`,
     `desk/public/logo.svg`,
     `public/favicon.svg`,
-    `public/logo.svg`
+    `public/logo.svg`,
   ];
 
   for (const item of candidates) {
@@ -391,7 +444,9 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
   const { owner, repo } = parseRepoUrl(repoUrl);
 
   // Fetch repo info
-  const repoData = (await githubFetch(`/repos/${owner}/${repo}`)) as GitHubRepo | null;
+  const repoData = (await githubFetch(
+    `/repos/${owner}/${repo}`,
+  )) as GitHubRepo | null;
   if (!repoData) {
     throw new Error(`Repository not found: ${repoUrl}`);
   }
@@ -402,7 +457,19 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "frappe-brewery-"));
   console.log(`📥 Cloning repository to temp directory...`);
   try {
-    execSync(`git clone --depth 1 https://github.com/${owner}/${repo}.git ${tmpDir}`, { stdio: "ignore" });
+    execFileSync(
+      "git",
+      [
+        "clone",
+        "--depth",
+        "1",
+        `https://github.com/${owner}/${repo}.git`,
+        tmpDir,
+      ],
+      {
+        stdio: "ignore",
+      },
+    );
   } catch (err) {
     fs.rmSync(tmpDir, { recursive: true, force: true });
     throw new Error(`Failed to clone repository`);
@@ -411,26 +478,34 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
   try {
     // Fetch latest release
     const releases = (await githubFetch(
-      `/repos/${owner}/${repo}/releases?per_page=1`
+      `/repos/${owner}/${repo}/releases?per_page=1`,
     )) as GitHubRelease[] | null;
     const latestRelease = releases?.[0] ?? null;
 
     // Fetch branches using git ls-remote
     let branchNames: string[] = [];
     try {
-       branchNames = Array.from(getRemoteBranches(`https://github.com/${owner}/${repo}.git`));
+      branchNames = Array.from(
+        getRemoteBranches(`https://github.com/${owner}/${repo}.git`),
+      );
     } catch {}
 
     const appName = repo.replace(/-/g, "_");
 
     // Extract files locally
-    const hooksContent = getLocalFileContent(tmpDir, [`${appName}/hooks.py`, "hooks.py"]) ?? "";
+    const hooksContent =
+      getLocalFileContent(tmpDir, [`${appName}/hooks.py`, "hooks.py"]) ?? "";
 
     // Derive fields
     const slug = toSlug(appName);
-    const title = extractAppTitle(hooksContent)
-      ?? repoData.name.replace(/_/g, " ").replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase());
-    const description = repoData.description ?? `A Frappe app from ${owner}/${repo}`;
+    const title =
+      extractAppTitle(hooksContent) ??
+      repoData.name
+        .replace(/_/g, " ")
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase());
+    const description =
+      repoData.description ?? `A Frappe app from ${owner}/${repo}`;
     const license = detectLicense(repoData.license?.spdx_id);
     let frappeVersions = detectFrappeVersions(repoData.topics);
     const {
@@ -446,9 +521,13 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
     );
     frappeVersions = validFrappeVersions;
     const minFrappeVersion = detectMinFrappeVersion(frappeVersions);
-    const requiredApps = hooksContent ? extractRequiredApps(hooksContent) : ["frappe"];
+    const requiredApps = hooksContent
+      ? extractRequiredApps(hooksContent)
+      : ["frappe"];
     const categories = topicsToCategories(repoData.topics).slice(0, 4);
-    const tags = repoData.topics.filter(t => !["frappe", "erpnext", "python"].includes(t)).slice(0, 4);
+    const tags = repoData.topics
+      .filter((t) => !["frappe", "erpnext", "python"].includes(t))
+      .slice(0, 4);
     const iconUrl = detectIconUrl(owner, repo, defaultBranch, appName, tmpDir);
 
     const outputPath = path.join(APPS_DIR, `${slug}.json`);
@@ -478,7 +557,7 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
         `bench get-app ${owner === "frappe" ? repo : repoUrl}`,
         `bench --site [site-name] install-app ${appName}`,
         `bench --site [site-name] migrate`,
-        `bench restart`
+        `bench restart`,
       ],
       links: {
         ...(repoData.homepage ? { website: repoData.homepage } : {}),
@@ -511,7 +590,9 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
       console.log(`\nThen run: npm run brewery:validate`);
 
       if (latestRelease) {
-        console.log(`\n📦 Latest release: ${latestRelease.tag_name} (${latestRelease.published_at.slice(0, 10)})`);
+        console.log(
+          `\n📦 Latest release: ${latestRelease.tag_name} (${latestRelease.published_at.slice(0, 10)})`,
+        );
       }
     }
 
@@ -522,19 +603,21 @@ export async function extractApp(repoUrl: string, writeToFile: boolean = true) {
   }
 }
 
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
 export async function main() {
   const repoUrl = process.argv[2];
   if (!repoUrl) {
-    console.error("Usage: npm run brewery:extract https://github.com/owner/repo");
+    console.error(
+      "Usage: npm run brewery:extract https://github.com/owner/repo",
+    );
     process.exit(1);
   }
   await extractApp(repoUrl, true);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main().catch(err => {
+  main().catch((err) => {
     console.error("❌", err.message);
     process.exit(1);
   });

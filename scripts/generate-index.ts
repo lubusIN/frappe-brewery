@@ -7,13 +7,16 @@ const INDEX_DIR = path.join(ROOT, "index");
 
 import type { App } from "../src/types";
 import { formatApp as sharedFormatApp } from "./format-apps.js";
-import { getAllowedFrappeVersions } from "./schema.js";
+import {
+  getAllowedFrappeVersions,
+  readJson as readJsonFile,
+} from "./schema.js";
 
 // ──────────────────────────────────────────────
 // Helpers
 // ──────────────────────────────────────────────
 function readJson(filePath: string): App {
-  return JSON.parse(fs.readFileSync(filePath, "utf8")) as App;
+  return readJsonFile(filePath) as App;
 }
 
 function writeJson(filePath: string, data: Record<string, any>): void {
@@ -22,9 +25,13 @@ function writeJson(filePath: string, data: Record<string, any>): void {
       const existingData = JSON.parse(fs.readFileSync(filePath, "utf8"));
       const existingForCompare = { ...existingData, generated_at: "" };
       const newForCompare = { ...data, generated_at: "" };
-      
-      if (JSON.stringify(existingForCompare) === JSON.stringify(newForCompare)) {
-        console.log(`  → skipped ${path.relative(ROOT, filePath)} (no changes)`);
+
+      if (
+        JSON.stringify(existingForCompare) === JSON.stringify(newForCompare)
+      ) {
+        console.log(
+          `  → skipped ${path.relative(ROOT, filePath)} (no changes)`,
+        );
         return;
       }
     } catch {
@@ -76,7 +83,7 @@ writeJson(path.join(INDEX_DIR, "apps.json"), {
 // ──────────────────────────────────────────────
 // index/categories.json — grouped by category
 // ──────────────────────────────────────────────
-const categoryMap: Record<string, ReturnType<typeof toSummary>[]> = {};
+const categoryMap: Record<string, ReturnType<typeof formatApp>[]> = {};
 
 for (const app of apps) {
   for (const category of app.categories ?? []) {
@@ -126,17 +133,17 @@ writeJson(path.join(INDEX_DIR, "stats.json"), {
   by_frappe_version: frappeVersions.reduce<Record<string, number>>(
     (acc, version) => {
       acc[version] = apps.filter((app) =>
-        app.frappe_versions.includes(version)
+        app.frappe_versions.includes(version),
       ).length;
       return acc;
     },
-    {}
+    {},
   ),
   by_category: Object.fromEntries(
     Object.entries(categoryMap).map(([category, items]) => [
       category,
       items.length,
-    ])
+    ]),
   ),
 });
 

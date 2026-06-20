@@ -9,32 +9,37 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: issue-acceptance-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
 jobs:
   accept:
     if: github.event.label.name == '[app]accepted' && contains(github.event.issue.labels.*.name, '[app]submission')
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Accept Issue
+      - name: Fetch issue comments
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: gh api "repos/$GITHUB_REPOSITORY/issues/$ISSUE_NUMBER/comments?per_page=100" > issue-comments.json
+
+      - name: Accept Issue
         run: npx tsx scripts/accept-issue.ts
 
-      - name: Format Apps
+      - name: Format and Validate
         run: |
           npm run brewery:format
-          npm run brewery:validate || echo "Validation failed but proceeding"
+          if ! npm run brewery:validate; then
+            echo "::warning::Validation failed — please review the app JSON before merging the PR."
+          fi
 
       - name: Create Pull Request
         id: cpr
