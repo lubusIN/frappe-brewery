@@ -1,6 +1,6 @@
 # Frappe Brewery
 
-A community app registry for the Frappe ecosystem.
+An open app registry for the Frappe ecosystem.
 
 <img src=".github/assets/banner.png" />
 

@@ -236,7 +236,7 @@ const onSearchSelect = (item: any) => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-10 sm:py-8">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div class="flex flex-col gap-1.5">
-            <span class="text-sm font-semibold text-ink-gray-7">Community Frappe app registry</span>
+            <span class="text-sm font-semibold text-ink-gray-7">Open Frappe app registry</span>
             <span class="text-xs text-ink-gray-5">Open data · MIT License · Built for the Frappe community</span>
           </div>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-3">

@@ -80,9 +80,15 @@ const schemaExample = `{
     <div class="mb-10 pb-8 border-b border-outline-gray-1">
       <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-2">Open Source</p>
       <h1 class="text-3xl font-bold text-ink-gray-9">Submit Your App</h1>
-      <p class="mt-3 text-base text-ink-gray-5 max-w-xl leading-relaxed">
+      <p class="mt-3 text-base text-ink-gray-5 leading-relaxed">
         The easiest way to submit your app is by opening an Issue. Our automated bot will extract your details and create a PR for you! Alternatively, you can open a Pull Request manually.
       </p>
+      <div class="mt-4 p-4 rounded-lg bg-surface-gray-1 border border-outline-gray-2">
+        <p class="text-sm text-ink-gray-6 leading-relaxed">
+          <strong class="text-ink-gray-8">Review Process:</strong> <br/>
+          Each submission will go through automated checks and manual review. Acceptance of an app is at the sole discretion of the maintainers. Maintainers will perform thorough checks for AI slop, UI/UX quality, and code standards.
+        </p>
+      </div>
       <div class="flex gap-3 mt-5">
         <Button
           id="open-issue-btn"

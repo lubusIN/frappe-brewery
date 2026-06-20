@@ -1,7 +1,7 @@
 {
   "name": "frappe-brewery",
   "version": "0.1.0",
-  "description": "Community app registry for the Frappe ecosystem",
+  "description": "Open app registry for the Frappe ecosystem",
   "private": true,
   "type": "module",
   "scripts": {
