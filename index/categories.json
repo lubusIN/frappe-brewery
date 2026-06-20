@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-14T15:14:12.332Z",
+  "generated_at": "2026-06-19T18:29:27.994Z",
   "categories": [
     {
-      "name": "Accounting",
+      "name": "Accounting & Finance",
       "count": 1,
       "apps": [
         {
@@ -27,10 +27,10 @@
             "frappe"
           ],
           "categories": [
-            "Accounting",
-            "Business",
+            "Accounting & Finance",
+            "Business & Operations",
             "Human Resources",
-            "Customer Relations"
+            "CRM & Support"
           ],
           "tags": [
             "erp",
@@ -65,7 +65,7 @@
       ]
     },
     {
-      "name": "Analytics",
+      "name": "Analytics & AI",
       "count": 1,
       "apps": [
         {
@@ -90,7 +90,7 @@
             "frappe"
           ],
           "categories": [
-            "Analytics"
+            "Analytics & AI"
           ],
           "tags": [
             "analytics",
@@ -125,7 +125,7 @@
       ]
     },
     {
-      "name": "Business",
+      "name": "Business & Operations",
       "count": 2,
       "apps": [
         {
@@ -150,10 +150,10 @@
             "frappe"
           ],
           "categories": [
-            "Accounting",
-            "Business",
+            "Accounting & Finance",
+            "Business & Operations",
             "Human Resources",
-            "Customer Relations"
+            "CRM & Support"
           ],
           "tags": [
             "erp",
@@ -205,8 +205,8 @@
             "frappe"
           ],
           "categories": [
-            "Customer Relations",
-            "Business"
+            "CRM & Support",
+            "Business & Operations"
           ],
           "tags": [
             "crm",
@@ -239,7 +239,7 @@
       ]
     },
     {
-      "name": "Customer Relations",
+      "name": "CRM & Support",
       "count": 3,
       "apps": [
         {
@@ -264,10 +264,10 @@
             "frappe"
           ],
           "categories": [
-            "Accounting",
-            "Business",
+            "Accounting & Finance",
+            "Business & Operations",
             "Human Resources",
-            "Customer Relations"
+            "CRM & Support"
           ],
           "tags": [
             "erp",
@@ -319,8 +319,8 @@
             "frappe"
           ],
           "categories": [
-            "Customer Relations",
-            "Business"
+            "CRM & Support",
+            "Business & Operations"
           ],
           "tags": [
             "crm",
@@ -373,7 +373,7 @@
           ],
           "categories": [
             "Utilities",
-            "Customer Relations"
+            "CRM & Support"
           ],
           "tags": [
             "helpdesk",
@@ -408,7 +408,7 @@
       ]
     },
     {
-      "name": "Developer",
+      "name": "Developer Tools",
       "count": 2,
       "apps": [
         {
@@ -431,8 +431,8 @@
             "frappe"
           ],
           "categories": [
-            "Developer",
-            "Website"
+            "Developer Tools",
+            "Website & Themes"
           ],
           "tags": [
             "low-code",
@@ -480,7 +480,7 @@
             "frappe"
           ],
           "categories": [
-            "Developer"
+            "Developer Tools"
           ],
           "tags": [
             "low-code. app-builder"
@@ -533,10 +533,10 @@
             "frappe"
           ],
           "categories": [
-            "Accounting",
-            "Business",
+            "Accounting & Finance",
+            "Business & Operations",
             "Human Resources",
-            "Customer Relations"
+            "CRM & Support"
           ],
           "tags": [
             "erp",
@@ -651,7 +651,7 @@
           ],
           "categories": [
             "Utilities",
-            "Customer Relations"
+            "CRM & Support"
           ],
           "tags": [
             "helpdesk",
@@ -737,7 +737,7 @@
       ]
     },
     {
-      "name": "Website",
+      "name": "Website & Themes",
       "count": 1,
       "apps": [
         {
@@ -760,8 +760,8 @@
             "frappe"
           ],
           "categories": [
-            "Developer",
-            "Website"
+            "Developer Tools",
+            "Website & Themes"
           ],
           "tags": [
             "low-code",

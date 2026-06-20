@@ -11,8 +11,8 @@ const featuredApps = ref<App[]>([])
 const loading = ref(true)
 
 const categories = [
-  'Accounting', 'Human Resources', 'Retail', 'Business',
-  'Healthcare', 'Developer', 'Integrations', 'Analytics',
+  'Accounting & Finance', 'Human Resources', 'E-Commerce & Retail', 'Business & Operations',
+  'Industry Specific', 'Developer Tools', 'CRM & Support', 'Analytics & AI',
 ].map(name => ({ name, icon: CATEGORY_ICONS[name] || 'box' }))
 
 const apiEndpoints = [

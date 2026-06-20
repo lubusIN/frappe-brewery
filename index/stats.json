@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T15:14:12.332Z",
+  "generated_at": "2026-06-19T18:29:27.994Z",
   "total_apps": 8,
   "total_categories": 8,
   "by_frappe_version": {
@@ -8,13 +8,13 @@
     "16": 8
   },
   "by_category": {
-    "Accounting": 1,
-    "Business": 2,
+    "Accounting & Finance": 1,
+    "Business & Operations": 2,
     "Human Resources": 2,
-    "Customer Relations": 3,
-    "Developer": 2,
-    "Website": 1,
+    "CRM & Support": 3,
+    "Developer Tools": 2,
+    "Website & Themes": 1,
     "Utilities": 2,
-    "Analytics": 1
+    "Analytics & AI": 1
   }
 }

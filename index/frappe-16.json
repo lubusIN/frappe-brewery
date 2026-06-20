@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-14T15:14:12.332Z",
+  "generated_at": "2026-06-19T18:29:27.994Z",
   "frappe_version": "16",
   "count": 8,
   "apps": [
@@ -25,10 +25,10 @@
         "frappe"
       ],
       "categories": [
-        "Accounting",
-        "Business",
+        "Accounting & Finance",
+        "Business & Operations",
         "Human Resources",
-        "Customer Relations"
+        "CRM & Support"
       ],
       "tags": [
         "erp",
@@ -80,8 +80,8 @@
         "frappe"
       ],
       "categories": [
-        "Developer",
-        "Website"
+        "Developer Tools",
+        "Website & Themes"
       ],
       "tags": [
         "low-code",
@@ -129,8 +129,8 @@
         "frappe"
       ],
       "categories": [
-        "Customer Relations",
-        "Business"
+        "CRM & Support",
+        "Business & Operations"
       ],
       "tags": [
         "crm",
@@ -183,7 +183,7 @@
       ],
       "categories": [
         "Utilities",
-        "Customer Relations"
+        "CRM & Support"
       ],
       "tags": [
         "helpdesk",
@@ -291,7 +291,7 @@
         "frappe"
       ],
       "categories": [
-        "Analytics"
+        "Analytics & AI"
       ],
       "tags": [
         "analytics",
@@ -394,7 +394,7 @@
         "frappe"
       ],
       "categories": [
-        "Developer"
+        "Developer Tools"
       ],
       "tags": [
         "low-code. app-builder"
