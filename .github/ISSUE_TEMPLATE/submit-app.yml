@@ -23,37 +23,18 @@ body:
       description: "Select the categories that best describe your app."
       multiple: true
       options:
-        - Accounting
-        - AI
-        - Analytics
-        - Automation
-        - Business
-        - Collaboration
-        - Communication
-        - Compliance
-        - CRM Integration
-        - Customer Relations
-        - Developer
-        - E-Commerce
-        - Extension
-        - Featured
-        - Files
-        - Healthcare
+        - Accounting & Finance
+        - Analytics & AI
+        - Business & Operations
+        - CRM & Support
+        - Developer Tools
+        - E-Commerce & Retail
         - Human Resources
-        - Integrations
-        - Localization
+        - Industry Specific
         - Marketing
         - Mobile
-        - Non-Profit
-        - Payments
-        - Productivity
-        - Retail
-        - Storage
-        - Support
-        - Themes
+        - Website & Themes
         - Utilities
-        - Utility
-        - Website
     validations:
       required: true
       
