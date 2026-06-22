@@ -6,6 +6,10 @@
 
 An open app registry for the Frappe Apps.
 
+> [!WARNING]
+> The checks, automated validations, and app extraction workflows are currently under active development. They may occasionally be fragile or produce false positives. If your app fails validation unexpectedly, please let us know!
+
+
 - **Open data** all app entries are plain JSON, versioned in Git
 - **GitHub-based submissions** submit apps via Pull Request
 - **Static JSON API** no database, consumed directly by tools
