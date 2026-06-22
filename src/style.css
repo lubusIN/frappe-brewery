@@ -12,3 +12,9 @@
   }
 }
 
+@layer components {
+  .dialog-overlay {
+    @apply z-[100];
+  }
+}
+

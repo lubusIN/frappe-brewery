@@ -11,6 +11,10 @@ export default defineConfig({
     frappeui({
       frappeProxy: false,
       jinjaBootData: false,
+      buildConfig: {
+        outDir: path.resolve(__dirname, 'dist'),
+        indexHtmlPath: path.resolve(__dirname, 'dist/index.html'),
+      }
     }),
     vue(),
     {
