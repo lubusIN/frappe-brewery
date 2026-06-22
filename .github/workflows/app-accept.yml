@@ -36,9 +36,14 @@ jobs:
 
       - name: Format and Validate
         run: |
-          npm run brewery:format
-          if ! npm run brewery:validate; then
-            echo "::warning::Validation failed — please review the app JSON before merging the PR."
+          CHANGED_FILE=$(git ls-files -o -m apps/*.json | head -n 1)
+          if [ -n "$CHANGED_FILE" ]; then
+            npm run brewery:format -- "$CHANGED_FILE"
+            if ! npm run brewery:validate -- "$CHANGED_FILE"; then
+              echo "::warning::Validation failed — please review the app JSON before merging the PR."
+            fi
+          else
+            echo "No changed apps found to validate."
           fi
 
       - name: Create Pull Request

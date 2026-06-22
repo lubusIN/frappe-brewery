@@ -69,10 +69,11 @@ jobs:
           if [ "${{ steps.changed-apps.outputs.any_changed }}" == "true" ]; then
             mapfile -d '' files < "$CHANGED_APPS_FILE"
             NO_COLOR=1 npm run brewery:validate -- "${files[@]}" > validation.log 2>&1
+            exit_code=$?
           else
-            NO_COLOR=1 npm run brewery:validate > validation.log 2>&1
+            echo "No app files changed, skipping validation." > validation.log
+            exit_code=0
           fi
-          exit_code=$?
           set -e
 
           echo "VALIDATION_EXIT_CODE=$exit_code" >> $GITHUB_ENV

@@ -46,9 +46,18 @@ export function formatApp(data: any): any {
 import { fileURLToPath } from 'url';
 
 export async function main() {
-  const files = fs
-    .readdirSync(APPS_DIR)
-    .filter((file) => file.endsWith(".json"));
+  const args = process.argv.slice(2);
+  let files: string[];
+
+  if (args.length > 0) {
+    files = args
+      .map((arg) => path.basename(arg))
+      .filter((f) => f.endsWith(".json"));
+  } else {
+    files = fs
+      .readdirSync(APPS_DIR)
+      .filter((file) => file.endsWith(".json"));
+  }
 
   for (const file of files) {
     const filePath = path.join(APPS_DIR, file);
