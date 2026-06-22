@@ -131,7 +131,11 @@ function extractRequiredApps(hooksContent: string): string[] {
       .map((s) => s.trim().replace(/["']/g, ""))
       .filter(Boolean);
     for (const item of items) {
-      if (!deps.includes(item)) deps.push(item);
+      let appName = item.split("/").pop();
+      if (appName) {
+        if (appName.endsWith(".git")) appName = appName.slice(0, -4);
+        if (!deps.includes(appName)) deps.push(appName);
+      }
     }
   }
   return deps;
