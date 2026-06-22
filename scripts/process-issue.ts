@@ -11,7 +11,7 @@ async function main() {
   }
 
   // Parse markdown from GitHub Issue Form
-  const repoMatch = issueBody.match(/### GitHub Repository URL\s+([^\n]+)/);
+  const repoMatch = issueBody.match(/### GitHub Repository\s+([^\n]+)/);
   const categoriesMatch = issueBody.match(/### Categories\s+([^\n]+)/);
   const tagsMatch = issueBody.match(/### Tags\s+([^\n]+)/);
   const installBranchesMatch = issueBody.match(
