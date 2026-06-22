@@ -100,7 +100,7 @@ const onSearchSelect = (item: any) => {
 
           <!-- Logo -->
           <RouterLink to="/" class="flex items-center gap-2 shrink-0" aria-label="Frappe Brewery">
-            <FeatherIcon name="codesandbox" class="w-5 h-5 text-ink-gray-9" />
+            <img src="/favicon.svg" alt="Frappe Brewery Logo" class="w-6 h-6" />
             <span class="text-base font-semibold text-ink-gray-9 tracking-tight">Frappe Brewery</span>
           </RouterLink>
 

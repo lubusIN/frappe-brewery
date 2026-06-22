@@ -5,12 +5,12 @@ labels: ["[app]submission"]
 body:
   - type: markdown
     attributes:
-      value: "### Welcome to Frappe Brewery!\nSubmit your app by providing the public GitHub repository URL. We will automatically extract metadata like supported versions, install branches, license, and descriptions directly from your repository! Please provide the extra fields below that we cannot automatically extract.\n\n**Note**: Each submission will go through an automated check and a manual review. Acceptance of an app is at the sole discretion of the maintainers. We perform thorough checks for AI slop, UI/UX quality, and code standards."
+      value: "### Welcome to Frappe Brewery!\nHave an app you'd like to share? Submit the public GitHub repository URL and we'll do most of the heavy lifting.Our automated workflows will try to extract the metadata.\n\n**Note**:Frappe Brewery is a curated registry focused on quality applications and good ecosystem craftsmanship. We review submissions for usability, maintainability, documentation, and alignment with Frappe best practices."
   
   - type: input
     id: repository
     attributes:
-      label: GitHub Repository URL
+      label: GitHub Repository
       description: "Must be a public GitHub repository (e.g. https://github.com/frappe/erpnext)"
       placeholder: "https://github.com/your-org/your-repo"
     validations:

@@ -86,7 +86,7 @@ const schemaExample = `{
       <div class="mt-4 p-4 rounded-lg bg-surface-gray-1 border border-outline-gray-2">
         <p class="text-sm text-ink-gray-6 leading-relaxed">
           <strong class="text-ink-gray-8">Review Process:</strong> <br/>
-          Each submission will go through automated checks and manual review. Acceptance of an app is at the sole discretion of the maintainers. Maintainers will perform thorough checks for AI slop, UI/UX quality, and code standards.
+          Each submission will go through automated checks and manual review. Acceptance of an app is at the sole discretion of the maintainers. Frappe Brewery is a curated registry focused on quality applications and good ecosystem craftsmanship. We review submissions for usability, maintainability, documentation, and alignment with Frappe best practices.
         </p>
       </div>
       <div class="flex gap-3 mt-5">

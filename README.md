@@ -1,8 +1,10 @@
-# Frappe Brewery
-
-An open app registry for the Frappe ecosystem.
+<p align="center"><img width="180" src=".github/assets/logo.svg"></p>
 
 <img src=".github/assets/banner.png" />
+
+# Frappe Brewery
+
+An open app registry for the Frappe Apps.
 
 - **Open data** all app entries are plain JSON, versioned in Git
 - **GitHub-based submissions** submit apps via Pull Request
