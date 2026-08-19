@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { FeatherIcon, FormControl, Button, Badge, Switch } from 'frappe-ui'
 import { fetchApps } from '../api'
 import AppCard from '../components/AppCard.vue'
-import { CATEGORIES, FRAPPE_VERSIONS, LICENSES } from '../constants'
+import { CATEGORIES, FRAPPE_VERSIONS, LICENSES, formatFrappeVersion } from '../constants'
 import type { App, IndexResponse } from '../types'
 
 const route = useRoute()
@@ -24,7 +24,7 @@ const showVerifiedOnly = ref(route.query.verified === 'true')
 
 const versionOptions = [
   { label: 'All versions', value: '' },
-  ...FRAPPE_VERSIONS.map(v => ({ label: `Frappe ${v}`, value: v }))
+  ...FRAPPE_VERSIONS.map(v => ({ label: `Frappe ${formatFrappeVersion(v)}`, value: v }))
 ]
 
 const categoryOptions = computed(() => {

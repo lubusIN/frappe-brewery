@@ -35,7 +35,7 @@ const requiredFields = [
   { name: 'description', type: 'string', desc: 'Short description (10–500 characters)' },
   { name: 'repository', type: 'uri', desc: 'Public GitHub repository URL' },
   { name: 'license', type: 'string', desc: 'SPDX identifier (MIT, GPL-3.0, AGPL-3.0…)' },
-  { name: 'frappe_versions', type: 'string[]', desc: 'Supported versions: "14", "15", "16"' },
+  { name: 'frappe_versions', type: 'string[]', desc: 'Supported versions: "14", "15", "16", "develop"' },
   { name: 'required_apps', type: 'string[]', desc: 'Must include "frappe"; add "erpnext" if needed' },
   { name: 'categories', type: 'string[]', desc: 'From allowed list (CRM, HR, Accounting…) (max 4)' },
   { name: 'tags', type: 'string[]', desc: 'Free-form tags (max 4) to describe the app.' },
@@ -51,11 +51,12 @@ const schemaExample = `{
   "description": "What your app does.",
   "repository": "https://github.com/your-org/my-app",
   "license": "MIT",
-  "frappe_versions": ["15", "16"],
+  "frappe_versions": ["15", "16", "develop"],
   "min_frappe_version": "15.0.0",
   "install_branches": {
     "15": "version-15",
-    "16": "version-16"
+    "16": "version-16",
+    "develop": "develop"
   },
   "required_apps": ["frappe"],
   "categories": ["Utilities"],

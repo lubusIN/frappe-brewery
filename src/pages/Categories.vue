@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { FeatherIcon, Badge, Dropdown, Button } from 'frappe-ui'
 import { fetchCategories } from '../api'
-import { CATEGORY_ICONS } from '../constants'
+import { CATEGORY_ICONS, formatFrappeVersionBadge } from '../constants'
 import AppCard from '../components/AppCard.vue'
 import type { CategoriesResponse, CategoryEntry } from '../types'
 
@@ -145,7 +145,7 @@ onMounted(async () => {
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             <AppCard v-for="app in activeCategory.apps" :key="app.slug" :app="app">
               <template #footer>
-                <Badge v-for="v in app.frappe_versions" :key="v" theme="gray" :label="`v${v}`" class="font-mono" />
+                <Badge v-for="v in app.frappe_versions" :key="v" theme="gray" :label="formatFrappeVersionBadge(v)" class="font-mono" />
                 <span class="ml-auto text-xs text-ink-gray-3">{{ app.license }}</span>
               </template>
             </AppCard>

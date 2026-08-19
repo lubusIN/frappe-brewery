@@ -19,3 +19,11 @@ export const CATEGORY_ICONS: Record<string, string> = {
 export const CATEGORIES = schema.properties.categories.items.enum as string[]
 export const FRAPPE_VERSIONS = schema.properties.frappe_versions.items.enum as string[]
 export const LICENSES = schema.properties.license.enum as string[]
+
+export function formatFrappeVersion(version: string): string {
+  return version === 'develop' ? 'Develop' : version
+}
+
+export function formatFrappeVersionBadge(version: string): string {
+  return version === 'develop' ? 'Develop' : `v${version}`
+}

@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { FeatherIcon, Badge, Button } from 'frappe-ui'
 import { fetchStats, fetchApps } from '../api'
-import { CATEGORY_ICONS } from '../constants'
+import { CATEGORY_ICONS, formatFrappeVersionBadge } from '../constants'
 import AppCard from '../components/AppCard.vue'
 import type { StatsResponse, App } from '../types'
 
@@ -92,7 +92,7 @@ onMounted(async () => {
         <AppCard v-for="app in featuredApps" :key="app.slug" :app="app">
           <template #footer>
             <Badge v-for="cat in app.categories.slice(0, 1)" :key="cat" theme="gray" :label="cat" />
-            <span class="text-xs text-ink-gray-3 font-mono ml-auto">v{{ app.frappe_versions.join(', ') }}</span>
+            <span class="text-xs text-ink-gray-3 font-mono ml-auto">{{ app.frappe_versions.map(formatFrappeVersionBadge).join(', ') }}</span>
           </template>
         </AppCard>
       </div>

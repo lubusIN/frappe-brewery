@@ -188,3 +188,18 @@ export function selectInstallBranches(
       .map((version) => [version, selected[version].branch]),
   );
 }
+
+export function addDevelopInstallBranch(
+  installBranches: Record<string, string>,
+  branchNames: string[],
+  defaultBranch: string,
+): Record<string, string> {
+  const availableBranches = new Set(branchNames);
+  availableBranches.add(defaultBranch);
+
+  const developBranch = ["develop", "main", "master", defaultBranch].find(
+    (branch) => availableBranches.has(branch),
+  )!;
+
+  return { ...installBranches, develop: developBranch };
+}

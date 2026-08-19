@@ -59,7 +59,7 @@
       "description": "Frappe major versions this app supports",
       "items": {
         "type": "string",
-        "enum": ["14", "15", "16"]
+        "enum": ["14", "15", "16", "develop"]
       },
       "minItems": 1,
       "uniqueItems": true
@@ -73,7 +73,7 @@
       "type": "object",
       "description": "Matrix mapping supported Frappe versions to specific installation branches",
       "patternProperties": {
-        "^(14|15|16)$": {
+        "^(14|15|16|develop)$": {
           "type": "string",
           "description": "The branch name to install for this Frappe version"
         }

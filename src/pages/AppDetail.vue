@@ -3,6 +3,7 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { FeatherIcon, Badge, Button, FormControl } from 'frappe-ui'
 import { fetchApp } from '../api'
+import { formatFrappeVersion } from '../constants'
 import type { App } from '../types'
 
 const route = useRoute()
@@ -48,7 +49,10 @@ async function loadApp(slug: string) {
 
 const versionOptions = computed(() => {
   if (!app.value?.frappe_versions) return []
-  return app.value.frappe_versions.map(v => ({ label: `Frappe v${v}`, value: v }))
+  return app.value.frappe_versions.map(v => ({
+    label: v === 'develop' ? 'Frappe Develop' : `Frappe v${formatFrappeVersion(v)}`,
+    value: v,
+  }))
 })
 
 const displayCommands = computed(() => {
@@ -241,7 +245,7 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
                 <dt class="text-ink-gray-4 w-24 shrink-0 pt-0.5">Frappe</dt>
                 <dd class="flex gap-x-1.5 gap-y-1 flex-wrap pt-0.5">
                   <span v-for="(v, index) in app.frappe_versions" :key="v" class="text-ink-gray-7">
-                    v{{ v }}<span v-if="index !== app.frappe_versions.length - 1" class="text-ink-gray-4">,</span>
+                    {{ v === 'develop' ? 'Develop' : `v${v}` }}<span v-if="index !== app.frappe_versions.length - 1" class="text-ink-gray-4">,</span>
                   </span>
                 </dd>
               </div>
