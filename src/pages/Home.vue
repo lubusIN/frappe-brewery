@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
-import { FeatherIcon, Badge, Button } from 'frappe-ui'
+import { Icon, Badge, Button } from 'frappe-ui'
 import { fetchStats, fetchApps } from '../api'
 import { CATEGORY_ICONS, formatFrappeVersionBadge } from '../constants'
 import AppCard from '../components/AppCard.vue'
-import type { StatsResponse, App } from '../types'
+import type { App } from '../types'
 
 const featuredApps = ref<App[]>([])
 const loading = ref(true)
@@ -13,7 +13,7 @@ const loading = ref(true)
 const categories = [
   'Accounting & Finance', 'Human Resources', 'E-Commerce & Retail', 'Business & Operations',
   'Industry Specific', 'Developer Tools', 'CRM & Support', 'Analytics & AI',
-].map(name => ({ name, icon: CATEGORY_ICONS[name] || 'box' }))
+].map(name => ({ name, icon: CATEGORY_ICONS[name] || 'lucide-box' }))
 
 const apiEndpoints = [
   { path: '/index/apps.json' },
@@ -41,7 +41,7 @@ onMounted(async () => {
     <section class="border-b border-outline-gray-1 bg-surface-gray-1">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div class="max-w-3xl mx-auto flex flex-col items-center text-center">
-          <h1 class="text-3xl sm:text-4xl font-bold text-ink-gray-9 tracking-tight leading-tight">
+          <h1 class="text-4xl-bold sm:text-5xl text-ink-gray-9 tracking-tight leading-tight">
             Frappe Brewery
           </h1>
           <p class="mt-3 text-base text-ink-gray-5 leading-relaxed max-w-xl">
@@ -61,7 +61,7 @@ onMounted(async () => {
               size="md"
               variant="solid"
               theme="gray"
-              icon-right="arrow-right"
+              icon-right="lucide-arrow-right"
             >
               Browse
             </Button>
@@ -74,17 +74,17 @@ onMounted(async () => {
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Brewery</p>
-          <h2 class="text-xl font-semibold text-ink-gray-9">Featured Apps</h2>
+          <p class="text-xs-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Brewery</p>
+          <h2 class="text-2xl-semibold text-ink-gray-9">Featured Apps</h2>
         </div>
-        <Button :route="{ path: '/apps' }" variant="ghost" theme="gray" icon-right="arrow-right">
+        <Button :route="{ path: '/apps' }" variant="ghost" theme="gray" icon-right="lucide-arrow-right">
           View all
         </Button>
       </div>
 
       <!-- Skeleton -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div v-for="i in 4" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-lg" />
+        <div v-for="i in 4" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-6" />
       </div>
 
       <!-- Cards -->
@@ -105,10 +105,10 @@ onMounted(async () => {
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
       <div class="mb-6 flex items-end justify-between">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Brewery</p>
-          <h2 class="text-xl font-semibold text-ink-gray-9">Featured Categories</h2>
+          <p class="text-xs-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Brewery</p>
+          <h2 class="text-2xl-semibold text-ink-gray-9">Featured Categories</h2>
         </div>
-        <Button :route="{ path: '/categories' }" variant="ghost" theme="gray" icon-right="arrow-right">
+        <Button :route="{ path: '/categories' }" variant="ghost" theme="gray" icon-right="lucide-arrow-right">
           View all
         </Button>
       </div>
@@ -117,10 +117,10 @@ onMounted(async () => {
           v-for="cat in categories"
           :key="cat.name"
           :to="`/categories?cat=${encodeURIComponent(cat.name)}`"
-          class="flex flex-col items-center gap-2.5 py-5 px-3 rounded-lg border border-outline-gray-1 bg-surface-white hover:border-outline-gray-4 transition-colors duration-200 text-center group"
+          class="flex flex-col items-center gap-2.5 py-5 px-3 rounded-6 border border-outline-gray-1 bg-surface-base hover:border-outline-gray-4 transition-colors duration-200 text-center group"
         >
-          <FeatherIcon :name="cat.icon" class="w-6 h-6 text-ink-gray-8 mb-1" />
-          <span class="text-xs font-medium text-ink-gray-6 leading-tight">{{ cat.name }}</span>
+          <Icon :icon="cat.icon" class="w-6 h-6 text-ink-gray-8 mb-1" />
+          <span class="text-xs-medium text-ink-gray-6 leading-tight">{{ cat.name }}</span>
         </RouterLink>
       </div>
     </section>
@@ -133,16 +133,16 @@ onMounted(async () => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Static JSON API</p>
-            <h2 class="text-2xl font-bold text-ink-gray-9 leading-snug">Ready for your tools</h2>
+            <p class="text-xs-semibold uppercase tracking-widest text-ink-gray-4 mb-1">Static JSON API</p>
+            <h2 class="text-3xl-bold text-ink-gray-9 leading-snug">Ready for your tools</h2>
             <p class="mt-3 text-ink-gray-5 leading-relaxed">
               Frappe Local, hosting platforms, and community tools can consume the brewery directly. No auth, no rate limits, no database.
             </p>
-            <Button :route="{ path: '/docs' }" variant="outline" theme="gray" class="mt-6" icon-left="book">
+            <Button :route="{ path: '/docs' }" variant="outline" theme="gray" class="mt-6" icon-left="lucide-book">
               API Docs
             </Button>
           </div>
-          <div class="rounded-lg border border-outline-gray-2 bg-surface-white overflow-hidden">
+          <div class="rounded-6 border border-outline-gray-2 bg-surface-base overflow-hidden">
             <div class="flex items-center gap-2 px-4 py-3 border-b border-outline-gray-1 bg-surface-gray-1">
               <span class="w-3 h-3 rounded-full bg-red-300"></span>
               <span class="w-3 h-3 rounded-full bg-yellow-300"></span>
@@ -151,7 +151,7 @@ onMounted(async () => {
             </div>
             <div class="p-5 font-mono text-xs space-y-3">
               <div v-for="ep in apiEndpoints" :key="ep.path" class="flex items-center gap-3">
-                <span class="shrink-0 text-ink-blue-2 font-semibold">GET</span>
+                <span class="shrink-0 text-ink-blue-4 font-semibold">GET</span>
                 <span class="text-ink-gray-6">{{ ep.path }}</span>
               </div>
             </div>

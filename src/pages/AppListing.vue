@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { FeatherIcon, FormControl, Button, Badge, Switch } from 'frappe-ui'
+import { Icon, FormControl, Button, Badge, Switch } from 'frappe-ui'
 import { fetchApps } from '../api'
 import AppCard from '../components/AppCard.vue'
 import { CATEGORIES, FRAPPE_VERSIONS, LICENSES, formatFrappeVersion } from '../constants'
@@ -41,13 +41,6 @@ const categoryOptions = computed(() => {
     { label: 'All categories', value: '', description: String(allApps.value.length) },
     ...sortedActive.map(c => ({ label: c, value: c, description: String(categoryCounts.get(c)) }))
   ]
-})
-
-const categoryModel = computed({
-  get: () => categoryOptions.value?.find(o => o.value === selectedCategory.value) || categoryOptions.value?.[0],
-  set: (val: any) => {
-    selectedCategory.value = val?.value || ''
-  }
 })
 
 const licenseOptions = [
@@ -114,7 +107,7 @@ onMounted(async () => {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
     <!-- Page header -->
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-ink-gray-9">Apps</h1>
+      <h1 class="text-4xl-bold text-ink-gray-9">Apps</h1>
       <p class="text-base text-ink-gray-5 mt-2">
         Extend the functionality of your Frappe sites by integrating apps that suit your needs. Seamlessly install in just a few steps.
       </p>
@@ -124,9 +117,10 @@ onMounted(async () => {
     <div class="flex flex-col md:flex-row gap-3 mb-4 w-full">
       <div class="grid grid-cols-2 md:flex items-center gap-3 w-full md:w-auto shrink-0">
         <FormControl
-          type="autocomplete"
+          type="combobox"
+          trigger="button"
           :options="categoryOptions"
-          v-model="categoryModel"
+          v-model="selectedCategory"
           placeholder="All categories"
           class="w-full md:w-auto [&_button]:w-full [&_select]:w-full"
         />
@@ -154,7 +148,7 @@ onMounted(async () => {
         class="w-full md:flex-1"
       >
         <template #prefix>
-          <FeatherIcon name="search" class="w-4 h-4 text-ink-gray-4" />
+          <Icon icon="lucide-search" class="w-4 h-4 text-ink-gray-4" />
         </template>
       </FormControl>
     </div>
@@ -179,18 +173,18 @@ onMounted(async () => {
     <main aria-label="App listing">
       <!-- Loading -->
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div v-for="i in 8" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-lg" />
+        <div v-for="i in 8" :key="i" class="animate-pulse bg-surface-gray-2 h-44 rounded-6" />
       </div>
 
       <!-- Error -->
       <div v-else-if="error" class="flex flex-col items-center py-20 text-center" role="alert">
-        <FeatherIcon name="alert-circle" class="w-8 h-8 text-ink-gray-3 mb-3" />
+        <Icon icon="lucide-alert-circle" class="w-8 h-8 text-ink-gray-3 mb-3" />
         <p class="text-ink-gray-5">{{ error }}</p>
       </div>
 
       <!-- Empty -->
       <div v-else-if="filteredApps.length === 0" class="flex flex-col items-center py-20 text-center">
-        <FeatherIcon name="search" class="w-8 h-8 text-ink-gray-3 mb-3" />
+        <Icon icon="lucide-search" class="w-8 h-8 text-ink-gray-3 mb-3" />
         <p class="text-ink-gray-5 font-medium">No apps match your filters</p>
         <Button variant="ghost" class="mt-4" @click="resetFilters">Clear filters</Button>
       </div>
