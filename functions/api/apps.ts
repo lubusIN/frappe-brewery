@@ -8,8 +8,8 @@
  *   q               — search query (title, description, tags)
  */
 
-import type { AppSummary, IndexResponse } from '../../src/types'
-export const onRequestGet: PagesFunction = async ({ request, env }) => {
+import type { IndexResponse } from '../../src/types'
+export const onRequestGet: PagesFunction = async ({ request }) => {
   const url = new URL(request.url)
 
   // Read the static index file
@@ -46,14 +46,14 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     apps = apps.filter(a => a.required_apps.includes('erpnext'))
   }
   if (verifiedOnly === 'true') {
-    apps = apps.filter(a => a.verified)
+    apps = apps.filter(a => a.meta?.verified)
   }
   if (query) {
     const q = query.toLowerCase()
     apps = apps.filter(a =>
       a.title.toLowerCase().includes(q) ||
       a.description.toLowerCase().includes(q) ||
-      a.tags.some(t => t.toLowerCase().includes(q))
+      (a.tags && a.tags.some(t => t.toLowerCase().includes(q)))
     )
   }
 

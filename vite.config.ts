@@ -34,7 +34,4 @@ export default defineConfig({
       }
     }
   ],
-  optimizeDeps: {
-    include: ['feather-icons', 'debug'],
-  },
 })

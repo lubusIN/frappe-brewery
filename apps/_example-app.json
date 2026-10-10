@@ -8,11 +8,13 @@
   "min_frappe_version": "15.0.0",
   "frappe_versions": [
     "15",
-    "16"
+    "16",
+    "develop"
   ],
   "install_branches": {
     "15": "version-15",
-    "16": "version-16"
+    "16": "version-16",
+    "develop": "develop"
   },
   "required_apps": [
     "frappe"

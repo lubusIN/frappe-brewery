@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, markRaw } from 'vue'
 import { useRoute, useRouter, RouterLink, RouterView } from 'vue-router'
-import { FeatherIcon, Button } from 'frappe-ui'
+import { Icon, Button } from 'frappe-ui'
 import { fetchApps as fetchAppsApi } from './api'
 import AppCommandPalette from './components/AppCommandPalette.vue'
 import PaletteAppItem from './components/PaletteAppItem.vue'
+import type { App } from './types'
 
 const route = useRoute()
 const menuOpen = ref(false)
@@ -45,7 +46,7 @@ onMounted(() => {
 // Search logic
 const showSearch = ref(false)
 const searchQuery = ref('')
-const apps = ref([])
+const apps = ref<App[]>([])
 const router = useRouter()
 
 const loadApps = async () => {
@@ -91,17 +92,17 @@ const onSearchSelect = (item: any) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-surface-white flex flex-col">
+  <div class="min-h-screen bg-surface-base flex flex-col">
 
     <!-- ── Top Navbar ── -->
-    <header class="sticky top-0 z-50 bg-surface-white border-b border-outline-gray-1">
+    <header class="sticky top-0 z-50 bg-surface-base border-b border-outline-gray-1">
       <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <div class="flex items-center h-[52px] gap-6">
 
           <!-- Logo -->
           <RouterLink to="/" class="flex items-center gap-2 shrink-0" aria-label="Frappe Brewery">
             <img src="/favicon.svg" alt="Frappe Brewery Logo" class="w-6 h-6" />
-            <span class="text-base font-semibold text-ink-gray-9 tracking-tight">Frappe Brewery</span>
+            <span class="text-base-semibold text-ink-gray-9 tracking-tight">Frappe Brewery</span>
           </RouterLink>
 
           <!-- Desktop nav links -->
@@ -110,7 +111,7 @@ const onSearchSelect = (item: any) => {
               v-for="link in navLinks"
               :key="link.to"
               :to="link.to"
-              class="text-sm font-medium transition-colors"
+              class="text-sm-medium transition-colors"
               :class="isActive(link.to) ? 'text-ink-gray-9' : 'text-ink-gray-5 hover:text-ink-gray-8'"
             >
               {{ link.label }}
@@ -131,7 +132,7 @@ const onSearchSelect = (item: any) => {
               aria-label="Search"
               @click="showSearch = true"
             >
-              <template #prefix><FeatherIcon name="search" class="w-4 h-4" /></template>
+              <template #prefix><Icon icon="lucide-search" class="w-4 h-4" /></template>
               <span class="mr-2">Search</span>
               <template #suffix>
                 <div class="flex items-center gap-0.5 text-[11px] font-medium text-ink-gray-5">
@@ -146,7 +147,7 @@ const onSearchSelect = (item: any) => {
               class="sm:hidden"
               variant="ghost"
               theme="gray"
-              icon="search"
+              icon="lucide-search"
               aria-label="Search"
               @click="showSearch = true"
             />
@@ -155,7 +156,7 @@ const onSearchSelect = (item: any) => {
             <Button 
               variant="subtle"
               theme="gray"
-              :icon="isDark ? 'sun' : 'moon'"
+              :icon="isDark ? 'lucide-sun' : 'lucide-moon'"
               @click="toggleDark"
               class="flex"
               aria-label="Toggle dark mode"
@@ -179,7 +180,7 @@ const onSearchSelect = (item: any) => {
               class="md:hidden ml-0.5"
               variant="ghost"
               theme="gray"
-              :icon="menuOpen ? 'x' : 'menu'"
+              :icon="menuOpen ? 'lucide-x' : 'lucide-menu'"
               :aria-expanded="menuOpen"
               aria-controls="mobile-menu"
               @click="menuOpen = !menuOpen"
@@ -197,13 +198,13 @@ const onSearchSelect = (item: any) => {
         leave-from-class="opacity-100 translate-y-0"
         leave-to-class="opacity-0 -translate-y-1.5"
       >
-        <div v-if="menuOpen" id="mobile-menu" class="absolute left-0 right-0 top-[53px] md:hidden border-b border-outline-gray-1 bg-surface-white px-4 pb-3 pt-2 shadow-sm">
+        <div v-if="menuOpen" id="mobile-menu" class="absolute left-0 right-0 top-[53px] md:hidden border-b border-outline-gray-1 bg-surface-base px-4 pb-3 pt-2 shadow-sm">
           <nav class="flex flex-col gap-0.5">
             <RouterLink
               v-for="link in navLinks"
               :key="link.to"
               :to="link.to"
-              class="flex items-center w-full px-3 py-2 rounded text-sm transition-colors"
+              class="flex items-center w-full px-3 py-2 rounded-4 text-sm transition-colors"
               :class="isActive(link.to) ? 'bg-surface-gray-2 text-ink-gray-9 font-medium' : 'text-ink-gray-7 hover:bg-surface-gray-2'"
               @click="menuOpen = false"
             >
@@ -236,12 +237,12 @@ const onSearchSelect = (item: any) => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-10 sm:py-8">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div class="flex flex-col gap-1.5">
-            <span class="text-sm font-semibold text-ink-gray-7">Open Frappe app registry</span>
+            <span class="text-sm-semibold text-ink-gray-7">Open Frappe app registry</span>
             <span class="text-xs text-ink-gray-5">Open data · MIT License · Built for the Frappe community</span>
           </div>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
-            <RouterLink v-for="link in navLinks" :key="link.to" :to="link.to" class="text-sm sm:text-xs font-medium text-ink-gray-6 hover:text-ink-gray-9 transition-colors">{{ link.label }}</RouterLink>
-            <a href="https://github.com/lubusIN/frappe-brewery" target="_blank" rel="noopener" class="text-sm sm:text-xs font-medium text-ink-gray-6 hover:text-ink-gray-9 transition-colors">GitHub</a>
+            <RouterLink v-for="link in navLinks" :key="link.to" :to="link.to" class="text-sm-medium sm:text-xs text-ink-gray-6 hover:text-ink-gray-9 transition-colors">{{ link.label }}</RouterLink>
+            <a href="https://github.com/lubusIN/frappe-brewery" target="_blank" rel="noopener" class="text-sm-medium sm:text-xs text-ink-gray-6 hover:text-ink-gray-9 transition-colors">GitHub</a>
           </div>
         </div>
       </div>

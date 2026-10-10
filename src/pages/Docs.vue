@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { FeatherIcon, Button } from 'frappe-ui'
 import { appUrl, badgeHtml, badgeImageUrl, badgeMarkdown, BADGE_PATH, SITE_URL } from '../site'
+import { Icon, Button } from 'frappe-ui'
 
 const copied = ref<string | null>(null)
 async function copy(text: string) {
@@ -11,9 +11,9 @@ async function copy(text: string) {
 }
 
 const overviewCards = [
-  { icon: 'zap', title: 'Static files', desc: 'All endpoints return pre-generated JSON. No server-side processing.' },
-  { icon: 'unlock', title: 'No auth required', desc: 'Read-only, publicly accessible. No API keys needed.' },
-  { icon: 'refresh-cw', title: 'Auto-updated', desc: 'Index regenerated on every merge to main via GitHub Actions.' },
+  { icon: 'lucide-zap', title: 'Static files', desc: 'All endpoints return pre-generated JSON. No server-side processing.' },
+  { icon: 'lucide-unlock', title: 'No auth required', desc: 'Read-only, publicly accessible. No API keys needed.' },
+  { icon: 'lucide-refresh-cw', title: 'Auto-updated', desc: 'Index regenerated on every merge to main via GitHub Actions.' },
 ]
 
 const badgeMarkdownExample = badgeMarkdown('my-app')
@@ -93,8 +93,8 @@ const endpoints = [
   <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
     <!-- Header -->
     <div class="mb-10 pb-8 border-b border-outline-gray-1">
-      <p class="text-xs font-semibold uppercase tracking-widest text-ink-gray-4 mb-2">Developer Docs</p>
-      <h1 class="text-3xl font-bold text-ink-gray-9">API Reference</h1>
+      <p class="text-xs-semibold uppercase tracking-widest text-ink-gray-4 mb-2">Developer Docs</p>
+      <h1 class="text-4xl-bold text-ink-gray-9">API Reference</h1>
       <p class="mt-3 text-base text-ink-gray-5 max-w-xl leading-relaxed">
         The brewery exposes a static JSON API via Cloudflare Pages. No auth, no rate limits, no database.
       </p>
@@ -102,11 +102,11 @@ const endpoints = [
 
     <!-- Overview cards -->
     <section class="mb-12" aria-labelledby="overview-heading">
-      <h2 id="overview-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Overview</h2>
+      <h2 id="overview-heading" class="text-lg-semibold text-ink-gray-8 mb-4">Overview</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div v-for="card in overviewCards" :key="card.title" class="rounded-lg border border-outline-gray-1 p-5 bg-surface-white">
-          <FeatherIcon :name="card.icon" class="w-6 h-6 text-ink-gray-8 mb-3" />
-          <h3 class="text-sm font-semibold text-ink-gray-8 mb-1">{{ card.title }}</h3>
+        <div v-for="card in overviewCards" :key="card.title" class="rounded-6 border border-outline-gray-1 p-5 bg-surface-base">
+          <Icon :icon="card.icon" class="w-6 h-6 text-ink-gray-8 mb-3" />
+          <h3 class="text-sm-semibold text-ink-gray-8 mb-1">{{ card.title }}</h3>
           <p class="text-xs text-ink-gray-4 leading-relaxed">{{ card.desc }}</p>
         </div>
       </div>
@@ -114,15 +114,15 @@ const endpoints = [
 
     <!-- Base URL -->
     <section class="mb-12" aria-labelledby="base-url-heading">
-      <h2 id="base-url-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Base URL</h2>
-      <div class="flex items-center gap-3 bg-white p-3 rounded-lg border border-ink-gray-2 shadow-sm max-w-sm mt-4">
+      <h2 id="base-url-heading" class="text-lg-semibold text-ink-gray-8 mb-3">Base URL</h2>
+      <div class="flex items-center gap-3 bg-surface-base p-3 rounded-6 border border-outline-gray-2 shadow-sm max-w-sm mt-4">
         <code class="flex-1 font-mono text-sm text-ink-gray-7">https://frappe-brewery.lubus.in</code>
         <Button
           :variant="copied === 'https://frappe-brewery.lubus.in' ? 'subtle' : 'outline'"
           :theme="copied === 'https://frappe-brewery.lubus.in' ? 'green' : 'gray'"
           @click="copy('https://frappe-brewery.lubus.in')"
           class="shrink-0 transition-colors"
-          :icon-left="copied === 'https://frappe-brewery.lubus.in' ? 'check' : 'copy'"
+          :icon-left="copied === 'https://frappe-brewery.lubus.in' ? 'lucide-check' : 'lucide-copy'"
         >
           {{ copied === 'https://frappe-brewery.lubus.in' ? 'Copied' : 'Copy' }}
         </Button>
@@ -131,29 +131,29 @@ const endpoints = [
 
     <!-- Endpoints -->
     <section class="mb-12" aria-labelledby="endpoints-heading">
-      <h2 id="endpoints-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Endpoints</h2>
-      <div class="rounded-lg border border-outline-gray-1 overflow-hidden divide-y divide-outline-gray-1">
-        <div v-for="ep in endpoints" :key="ep.path" class="bg-surface-white">
+      <h2 id="endpoints-heading" class="text-lg-semibold text-ink-gray-8 mb-4">Endpoints</h2>
+      <div class="rounded-6 border border-outline-gray-1 overflow-hidden divide-y divide-outline-gray-1">
+        <div v-for="ep in endpoints" :key="ep.path" class="bg-surface-base">
           <div class="flex items-center gap-3 px-5 py-4">
-            <span class="shrink-0 text-xs font-bold font-mono text-ink-blue-2 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">{{ ep.method }}</span>
+            <span class="shrink-0 text-xs-bold font-mono text-ink-blue-4 bg-surface-blue-1 border border-outline-blue-2 px-2 py-0.5 rounded-5">{{ ep.method }}</span>
             <code class="flex-1 font-mono text-sm text-ink-gray-7">{{ ep.path }}</code>
           </div>
           <div v-if="ep.desc || ep.example" class="px-5 pb-4 space-y-3">
             <p v-if="ep.desc" class="text-xs text-ink-gray-4">{{ ep.desc }}</p>
             <div v-if="ep.example">
               <div class="flex items-center justify-between mb-1.5">
-                <span class="text-xs text-ink-gray-3 uppercase tracking-wider font-semibold">Example response</span>
+                <span class="text-xs-semibold text-ink-gray-3 uppercase tracking-wider">Example response</span>
                 <Button
                   variant="ghost"
                   :theme="copied === ep.example ? 'green' : 'gray'"
                   @click="copy(ep.example!)"
                   aria-label="Copy example"
-                  :icon-left="copied === ep.example ? 'check' : 'copy'"
+                  :icon-left="copied === ep.example ? 'lucide-check' : 'lucide-copy'"
                 >
                   {{ copied === ep.example ? 'Copied' : 'Copy' }}
                 </Button>
               </div>
-              <pre class="font-mono text-xs text-ink-gray-5 bg-surface-gray-1 border border-outline-gray-1 rounded-lg p-4 overflow-x-auto leading-relaxed">{{ ep.example }}</pre>
+              <pre class="font-mono text-xs text-ink-gray-5 bg-surface-gray-1 border border-outline-gray-1 rounded-6 p-4 overflow-x-auto leading-relaxed">{{ ep.example }}</pre>
             </div>
           </div>
         </div>
@@ -162,13 +162,13 @@ const endpoints = [
 
     <!-- Usage -->
     <section class="mb-12" aria-labelledby="usage-heading">
-      <h2 id="usage-heading" class="text-lg font-semibold text-ink-gray-8 mb-4">Usage examples</h2>
+      <h2 id="usage-heading" class="text-lg-semibold text-ink-gray-8 mb-4">Usage examples</h2>
       <div class="space-y-4">
-        <div v-for="ex in usageExamples" :key="ex.title" class="rounded-lg border border-outline-gray-1 overflow-hidden">
+        <div v-for="ex in usageExamples" :key="ex.title" class="rounded-6 border border-outline-gray-1 overflow-hidden">
           <div class="px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
-            <h3 class="text-sm font-semibold text-ink-gray-7">{{ ex.title }}</h3>
+            <h3 class="text-sm-semibold text-ink-gray-7">{{ ex.title }}</h3>
           </div>
-          <pre class="p-4 font-mono text-xs text-ink-gray-6 overflow-x-auto bg-surface-white leading-relaxed">{{ ex.code }}</pre>
+          <pre class="p-4 font-mono text-xs text-ink-gray-6 overflow-x-auto bg-surface-base leading-relaxed">{{ ex.code }}</pre>
         </div>
       </div>
     </section>
@@ -227,36 +227,36 @@ const endpoints = [
 
     <!-- Self-hosting -->
     <section aria-labelledby="selfhost-heading">
-      <h2 id="selfhost-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">Self-hosting</h2>
-      <div class="rounded-lg border border-outline-gray-1 p-6 bg-surface-white">
+      <h2 id="selfhost-heading" class="text-lg-semibold text-ink-gray-8 mb-3">Self-hosting</h2>
+      <div class="rounded-6 border border-outline-gray-1 p-6 bg-surface-base">
         <p class="text-sm text-ink-gray-5 leading-relaxed mb-4">The brewery is fully open source. Fork it, add your own apps, and deploy your instance to Cloudflare Pages.</p>
         <ol class="space-y-2 text-sm text-ink-gray-6">
           <li class="flex gap-3 items-start">
-            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5 mt-0.5">1</span>
+            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs-bold text-ink-gray-5 mt-0.5">1</span>
             <div class="leading-relaxed">
-              Fork <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">lubusIN/frappe-brewery</code> on GitHub
+              Fork <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded-4 border border-outline-gray-1">lubusIN/frappe-brewery</code> on GitHub
             </div>
           </li>
           <li class="flex gap-3 items-start">
-            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5 mt-0.5">2</span>
+            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs-bold text-ink-gray-5 mt-0.5">2</span>
             <div class="leading-relaxed">
               Connect to Cloudflare Pages and configure the project settings:
               <ul class="mt-1.5 space-y-1">
                 <li class="flex items-center gap-2">
                   <span class="text-ink-gray-5">Build command:</span>
-                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1 flex-1 overflow-x-auto whitespace-nowrap">npm run build</code>
+                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded-4 border border-outline-gray-1 flex-1 overflow-x-auto whitespace-nowrap">npm run build</code>
                 </li>
                 <li class="flex items-center gap-2">
                   <span class="text-ink-gray-5">Output directory:</span>
-                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">dist</code>
+                  <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded-4 border border-outline-gray-1">dist</code>
                 </li>
               </ul>
             </div>
           </li>
           <li class="flex gap-3 items-start">
-            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs font-bold text-ink-gray-5 mt-0.5">3</span>
+            <span class="shrink-0 w-5 h-5 rounded-full bg-surface-gray-2 flex items-center justify-center text-xs-bold text-ink-gray-5 mt-0.5">3</span>
             <div class="leading-relaxed">
-              Add apps to <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded border border-outline-gray-1">apps/</code>, CI regenerates the index automatically on merge
+              Add apps to <code class="font-mono text-xs bg-surface-gray-2 px-1.5 py-0.5 rounded-4 border border-outline-gray-1">apps/</code>, CI regenerates the index automatically on merge
             </div>
           </li>
         </ol>

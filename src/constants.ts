@@ -2,20 +2,28 @@
 import schema from '../scripts/app.schema.json'
 
 export const CATEGORY_ICONS: Record<string, string> = {
-  'Accounting & Finance': 'bar-chart-2',
-  'Analytics & AI': 'trending-up',
-  'Business & Operations': 'briefcase',
-  'CRM & Support': 'heart',
-  'Developer Tools': 'code',
-  'E-Commerce & Retail': 'shopping-cart',
-  'Human Resources': 'users',
-  'Industry Specific': 'activity',
-  'Marketing': 'speaker',
-  'Mobile': 'smartphone',
-  'Website & Themes': 'layout',
-  'Utilities': 'zap',
+  'Accounting & Finance': 'lucide-bar-chart-2',
+  'Analytics & AI': 'lucide-trending-up',
+  'Business & Operations': 'lucide-briefcase',
+  'CRM & Support': 'lucide-heart',
+  'Developer Tools': 'lucide-code',
+  'E-Commerce & Retail': 'lucide-shopping-cart',
+  'Human Resources': 'lucide-users',
+  'Industry Specific': 'lucide-activity',
+  'Marketing': 'lucide-speaker',
+  'Mobile': 'lucide-smartphone',
+  'Website & Themes': 'lucide-layout',
+  'Utilities': 'lucide-zap',
 }
 
 export const CATEGORIES = schema.properties.categories.items.enum as string[]
 export const FRAPPE_VERSIONS = schema.properties.frappe_versions.items.enum as string[]
 export const LICENSES = schema.properties.license.enum as string[]
+
+export function formatFrappeVersion(version: string): string {
+  return version === 'develop' ? 'Develop' : version
+}
+
+export function formatFrappeVersionBadge(version: string): string {
+  return version === 'develop' ? 'Develop' : `v${version}`
+}

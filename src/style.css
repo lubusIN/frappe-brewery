@@ -13,8 +13,9 @@
 }
 
 @layer components {
-  .dialog-overlay {
+  /* RC dialogs render the backdrop and content container as siblings. */
+  .dialog-overlay,
+  .dialog-scroll-container {
     @apply z-[100];
   }
 }
-

@@ -1,11 +1,12 @@
 <template>
   <Dialog
     v-model="show"
-    :options="{ size: 'lg', position: 'top' }"
+    size="lg"
+    position="top"
     bare
     @after-leave="searchQuery = ''"
   >
-    <template #body>
+    <template #default>
       <div class="flex flex-col">
       <ul class="max-h-96 overflow-y-auto p-2">
         <TextInput
@@ -14,12 +15,10 @@
           size="md"
           placeholder="Type a command…"
           autofocus
-          @keydown.down.prevent="move(1)"
-          @keydown.up.prevent="move(-1)"
-          @keydown.enter.prevent="onEnter"
+          @keydown="handleKeydown"
         >
           <template #prefix>
-            <FeatherIcon name="search" class="h-4 w-4 text-ink-gray-5" />
+            <Icon icon="lucide-search" class="h-4 w-4 text-ink-gray-5" />
           </template>
         </TextInput>
 
@@ -30,7 +29,7 @@
           No results found.
         </li>
 
-        <template v-for="(group, groupIndex) in groups" :key="group.title">
+        <template v-for="group in groups" :key="group.title">
           <div
             class="mb-2.5 px-4.5 mt-4.5 first:mt-3 text-base text-ink-gray-5"
             v-if="!group.hideTitle && group.items.length > 0"
@@ -54,7 +53,7 @@
       </ul>
 
       <div
-        class="flex items-center gap-4 border-t border-outline-gray-modals px-4 py-2 text-p-xs text-ink-gray-5"
+        class="flex items-center gap-4 border-t border-outline-elevation-2 px-4 py-2 text-p-xs text-ink-gray-5"
       >
         <span class="flex items-center gap-1.5">
           <KeyboardShortcut combo="ArrowUp" bg />
@@ -75,43 +74,48 @@
   </Dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { KeyboardShortcut, TextInput } from 'frappe-ui'
 
-const emit = defineEmits(['update:show', 'update:searchQuery', 'select'])
-const props = defineProps({
-  show: { type: Boolean, default: false },
-  searchQuery: { type: String, default: '' },
-  groups: { type: Array, default: () => [] },
-})
+const emit = defineEmits<{
+  (e: 'update:show', value: boolean): void
+  (e: 'update:searchQuery', value: string): void
+  (e: 'select', item: any): void
+}>()
+
+const props = defineProps<{
+  show?: boolean
+  searchQuery?: string
+  groups?: any[]
+}>()
 
 const show = computed({
-  get: () => props.show,
+  get: () => props.show ?? false,
   set: (value) => emit('update:show', value),
 })
 
 const searchQuery = computed({
-  get: () => props.searchQuery,
-  set: (value) => emit('update:searchQuery', value),
+  get: () => props.searchQuery ?? '',
+  set: (value) => emit('update:searchQuery', value || ''),
 })
 
 const activeIndex = ref(0)
 
 const flattenedItems = computed(() => {
-  return props.groups.flatMap(group => group.items)
+  return props.groups?.flatMap(group => group.items) ?? []
 })
 
 watch([searchQuery, show], () => {
   activeIndex.value = 0
 })
 
-function run(item) {
+function run(item: any) {
   emit('select', item)
   show.value = false
 }
 
-function move(delta) {
+function move(delta: number) {
   if (!flattenedItems.value.length) return
   activeIndex.value = (activeIndex.value + delta + flattenedItems.value.length) % flattenedItems.value.length
 }
@@ -121,7 +125,20 @@ function onEnter() {
   if (item) run(item)
 }
 
-function keydownWatcher(e) {
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault()
+    move(1)
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault()
+    move(-1)
+  } else if (e.key === 'Enter') {
+    e.preventDefault()
+    onEnter()
+  }
+}
+
+function keydownWatcher(e: KeyboardEvent) {
   if (e.key === 'Escape' && show.value) {
     show.value = false
     e.preventDefault()
@@ -130,7 +147,7 @@ function keydownWatcher(e) {
   if (
     e.key === 'k' &&
     (e.ctrlKey || e.metaKey) &&
-    !e.target.classList.contains('ProseMirror')
+    !(e.target as HTMLElement)?.classList?.contains('ProseMirror')
   ) {
     show.value = true
     e.preventDefault()

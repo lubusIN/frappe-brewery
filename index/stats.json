@@ -1,11 +1,12 @@
 {
-  "generated_at": "2026-06-19T18:29:27.994Z",
+  "generated_at": "2026-08-19T05:27:44.747Z",
   "total_apps": 8,
   "total_categories": 8,
   "by_frappe_version": {
     "14": 5,
     "15": 7,
-    "16": 8
+    "16": 8,
+    "develop": 8
   },
   "by_category": {
     "Accounting & Finance": 1,

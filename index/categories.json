@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T18:29:27.994Z",
+  "generated_at": "2026-08-19T05:27:44.747Z",
   "categories": [
     {
       "name": "Accounting & Finance",
@@ -16,12 +16,14 @@
           "frappe_versions": [
             "14",
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "version-14",
             "15": "version-15",
-            "16": "version-16"
+            "16": "version-16",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -79,12 +81,14 @@
           "frappe_versions": [
             "14",
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "main",
             "15": "main",
-            "16": "develop"
+            "16": "develop",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -139,12 +143,14 @@
           "frappe_versions": [
             "14",
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "version-14",
             "15": "version-15",
-            "16": "version-16"
+            "16": "version-16",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -195,11 +201,13 @@
           "min_frappe_version": "15.0.0",
           "frappe_versions": [
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "15": "develop",
-            "16": "develop"
+            "16": "develop",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -253,12 +261,14 @@
           "frappe_versions": [
             "14",
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "version-14",
             "15": "version-15",
-            "16": "version-16"
+            "16": "version-16",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -309,11 +319,13 @@
           "min_frappe_version": "15.0.0",
           "frappe_versions": [
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "15": "develop",
-            "16": "develop"
+            "16": "develop",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -361,12 +373,14 @@
           "frappe_versions": [
             "14",
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "version-14",
             "15": "main",
-            "16": "develop"
+            "16": "develop",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -421,11 +435,13 @@
           "min_frappe_version": "15.0.0",
           "frappe_versions": [
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "15": "develop",
-            "16": "develop"
+            "16": "develop",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -470,11 +486,13 @@
           "min_frappe_version": "15.0.0",
           "frappe_versions": [
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "15": "develop",
-            "16": "develop"
+            "16": "develop",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -522,12 +540,14 @@
           "frappe_versions": [
             "14",
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "version-14",
             "15": "version-15",
-            "16": "version-16"
+            "16": "version-16",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -579,12 +599,14 @@
           "frappe_versions": [
             "14",
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "version-14",
             "15": "version-15",
-            "16": "version-16"
+            "16": "version-16",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe",
@@ -639,12 +661,14 @@
           "frappe_versions": [
             "14",
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "version-14",
             "15": "main",
-            "16": "develop"
+            "16": "develop",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -693,11 +717,13 @@
           "min_frappe_version": "14.0.0",
           "frappe_versions": [
             "14",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "14": "version-14",
-            "16": "version-3"
+            "16": "version-3",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"
@@ -750,11 +776,13 @@
           "min_frappe_version": "15.0.0",
           "frappe_versions": [
             "15",
-            "16"
+            "16",
+            "develop"
           ],
           "install_branches": {
             "15": "develop",
-            "16": "develop"
+            "16": "develop",
+            "develop": "develop"
           },
           "required_apps": [
             "frappe"

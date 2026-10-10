@@ -16,6 +16,7 @@ import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import {
+  addDevelopInstallBranch,
   type BranchCompatibility,
   extractCiFrappeVersions,
   extractDependencyFrappeVersions,
@@ -319,12 +320,20 @@ async function detectInstallBranchesAsync(
   }
 
   if (Object.keys(installBranches).length === 0) {
-    const latestVersion = getAllowedFrappeVersions().at(-1)!;
+    const latestVersion = getAllowedFrappeVersions().filter(
+      (version) => version !== "develop",
+    ).at(-1)!;
     installBranches = { [latestVersion]: defaultBranch };
     warnings.push(
       `No Frappe compatibility declaration was found; ${defaultBranch} was tentatively mapped to Frappe ${latestVersion}.`,
     );
   }
+
+  installBranches = addDevelopInstallBranch(
+    installBranches,
+    branchNames,
+    defaultBranch,
+  );
 
   return {
     installBranches,
@@ -336,8 +345,11 @@ async function detectInstallBranchesAsync(
 }
 
 function detectMinFrappeVersion(frappeVersions: string[]): string {
-  if (frappeVersions.length === 0) return "14.0.0";
-  const minV = frappeVersions.map((v) => parseInt(v)).sort((a, b) => a - b)[0];
+  const stableVersions = frappeVersions
+    .map((version) => Number(version))
+    .filter(Number.isInteger);
+  if (stableVersions.length === 0) return "16.0.0";
+  const minV = stableVersions.sort((a, b) => a - b)[0];
   return `${minV}.0.0`;
 }
 

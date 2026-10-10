@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  addDevelopInstallBranch,
   extractCiFrappeVersions,
   extractDependencyFrappeVersions,
   getFrappeVersionFromBranchName,
@@ -85,4 +86,22 @@ test("prefers the newest compatible app release branch", () => {
   ], supported, "develop");
 
   assert.deepEqual(selected, { "15": "version-3" });
+});
+
+test("maps Frappe develop to the app develop branch when available", () => {
+  assert.deepEqual(
+    addDevelopInstallBranch({ "16": "version-16" }, ["main", "develop"], "main"),
+    { "16": "version-16", develop: "develop" },
+  );
+});
+
+test("falls back to a stable branch for Frappe develop", () => {
+  assert.deepEqual(
+    addDevelopInstallBranch({ "16": "version-16" }, ["main", "version-16"], "trunk"),
+    { "16": "version-16", develop: "main" },
+  );
+  assert.deepEqual(
+    addDevelopInstallBranch({ "16": "version-16" }, [], "trunk"),
+    { "16": "version-16", develop: "trunk" },
+  );
 });

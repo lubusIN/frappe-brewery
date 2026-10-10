@@ -146,7 +146,13 @@ The extractor ranks machine-readable evidence in this order:
 3. Frappe branches referenced by GitHub Actions workflows and install helpers
 4. GitHub topics such as `frappe-v15`
 
+Frappe `develop` is also included as an installation target. The extractor uses
+the app's `develop` branch when it exists, then falls back to `main`, `master`,
+or the repository's default branch. This fallback is an optimistic compatibility
+assumption and should be corrected manually if the app does not support Frappe
+`develop`.
+
 An app release branch such as `version-3` is not assumed to target Frappe 3. It
 is mapped only when its dependency metadata or CI configuration identifies the
 supported Frappe versions. If no compatibility evidence is available, the
-generated mapping is marked for manual review.w
+generated mapping is marked for manual review.

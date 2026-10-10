@@ -162,6 +162,10 @@ export async function validateSingleApp(
             }
             if (!owner || !repoName) continue;
 
+            // Develop compatibility is intentionally optimistic: prefer an
+            // app's develop branch, then allow its stable/default branch.
+            if (version === "develop") continue;
+
             try {
               const evidence = await inspectBranchCompatibility(
                 owner,
