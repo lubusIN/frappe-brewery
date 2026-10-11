@@ -22,7 +22,7 @@ const steps = [
   },
   {
     title: 'Open a Pull Request',
-    desc: 'Push your branch and open a PR. GitHub Actions CI validates automatically.',
+    desc: 'Push your branch and open a PR. GitHub Actions CI validates automatically. Once merged, you can add a README badge from your app\'s detail page.',
     code: null,
     icon: 'lucide-git-pull-request',
   },

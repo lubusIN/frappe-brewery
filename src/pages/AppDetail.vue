@@ -3,6 +3,7 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { Icon, Badge, Button, FormControl } from 'frappe-ui'
 import { fetchApp } from '../api'
+import BadgeEmbed from '../components/BadgeEmbed.vue'
 import { formatFrappeVersion } from '../constants'
 import type { App } from '../types'
 
@@ -282,6 +283,8 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               </div>
             </dl>
           </div>
+
+          <BadgeEmbed :slug="app.slug" />
 
           <!-- Links card -->
           <div v-if="app.links?.website || app.links?.docs || app.links?.demo" class="rounded-6 border border-outline-gray-2 bg-surface-base overflow-hidden">
