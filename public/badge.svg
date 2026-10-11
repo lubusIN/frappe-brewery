@@ -1,9 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="240" height="28" viewBox="0 0 240 28" role="img" aria-label="Listed on Frappe Brewery">
-  <title>Listed on Frappe Brewery</title>
-  <rect width="28" height="28" rx="3" fill="#231f20"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="28" viewBox="0 0 150 28" role="img" aria-label="On Frappe Brewery">
+  <title>On Frappe Brewery</title>
+  <clipPath id="r">
+    <rect width="150" height="28" rx="6"/>
+  </clipPath>
+  <g clip-path="url(#r)">
+    <rect width="28" height="28" fill="#231f20"/>
+    <rect x="28" width="122" height="28" fill="#374151"/>
+  </g>
   <g transform="translate(4.25 4.25) scale(0.259)">
     <path fill="#fdfdfd" d="M61.484 16.46h-45.25a2.423 2.423 0 1 0 0 4.849c.114 0 .22.027.325.035v-.035h23.644l4.04 16.164h-22.08l2.828-11.313h-4.976l-5.914 23.602c-1.286 5.156 1.851 10.383 7.011 11.668a9.7 9.7 0 0 0 2.313.285H42.98c5.317 0 9.625-4.317 9.618-9.633 0-.785-.098-1.559-.282-2.32l-7.12-28.453h16.288a2.42 2.42 0 0 0 2.426-2.422 2.42 2.42 0 0 0-2.426-2.426m-16.03 25.86 2.16 8.621a4.763 4.763 0 0 1-3.47 5.778 4.6 4.6 0 0 1-1.164.148H23.426a4.776 4.776 0 0 1-4.778-4.762q.001-.591.149-1.171l2.156-8.614Zm0 0"/>
   </g>
-  <rect x="28" width="212" height="28" rx="3" fill="#374151"/>
-  <text x="134" y="18.5" fill="#fdfdfd" font-family="Inter, system-ui, -apple-system, Segoe UI, sans-serif" font-size="11" font-weight="600" text-anchor="middle">Listed on Frappe Brewery</text>
+  <text x="89" y="18.5" fill="#fdfdfd" font-family="Inter, system-ui, -apple-system, Segoe UI, sans-serif" font-size="11" font-weight="600" text-anchor="middle">On Frappe Brewery</text>
 </svg>

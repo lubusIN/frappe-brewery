@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
-import { Icon, Badge, Button, FormControl } from 'frappe-ui'
+import { Icon, Badge, Button, FormControl, TabButtons } from 'frappe-ui'
 import { fetchApp } from '../api'
-import BadgeEmbed from '../components/BadgeEmbed.vue'
 import { formatFrappeVersion } from '../constants'
 import type { App } from '../types'
 
@@ -80,6 +79,37 @@ async function copyCommand() {
   await navigator.clipboard.writeText(displayCommands.value.join('\n'))
   copied.value = true
   setTimeout(() => { copied.value = false }, 2000)
+}
+
+const SITE_URL = 'https://frappe-brewery.lubus.in'
+const BADGE_PATH = '/badge.svg'
+
+const badgeTab = ref<string>('markdown')
+const badgeCopied = ref(false)
+
+const badgeTabOptions = [
+  { label: 'Markdown', value: 'markdown' },
+  { label: 'HTML', value: 'html' },
+]
+
+watch(badgeTab, () => {
+  badgeCopied.value = false
+})
+
+const badgeCode = computed(() => {
+  if (!app.value?.slug) return ''
+  const pageUrl = `${SITE_URL}/apps/${app.value.slug}`
+  const imgUrl = `${SITE_URL}${BADGE_PATH}`
+  return badgeTab.value === 'markdown'
+    ? `[![On Frappe Brewery](${imgUrl})](${pageUrl})`
+    : `<a href="${pageUrl}"><img src="${imgUrl}" alt="On Frappe Brewery" height="28"></a>`
+})
+
+async function copyBadge() {
+  if (!badgeCode.value) return
+  await navigator.clipboard.writeText(badgeCode.value)
+  badgeCopied.value = true
+  setTimeout(() => { badgeCopied.value = false }, 2000)
 }
 
 onMounted(() => loadApp(route.params.slug as string))
@@ -208,6 +238,57 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               </div>
             </div>
           </section>
+
+          <!-- Badge -->
+          <section aria-labelledby="badge-heading">
+            <div class="flex items-center justify-between mb-4">
+              <h2 id="badge-heading" class="text-base-semibold text-ink-gray-8 flex items-center gap-2">
+                <Icon icon="lucide-award" class="w-4 h-4 text-ink-gray-4" />
+                Badge
+              </h2>
+            </div>
+
+            <div class="rounded-6 overflow-hidden bg-surface-base border border-outline-gray-2 shadow-sm">
+              <!-- Code block header with format tabs and copy button -->
+              <div class="flex items-center justify-between px-4 py-2 bg-surface-gray-1 border-b border-outline-gray-1">
+                <TabButtons
+                  v-model="badgeTab"
+                  :options="badgeTabOptions"
+                  size="sm"
+                />
+
+                <button
+                  type="button"
+                  class="flex items-center gap-1.5 px-2 py-1 rounded-4 text-xs-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ink-gray-3"
+                  :class="badgeCopied ? 'text-ink-green-4 bg-surface-green-1' : 'text-ink-gray-5 hover:text-ink-gray-7 hover:bg-surface-gray-2'"
+                  @click="copyBadge"
+                >
+                  <Icon :icon="badgeCopied ? 'lucide-check' : 'lucide-copy'" class="w-3.5 h-3.5" />
+                  {{ badgeCopied ? 'Copied' : 'Copy' }}
+                </button>
+              </div>
+
+              <!-- Code block body -->
+              <div class="px-5 py-4 font-mono text-sm overflow-x-auto">
+                <span class="text-ink-gray-8 whitespace-nowrap">{{ badgeCode }}</span>
+              </div>
+
+              <!-- Note and badge preview at the end -->
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 py-4 bg-surface-gray-1 border-t border-outline-gray-1">
+                <p class="text-sm text-ink-gray-5 leading-relaxed">
+                  Add this badge to your README or website.
+                </p>
+                <a
+                  :href="`${SITE_URL}/apps/${app.slug}`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex rounded-4 focus:outline-none focus:ring-2 focus:ring-ink-gray-3 shrink-0 hover:opacity-90 transition-opacity"
+                >
+                  <img :src="BADGE_PATH" alt="On Frappe Brewery" height="28" width="150" />
+                </a>
+              </div>
+            </div>
+          </section>
         </div>
 
         <!-- Right: sidebar -->
@@ -283,8 +364,6 @@ watch(() => route.params.slug, s => s && loadApp(s as string))
               </div>
             </dl>
           </div>
-
-          <BadgeEmbed :slug="app.slug" />
 
           <!-- Links card -->
           <div v-if="app.links?.website || app.links?.docs || app.links?.demo" class="rounded-6 border border-outline-gray-2 bg-surface-base overflow-hidden">

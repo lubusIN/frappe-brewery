@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { appUrl, badgeHtml, badgeImageUrl, badgeMarkdown, BADGE_PATH, SITE_URL } from '../site'
 import { Icon, Button } from 'frappe-ui'
 
 const copied = ref<string | null>(null)
@@ -15,10 +14,6 @@ const overviewCards = [
   { icon: 'lucide-unlock', title: 'No auth required', desc: 'Read-only, publicly accessible. No API keys needed.' },
   { icon: 'lucide-refresh-cw', title: 'Auto-updated', desc: 'Index regenerated on every merge to main via GitHub Actions.' },
 ]
-
-const badgeMarkdownExample = badgeMarkdown('my-app')
-const badgeHtmlExample = badgeHtml('my-app')
-
 const usageExamples = [
   {
     title: 'Fetch all apps (JavaScript)',
@@ -101,7 +96,7 @@ const endpoints = [
     </div>
 
     <!-- Overview cards -->
-    <section class="mb-12" aria-labelledby="overview-heading">
+    <section id="overview" class="mb-12 scroll-mt-10" aria-labelledby="overview-heading">
       <h2 id="overview-heading" class="text-lg-semibold text-ink-gray-8 mb-4">Overview</h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div v-for="card in overviewCards" :key="card.title" class="rounded-6 border border-outline-gray-1 p-5 bg-surface-base">
@@ -113,7 +108,7 @@ const endpoints = [
     </section>
 
     <!-- Base URL -->
-    <section class="mb-12" aria-labelledby="base-url-heading">
+    <section id="base-url" class="mb-12 scroll-mt-10" aria-labelledby="base-url-heading">
       <h2 id="base-url-heading" class="text-lg-semibold text-ink-gray-8 mb-3">Base URL</h2>
       <div class="flex items-center gap-3 bg-surface-base p-3 rounded-6 border border-outline-gray-2 shadow-sm max-w-sm mt-4">
         <code class="flex-1 font-mono text-sm text-ink-gray-7">https://frappe-brewery.lubus.in</code>
@@ -130,7 +125,7 @@ const endpoints = [
     </section>
 
     <!-- Endpoints -->
-    <section class="mb-12" aria-labelledby="endpoints-heading">
+    <section id="endpoints" class="mb-12 scroll-mt-10" aria-labelledby="endpoints-heading">
       <h2 id="endpoints-heading" class="text-lg-semibold text-ink-gray-8 mb-4">Endpoints</h2>
       <div class="rounded-6 border border-outline-gray-1 overflow-hidden divide-y divide-outline-gray-1">
         <div v-for="ep in endpoints" :key="ep.path" class="bg-surface-base">
@@ -161,7 +156,7 @@ const endpoints = [
     </section>
 
     <!-- Usage -->
-    <section class="mb-12" aria-labelledby="usage-heading">
+    <section id="usage" class="mb-12 scroll-mt-10" aria-labelledby="usage-heading">
       <h2 id="usage-heading" class="text-lg-semibold text-ink-gray-8 mb-4">Usage examples</h2>
       <div class="space-y-4">
         <div v-for="ex in usageExamples" :key="ex.title" class="rounded-6 border border-outline-gray-1 overflow-hidden">
@@ -173,60 +168,8 @@ const endpoints = [
       </div>
     </section>
 
-    <!-- README Badge -->
-    <section class="mb-12" aria-labelledby="badge-heading">
-      <h2 id="badge-heading" class="text-lg font-semibold text-ink-gray-8 mb-3">README Badge</h2>
-      <div class="rounded-lg border border-outline-gray-1 p-6 bg-surface-white space-y-4">
-        <p class="text-sm text-ink-gray-5 leading-relaxed">
-          Listed apps can display a badge in their README or website. The badge links to the app's detail page on Frappe Brewery.
-        </p>
-        <a
-          :href="appUrl('erpnext')"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex rounded-md focus:outline-none focus:ring-2 focus:ring-ink-gray-3"
-        >
-          <img :src="badgeImageUrl()" alt="Listed on Frappe Brewery" height="28" width="240" />
-        </a>
-        <div class="space-y-3">
-          <div class="rounded-lg border border-outline-gray-1 overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
-              <h3 class="text-sm font-semibold text-ink-gray-7">Markdown</h3>
-              <Button
-                variant="ghost"
-                :theme="copied === badgeMarkdownExample ? 'green' : 'gray'"
-                :icon-left="copied === badgeMarkdownExample ? 'check' : 'copy'"
-                @click="copy(badgeMarkdownExample)"
-              >
-                {{ copied === badgeMarkdownExample ? 'Copied' : 'Copy' }}
-              </Button>
-            </div>
-            <pre class="p-4 font-mono text-xs text-ink-gray-6 overflow-x-auto bg-surface-white leading-relaxed">{{ badgeMarkdownExample }}</pre>
-          </div>
-          <div class="rounded-lg border border-outline-gray-1 overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-3 bg-surface-gray-1 border-b border-outline-gray-1">
-              <h3 class="text-sm font-semibold text-ink-gray-7">HTML</h3>
-              <Button
-                variant="ghost"
-                :theme="copied === badgeHtmlExample ? 'green' : 'gray'"
-                :icon-left="copied === badgeHtmlExample ? 'check' : 'copy'"
-                @click="copy(badgeHtmlExample)"
-              >
-                {{ copied === badgeHtmlExample ? 'Copied' : 'Copy' }}
-              </Button>
-            </div>
-            <pre class="p-4 font-mono text-xs text-ink-gray-6 overflow-x-auto bg-surface-white leading-relaxed">{{ badgeHtmlExample }}</pre>
-          </div>
-        </div>
-        <p class="text-xs text-ink-gray-4 leading-relaxed">
-          Replace <code class="font-mono bg-surface-gray-2 px-1 py-0.5 rounded border border-outline-gray-1">my-app</code> with your app slug.
-          Badge image URL: <code class="font-mono bg-surface-gray-2 px-1 py-0.5 rounded border border-outline-gray-1">{{ SITE_URL }}{{ BADGE_PATH }}</code>
-        </p>
-      </div>
-    </section>
-
     <!-- Self-hosting -->
-    <section aria-labelledby="selfhost-heading">
+    <section id="selfhost" aria-labelledby="selfhost-heading">
       <h2 id="selfhost-heading" class="text-lg-semibold text-ink-gray-8 mb-3">Self-hosting</h2>
       <div class="rounded-6 border border-outline-gray-1 p-6 bg-surface-base">
         <p class="text-sm text-ink-gray-5 leading-relaxed mb-4">The brewery is fully open source. Fork it, add your own apps, and deploy your instance to Cloudflare Pages.</p>
@@ -264,3 +207,4 @@ const endpoints = [
     </section>
   </div>
 </template>
+
