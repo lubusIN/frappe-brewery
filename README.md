@@ -111,7 +111,7 @@ Explore more open-source tools we're building for the Frappe ecosystem.
         <img src="https://raw.githubusercontent.com/lubusIN/frappe-local/main/.github/assets/logo.svg" alt="Frappe Local" height="60">
       </a>
       <br>
-      Create and manage local Frappe benches and sites visually.
+      Manage Frappe benches and sites visually.
     </td>
     <td width="50%" valign="top">
       <a href="https://github.com/lubusIN/frappe-playground">
@@ -135,7 +135,7 @@ Explore more open-source tools we're building for the Frappe ecosystem.
         <img src="https://raw.githubusercontent.com/lubusIN/wp-frappe-data-store/main/.github/assets/logo.svg" alt="WP Frappe Data Store" height="60">
       </a>
       <br>
-      Connect WordPress and Frappe with a React data store.
+      React Data store for WordPress.
     </td>
   </tr>
 </table>
