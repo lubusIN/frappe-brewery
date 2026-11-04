@@ -1,4 +1,4 @@
-<p align="center"><img width="180" src=".github/assets/logo.svg"></p>
+<p align="center"><img height="50" src=".github/assets/logo.svg"></p>
 
 <img src=".github/assets/banner.png" />
 
